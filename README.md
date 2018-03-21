@@ -1,0 +1,1 @@
+# newjojogame-script-editor
