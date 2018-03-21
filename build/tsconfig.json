@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"module": "umd",
+		"moduleResolution": "node",
+		"noImplicitAny": false,
+		"removeComments": false,
+		"preserveConstEnums": true,
+		"target": "es6",
+		"sourceMap": true,
+		"experimentalDecorators": true,
+		"declaration": false,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"noImplicitThis": true,
+        "alwaysStrict": true,
+        "allowJs": true,
+		"checkJs": true,
+		"baseUrl": ".",
+		"outDir": "./dist"
+	}
+}
