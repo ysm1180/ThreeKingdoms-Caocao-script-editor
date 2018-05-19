@@ -1,0 +1,32 @@
+{
+	"rules": {
+        "class-name": true,
+        "curly":[true, "ignore-same-line"],
+        "debug-assert": true,
+        "indent": [true,
+            "spaces"
+        ],
+        "no-unused-expression": true,
+		"no-duplicate-variable": true,
+		"quotemark" : [true, "single"],
+		"semicolon": [true, "always", "ignore-bound-class-methods"],
+        "space-within-parens": true,
+        "triple-equals": true,
+        "import-patterns": [
+			true,
+			{
+				"target": "**/code/base/common/**",
+				"restrictions": [
+					"**/code/base/common/**"
+				]
+            },
+            {
+				"target": "**/code/platform/**",
+				"restrictions": [
+					"**/code/base/common/**",                    
+					"**/code/platform/**"
+				]
+            }
+        ]
+	}
+}

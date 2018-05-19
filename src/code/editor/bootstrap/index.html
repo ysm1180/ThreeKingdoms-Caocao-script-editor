@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' https: data:; media-src 'none'; child-src 'self'; object-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; font-src 'self' https:;">
+
+		<link rel="stylesheet" type="text/css" href="file:///C:/Users/User/Documents/private/newjojogame-script-editor/dist/code/editor/bootstrap/main.css">
+	</head>
+	<body class="theme-dark" aria-label="">
+	</body>
+
+	<!-- Only debuging electron client -->
+	<script>require('electron-connect').client.create()</script>
+
+	<!-- Startup via index.js -->
+	<script src="index.js"></script>
+</html>
