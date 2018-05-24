@@ -1,6 +1,6 @@
 import { ServiceStorage } from 'code/platform/instantiation/serviceStorage';
 import { ClassDescriptor } from 'code/platform/instantiation/descriptor';
-import { decorator, init } from 'code/platform/instantiation/instantiation';
+import { decorator, init, ServicesAccessor, ServiceIdentifier } from 'code/platform/instantiation/instantiation';
 
 export const IInstantiationService = decorator<InstantiationService>('instantiationService');
 
@@ -36,5 +36,15 @@ export class InstantiationService  {
         arg.push(...serviceArgs);
 
         return create.apply(undefined, arg);
+    }
+
+    public invokeFunction<R>(fn: (accessor: ServicesAccessor) => R, ...args: any[]) {
+        let accessor: ServicesAccessor;
+        accessor = {
+            get: <T>(id: ServiceIdentifier<T>) => {
+                return this.services.get(id);
+            } 
+        };
+        return fn.apply(fn, [accessor].concat(args));
     }
 }

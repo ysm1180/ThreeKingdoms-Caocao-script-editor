@@ -10,7 +10,7 @@ export interface IBaseItemEvent {
 }
 export interface IItemRefreshEvent extends IBaseItemEvent { }
 export interface IItemChildrenRefreshEvent extends IBaseItemEvent {
-    isSkip: boolean;
+    skip: boolean;
 }
 export interface IItemExpandEvent extends IBaseItemEvent { }
 export interface IItemCollapseEvent extends IBaseItemEvent { }
@@ -243,8 +243,8 @@ export class Item {
         return result;
     }
 
-    private refreshChildren(isForce = false, isSkip = false) {
-        if (!isForce && !this.isExpanded()) {
+    private refreshChildren(skipRenderChildren: boolean = false, force: boolean = false) {
+        if (!force && !this.isExpanded()) {
             this.isRefreshChildren = true;
             return Promise.resolve(null);
         }
@@ -252,7 +252,7 @@ export class Item {
         this.isRefreshChildren = false;
 
         const doRefresh = () => {
-            const event: IItemChildrenRefreshEvent = { item: this, isSkip };
+            const event: IItemChildrenRefreshEvent = { item: this, skip: skipRenderChildren };
             this.onRefreshChildren.fire(event);
 
             if (this.isDisposed) {
@@ -283,7 +283,7 @@ export class Item {
                 }
 
                 return Promise.all(this.mapEachChild((child) => {
-                    return child.refresh();
+                    return child.refresh(skipRenderChildren);
                 }));
             }).then(() => {
                 this.onDidRefreshChildren.fire(event);
@@ -293,11 +293,11 @@ export class Item {
         return doRefresh();
     }
 
-    public refresh(): Promise<any> {
+    public refresh(skipRenderChildren: boolean = false): Promise<any> {
         const event: IItemRefreshEvent = { item: this };
         this.onDidRefresh.fire(event);
 
-        return this.refreshChildren();
+        return this.refreshChildren(skipRenderChildren);
     }
 
     public getNavigator() {
@@ -373,12 +373,11 @@ export class ItemNavigator implements IIterator<Item> {
     public next(): Item {
         if (this.item) {
             do {
-                if ((this.item.isVisible() && this.item.isExpanded()) && this.item.firstChild) {
+                if (this.item instanceof RootItem || (this.item.isVisible() && this.item.isExpanded()) && this.item.firstChild) {
                     this.item = this.item.firstChild;
                 } else if (this.item === this.start) {
                     this.item = null;
                 } else {
-                    // select next brother, next uncle, next great-uncle, etc...
                     while (this.item && this.item !== this.start && !this.item.next) {
                         this.item = this.item.parent;
                     }
@@ -432,6 +431,20 @@ export class ItemNavigator implements IIterator<Item> {
 
 }
 
+export class RootItem extends Item {
+    constructor(id: string, registry: ItemRegistry, context: TreeContext, element: any) {
+        super(id, registry, context, element);
+    }
+
+    public isVisible(): boolean {
+        return false;
+    }
+
+    public isExpanded(): boolean {
+        return true;
+    }
+}
+
 export class TreeModel {
     private root: Item;
     private context: TreeContext;
@@ -479,22 +492,24 @@ export class TreeModel {
         this.registry.onDidRemoveTraitItem.set(this.onDidRemoveTraitItem);
 
         const id = this.context.dataSource.getId(element);
-        this.root = new Item(id, this.registry, this.context, element);
+        this.root = new RootItem(id, this.registry, this.context, element);
 
         this.onDidSetRoot.fire(this.root);
-        return this.root.expand().then(() => {
-            return this.refresh(this.root);
-        });
+        return this.refresh(this.root);
     }
 
-    public refresh(element: any = null) {
+    public getRoot(): any {
+        return this.root ? this.root.getElement() : null;
+    }
+
+    public refresh(element: any = null, skipRenderChildren: boolean = false) {
         const item = this.getItem(element);
 
         if (!item) {
             return Promise.resolve(null);
         }
 
-        return item.refresh();
+        return item.refresh(skipRenderChildren);
     }
 
     public getItem(element: any): Item {
@@ -590,8 +605,24 @@ export class TreeModel {
         this.addTraits(trait, elements);
     }
 
+    public getElementsWithTrait(trait: string): any[] {
+        const elements = [];
+        const items = this.traitsToItems[trait] || [];
+        for (let id in items) {
+            if (items.hasOwnProperty(id)) {
+                elements.push(items[id].getElement());
+            }
+        }
+
+        return elements;
+    }
+
     public setSelection(elements: any[]) {
         this.setTraits('selected', elements);
+    }
+
+    public getSelection(): any[] {
+        return this.getElementsWithTrait('selected');
     }
 }
 

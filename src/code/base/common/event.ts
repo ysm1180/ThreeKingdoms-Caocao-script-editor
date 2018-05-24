@@ -48,6 +48,13 @@ export class Event<T> {
         this._listeners.push(thisArg ? [listener, thisArg] : listener);
     }
 
+    public remove(listener: Listener<T>) {
+        const index = this._listeners.indexOf(listener);
+        if (index !== -1) {
+            this._listeners.splice(index, 1);
+        }
+    }
+
     public fire(event?: T) {
         if (this._listeners) {
             const queue: [(Function | [Function, any]), T][] = [];

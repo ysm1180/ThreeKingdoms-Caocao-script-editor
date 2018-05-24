@@ -3,6 +3,10 @@ export interface ServiceIdentifier<T> {
     type: T;
 }
 
+export interface ServicesAccessor {
+    get<T>(id: ServiceIdentifier<T>): T;
+}
+
 export namespace init {
     export const TARGET = '$target';
     export const SERVICE = '$services';
@@ -13,12 +17,12 @@ export namespace init {
         if (target[TARGET] === target) {
             target[SERVICE].push({ id, index });
         } else {
-            target[SERVICE] = [{id, index}];
+            target[SERVICE] = [{ id, index }];
             target[TARGET] = target;
         }
     }
 
-    export function getService(ctor: any): {id: ServiceIdentifier<any>, index: number}[] {
+    export function getService(ctor: any): { id: ServiceIdentifier<any>, index: number }[] {
         return ctor[SERVICE] || [];
     }
 }

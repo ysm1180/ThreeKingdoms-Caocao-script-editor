@@ -2,6 +2,8 @@ import { DomBuilder } from 'code/base/browser/domBuilder';
 import { IEditorInput } from 'code/platform/editor/editor';
 
 export class BaseEditor {
+    
+
     private parent: DomBuilder;
 
     private id: string;

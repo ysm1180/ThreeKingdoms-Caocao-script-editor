@@ -1,14 +1,16 @@
 import { remote } from 'electron';
 import { IContextMenuDelegate } from 'code/base/browser/contextmenu';
-import { decorator } from 'code/platform/instantiation/instantiation';
+import { decorator, ServicesAccessor } from 'code/platform/instantiation/instantiation';
 import { MenuItemInfo, Separator } from 'code/platform/actions/menu';
+import { ICommandService, CommandService } from 'code/platform/commands/commandService';
 
 
 export const IContextMenuService = decorator<ContextMenuService>('contextmenuService');
 
 export class ContextMenuService {
-    constructor() {
-
+    constructor(
+        @ICommandService private commandService: CommandService
+    ) {
     }
 
     public showContextMenu(delegate: IContextMenuDelegate) {
@@ -31,7 +33,9 @@ export class ContextMenuService {
             } else {
                 const options: Electron.MenuItemConstructorOptions  = {
                     label: entry.label,
-                    click: entry.command,
+                    click: (item, window, event) => {
+                        this.runCommand(entry.command);
+                    },
                     accelerator: entry.accelerator,
                 };
 
@@ -41,5 +45,9 @@ export class ContextMenuService {
         });
 
         return menu;
+    }
+
+    private runCommand(fn: (accessor: ServicesAccessor) => any, ...args: any[]) {
+        this.commandService.run(fn, ...args);
     }
 }

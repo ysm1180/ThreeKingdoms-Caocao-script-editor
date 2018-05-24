@@ -73,7 +73,11 @@ export class Tree {
     private model: TreeModel;
     private view: TreeView;
 
-    constructor(container: HTMLElement, configuration: ITreeConfiguration, options: ITreeOptions) {
+    constructor(
+        container: HTMLElement,
+        configuration: ITreeConfiguration,
+        options: ITreeOptions,
+    ) {
         this.container = container;
 
         this.context = new TreeContext(this, configuration, options);
@@ -83,7 +87,23 @@ export class Tree {
         this.view.setModel(this.model);
     }
 
-    public setRoot(element: any) {
+    public setRoot(element: any): Promise<any> {
         return this.model.setRoot(element);
+    }
+
+    public getRoot(): any {
+        return this.model.getRoot();
+    }
+
+    public getSelection(): any[] {
+        return this.model.getSelection();
+    }
+
+    public refresh(element: any, skipRenderChildren: boolean = false): Promise<any> {
+        return this.model.refresh(element, skipRenderChildren);
+    }
+
+    public focus(): void {
+        this.view.focus();
     }
 }

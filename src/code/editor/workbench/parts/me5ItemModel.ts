@@ -1,11 +1,21 @@
 import * as path from 'path';
 import { IEditorInput } from 'code/platform/editor/editor';
+import { Image } from '../../browser/image';
 
 export interface IMe5Data {
     getId(): string;
+
     getChildren(): Me5Group[] | Me5Item[];
+
     hasChildren(): boolean;
+
     getName(): string;
+
+    setName(value: string): void;
+
+    setEditable(value: boolean): void;
+
+    isEditable(): boolean;
 }
 
 export interface IMe5ItemData {
@@ -13,7 +23,7 @@ export interface IMe5ItemData {
     music: any;
 }
 
-export class Me5Stat implements IMe5Data {
+export class Me5Stat {
     private groups: Me5Group[];
     private url: string;
 
@@ -42,9 +52,18 @@ export class Me5Stat implements IMe5Data {
     public getName(): string {
         return path.basename(this.url);
     }
+
+    public isEditable(): boolean {
+        return false;
+    }
+
+    public setEditable(value: boolean) {
+        // noop
+    }
 }
 
 export class Me5Group implements IMe5Data {
+    private editable: boolean;
     private parent: Me5Stat;
     private index: number;
     private name: string;
@@ -54,6 +73,7 @@ export class Me5Group implements IMe5Data {
         this.index = 0;
         this.name = `GROUP_${this.index}`;
         this.children = [];
+        this.editable = false;
     }
 
     public build(parent: Me5Stat, name?: string) {
@@ -89,18 +109,29 @@ export class Me5Group implements IMe5Data {
     public setName(name: string): void {
         this.name = name;
     }
+
+    public isEditable(): boolean {
+        return this.editable;
+    }
+
+    public setEditable(value: boolean): void {
+        this.editable = value;
+    }
 }
 
 export class Me5Item implements IMe5Data, IEditorInput {
+    private editable: boolean;
     private parent: Me5Group;
-    private data: Uint8Array;
     private index: number;
     private name: string;
+    private image: Image;
 
     constructor() {
         this.index = 0;
-        this.data = null;
         this.name = `${this.index}`;
+        this.editable = false;
+
+        this.image = null;
     }
 
     public getResource() {
@@ -108,11 +139,14 @@ export class Me5Item implements IMe5Data, IEditorInput {
     }
 
     public getType() {
-        return 'image';
+        return this.image !== null ? 'image' : 'music';
     }
 
     public resolve() {
-        return Promise.resolve(this.data);
+        return Promise.resolve({
+            image: this.image,
+            music: null,
+        });
     }
 
     public getId(): string {
@@ -126,7 +160,11 @@ export class Me5Item implements IMe5Data, IEditorInput {
             name = `${this.index}`;
         }
         this.name = name;
-        this.data = data;
+
+        if (Image.getType(data)) {
+            this.image = new Image();
+            this.image.build(data);
+        }
     }
 
     public getChildren() {
@@ -143,5 +181,13 @@ export class Me5Item implements IMe5Data, IEditorInput {
 
     public setName(name: string): void {
         this.name = name;
+    }
+
+    public isEditable(): boolean {
+        return this.editable;
+    }
+
+    public setEditable(value: boolean): void {
+        this.editable = value;
     }
 }

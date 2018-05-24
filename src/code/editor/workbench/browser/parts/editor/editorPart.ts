@@ -9,6 +9,10 @@ import { decorator } from 'code/platform/instantiation/instantiation';
 
 export const IEditorService = decorator<EditorPart>('editorPart');
 
+export interface IEditorClosedEvent {
+    editor: IEditorInput;
+}
+
 export class EditorPart extends Part {
     private editorContainer: DomBuilder;
 
@@ -16,6 +20,7 @@ export class EditorPart extends Part {
     private currentEditor: BaseEditor;
 
     public onEditorChanged = new Event<void>();
+    public onEditorClosed = new Event<IEditorClosedEvent>();
 
     constructor(
     ) {
@@ -46,14 +51,14 @@ export class EditorPart extends Part {
 
         this.editorContainer.size(width, height);
     }
-    
+
     public openEditor(editor: IEditorInput) {
         function describe(dataType: string): string {
             if (dataType === 'me5') {
-                return 'editor.imagevieweditor';
+                return ImageViewEditor.ID;
             }
 
-            return 'baseeditor';
+            return 'editor.baseeditor';
         }
 
         if (!editor) {
@@ -62,10 +67,11 @@ export class EditorPart extends Part {
 
         const isChanged = !this.editors.isActive(editor);
 
-        if (this.currentEditor && this.currentEditor.getId() === describe(editor.getType())) {
+        const editorId = describe(editor.getType());
+        if (this.currentEditor && this.currentEditor.getId() === editorId) {
 
         } else {
-            if (!this.createViewEditor(editor.getType())) {
+            if (!this.createViewEditor(editorId, editor.getType())) {
                 return;
             }
         }
@@ -80,10 +86,10 @@ export class EditorPart extends Part {
         this.currentEditor.setInput(input);
     }
 
-    private createViewEditor(type: string): BaseEditor {
+    private createViewEditor(id: string, type: string): BaseEditor {
         let editor: BaseEditor = null;
         if (type === 'me5') {
-            editor = new ImageViewEditor('editor.imagevieweditor');
+            editor = new ImageViewEditor(id);
         } else if (type === 'lua') {
 
         }
@@ -104,6 +110,10 @@ export class EditorPart extends Part {
             this.closeInactiveEditor(input);
         }
 
+        const closeEventData: IEditorClosedEvent = {
+            editor: input
+        };
+        this.onEditorClosed.fire(closeEventData);
         this.onEditorChanged.fire();
     }
 

@@ -4,6 +4,8 @@ import { BaseEditor } from 'code/editor/workbench/browser/parts/editor/baseEdito
 import { Image } from 'code/editor/browser/image';
 
 export class ImageViewEditor extends BaseEditor {
+    static ID = 'editor.imageviewer';
+
     private viewer: DomBuilder;
     private imageContainer: DomBuilder;
     private image: DomBuilder;
@@ -29,11 +31,11 @@ export class ImageViewEditor extends BaseEditor {
     }
 
     public setInput(input: IEditorInput) {
-        input.resolve().then((data: Uint8Array) => {
-            const image = new Image(data);
-            const base64 = image.build();
-
-            this.image.attr('src', ' data:image/png;base64,' + base64);
+        input.resolve().then((data : { image: Image, music }) => {
+            if (data.image) {
+                const base64 = data.image.encodeToBase64();
+                this.image.attr('src', ' data:image/png;base64,' + base64);
+            }
         });
     }
 }

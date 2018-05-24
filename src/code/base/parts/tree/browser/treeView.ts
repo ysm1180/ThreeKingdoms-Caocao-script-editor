@@ -5,7 +5,7 @@ import { StandardMouseEvent } from 'code/base/browser/mouseEvent';
 
 export interface IRow {
     element: HTMLElement;
-    content: HTMLElement;
+    templateData: any;
 }
 
 export class ViewItem {
@@ -36,12 +36,12 @@ export class ViewItem {
 
     public addClass(value: string) {
         this.styles[value] = true;
-        this.render();
+        this.render(true);
     }
 
     public removeClass(value: string) {
         delete this.styles[value];
-        this.render();
+        this.render(true);
     }
 
     private createRow(): IRow {
@@ -53,7 +53,7 @@ export class ViewItem {
 
         return {
             element: row,
-            content: item
+            templateData: this.context.renderer.renderTemplate(item),
         };
     }
 
@@ -61,7 +61,7 @@ export class ViewItem {
         return this.row && this.row.element;
     }
 
-    public render() {
+    public render(skipContextRender: boolean = false) {
         if (!this.element) {
             return;
         }
@@ -72,9 +72,11 @@ export class ViewItem {
             classes.push('has-children');
         }
         this.element.className = classes.join(' ');
-        this.element.style.paddingLeft = (this.model.getDepth() * this.context.options.indentPixels) + 'px';
+        this.element.style.paddingLeft = ((this.model.getDepth() - 1) * this.context.options.indentPixels) + 'px';
 
-        this.context.renderer.render(this.row.content, this.model.getElement());
+        if (!skipContextRender) {
+            this.context.renderer.render(this.context.tree, this.model.getElement(), this.row.templateData);
+        }
     }
 
     public insert(container: HTMLElement, afterElement?: HTMLElement) {
@@ -107,6 +109,24 @@ export class ViewItem {
 
         this.element.parentElement.removeChild(this.element);
         this.row = null;
+    }
+}
+
+export class RootViewItem extends ViewItem {
+    constructor(context: TreeContext, model: Model.Item) {
+        super(context, model);
+    }
+
+    public render(): void {
+
+    }
+
+    public insert(container: HTMLElement, afterElement: HTMLElement): void {
+        // no-op
+    }
+
+    public remove(): void {
+        // no-op
     }
 }
 
@@ -154,7 +174,7 @@ export class TreeView {
     private onClick(e: MouseEvent): void {
         const mouseEvent = new StandardMouseEvent(e);
         const item = this.getItemAround(mouseEvent.target);
-
+        
         if (!item) {
             return;
         }
@@ -210,18 +230,17 @@ export class TreeView {
         this.model.onDidExpandItem.set(this.onDidExpand, this);
         this.model.onDidCollapseItem.set(this.onDidCollapse, this);
         this.model.onDidAddTraitItem.set(this.onItemAddTrait, this);
-        this.model.onDidRemoveTraitItem.set(this.onItemRemoveTrait, this);        
+        this.model.onDidRemoveTraitItem.set(this.onItemRemoveTrait, this);
     }
 
     public onClearingRoot(item: Model.Item) {
         if (item) {
             this.onRemoveItems(item.getNavigator());
-            this.onRemoveItems(new ArrayIterator([item]));
         }
     }
 
     public onSetRoot(item: Model.Item) {
-        this.onInsertItems(new ArrayIterator([item]), null);
+        this.root = new RootViewItem(this.context, item);
     }
 
     public onItemAddTrait(e: Model.IItemTraitEvent) {
@@ -283,7 +302,7 @@ export class TreeView {
     public onItemChildrenRefreshed(e: Model.IItemChildrenRefreshEvent) {
         const item = <Model.Item>e.item;
 
-        if (!e.isSkip) {
+        if (!e.skip) {
             const afterRefreshingChildren: Model.Item[] = [];
             let child = item.firstChild;
             while (child !== null) {
@@ -292,7 +311,7 @@ export class TreeView {
             }
 
             this.onRemoveItems(new ArrayIterator<Model.Item>(this.previousRefreshingChildren[item.id]));
-            this.onInsertItems(new ArrayIterator<Model.Item>(afterRefreshingChildren), item.id);
+            this.onInsertItems(new ArrayIterator<Model.Item>(afterRefreshingChildren), item.getDepth() > 0 ? item.id : null);
         }
     }
 
@@ -402,4 +421,7 @@ export class TreeView {
         this.insertItemInDOM(item);
     }
 
+    public focus(): void {
+        this.domNode.focus();
+    }
 }

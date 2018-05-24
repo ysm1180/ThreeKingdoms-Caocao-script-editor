@@ -1,9 +1,15 @@
+import { Label } from 'code/base/browser/ui/labels';
+import { Input } from 'code/base/browser/ui/input';
+import { addDisposableEventListener } from 'code/base/browser/dom';
+import { dispose } from 'code/base/common/lifecycle';
+import { KeyCode } from 'code/base/common/keyCodes';
+import { ContextMenuEvent, Tree } from 'code/base/parts/tree/browser/tree';
+import { Menu } from 'code/platform/actions/menu';
+import { MenuId } from 'code/platform/actions/registry';
+import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
 import { IMe5Data, Me5Group, Me5Item } from 'code/editor/workbench/parts/me5ItemModel';
 import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
-import { ContextMenuEvent } from 'code/base/parts/tree/browser/tree';
 import { IContextMenuService, ContextMenuService } from 'code/editor/workbench/services/contextmenuService';
-import { Menu } from '../../../platform/actions/menu';
-import { MenuId } from '../../../platform/actions/registry';
 
 export interface IDataSource {
     getId(element: any): string;
@@ -12,7 +18,8 @@ export interface IDataSource {
 }
 
 export interface IDataRenderer {
-    render(container: HTMLElement, element: any): void;
+    renderTemplate(container: HTMLElement): any;
+    render(tree: Tree, element: any, templateData: IMe5TemplateData): void;
 }
 
 export interface IDataController {
@@ -34,23 +41,70 @@ export class Me5DataSource implements IDataSource {
     }
 }
 
+export interface IMe5TemplateData {
+    container: HTMLElement;
+    label: Label;
+}
+
 export class Me5DataRenderer implements IDataRenderer {
-    public render(container: HTMLElement, element: IMe5Data) {
-        if (container) {
-            const labelContainer = document.createElement('div');
-            labelContainer.className = 'label';
-            labelContainer.title = element.getName();
+    constructor(
+        @IInstantiationService private instantiationService: InstantiationService,
 
-            const labelContent = document.createElement('div');
-            labelContent.className = 'label-description';
-            labelContent.innerHTML = element.getName();
+    ) {
 
-            labelContainer.appendChild(labelContent);
-            if (container.firstChild) {
-                container.removeChild(container.firstChild);
-            }
-            container.appendChild(labelContainer);
+    }
+
+    public renderTemplate(container: HTMLElement): IMe5TemplateData {
+        const label = this.instantiationService.create(Label, container);
+        return { label, container };
+    }
+
+    public render(tree: Tree, element: IMe5Data, templateData: IMe5TemplateData) {
+        if (element.isEditable()) {
+            templateData.label.element.style.display = 'none';
+            this.renderInput(tree, templateData.container, element);
+        } else {
+            templateData.label.element.style.display = 'flex';
+            templateData.label.setValue(element.getName());
         }
+    }
+
+    private renderInput(tree: Tree, container: HTMLElement, element: IMe5Data) {
+        const label = this.instantiationService.create(Label, container);
+        const input = new Input(label.element);
+
+        input.value = element.getName();
+        input.focus();
+
+        const done = (commit: boolean) => {
+            element.setEditable(false);
+
+            if (commit) {
+                element.setName(input.value);
+            }
+
+            dispose(toDispose);
+            container.removeChild(label.element);
+
+            tree.refresh(element, true);
+        };
+
+        const toDispose = [
+            addDisposableEventListener(input.inputElement, 'keydown', (e: KeyboardEvent) => {
+                if (e.keyCode === KeyCode.Enter) {
+                    done(true);
+                } else if (e.keyCode === KeyCode.Escape) {
+                    done(false);
+                }
+            }),
+
+            addDisposableEventListener(input.inputElement, 'blur', () => {
+                setTimeout(() => {
+                    tree.focus();
+                }, 0);
+                done(false);
+            }),
+        ];
     }
 }
 

@@ -6,6 +6,9 @@ import { IInstantiationService, InstantiationService } from 'code/platform/insta
 import { TitlePart, ITitlePartService } from 'code/editor/workbench/browser/parts/titlePart';
 import { ServiceStorage } from 'code/platform/instantiation/serviceStorage';
 import { IContextMenuService, ContextMenuService } from '../services/contextmenuService';
+import { IMe5DataService, Me5DataService } from '../services/me5DataService';
+import { ITreeService, TreeService } from '../../../platform/tree/treeService';
+import { ICommandService, CommandService } from '../../../platform/commands/commandService';
 
 
 export class Workbench {
@@ -33,7 +36,7 @@ export class Workbench {
     public startup() {
         this.createWorkbench();
 
-        this.init();
+        this.initService();
 
         this.registerListeners();
 
@@ -42,13 +45,17 @@ export class Workbench {
         this.createLayout();
     }
 
-    private init() {        
-        this.serviceStorage.set(IContextMenuService, this.instantiationService.create(ContextMenuService));   
+    private initService() {
+        this.serviceStorage.set(ITreeService, this.instantiationService.create(TreeService));
+        this.serviceStorage.set(ICommandService, this.instantiationService.create(CommandService));
+        this.serviceStorage.set(IContextMenuService, this.instantiationService.create(ContextMenuService));
+
+        this.serviceStorage.set(IMe5DataService, this.instantiationService.create(Me5DataService));
 
         this.sidebar = this.instantiationService.create(Sidebar);
         this.editor = this.instantiationService.create(EditorPart);
         this.serviceStorage.set(IEditorService, this.editor);
-        
+
         this.title = this.instantiationService.create(TitlePart);
         this.serviceStorage.set(ITitlePartService, this.title);
     }
