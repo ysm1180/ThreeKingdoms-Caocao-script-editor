@@ -1,3 +1,20 @@
+export function once<T extends Function>(this: any, fn: T): T {
+    const _this = this;
+    let didCall = false;
+    let result: any;
+
+    return function () {
+        if (didCall) {
+            return result;
+        }
+
+        didCall = true;
+        result = fn.apply(_this, arguments);
+
+        return result;
+    } as any as T;
+}
+
 export interface IDisposable {
     dispose(): void;
 }
@@ -21,6 +38,17 @@ export function dispose<T extends IDisposable>(first: T | T[], ...rest: T[]): T 
         return [];
     }
 }
+
+export function toDisposable(...fns: (() => void)[]): IDisposable {
+    return {
+        dispose() {
+            for (const fn of fns) {
+                fn();
+            }
+        }
+    };
+}
+
 
 export class Disposable implements IDisposable {
     private toDispose: IDisposable[];

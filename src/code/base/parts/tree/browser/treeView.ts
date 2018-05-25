@@ -2,6 +2,7 @@ import * as Model from 'code/base/parts/tree/browser/treeModel';
 import { TreeContext, MouseContextMenuEvent } from 'code/base/parts/tree/browser/tree';
 import { ArrayIterator, IIterator } from 'code/base/common/iterator';
 import { StandardMouseEvent } from 'code/base/browser/mouseEvent';
+import { addClass, removeClass } from 'code/base/browser/dom';
 
 export interface IRow {
     element: HTMLElement;
@@ -224,13 +225,13 @@ export class TreeView {
         this.model.onSetRoot.add(this.onClearingRoot, this);
         this.model.onDidSetRoot.add(this.onSetRoot, this);
 
-        this.model.onDidRefreshItem.set(this.onItemRefresh, this);
-        this.model.onRefreshItemChildren.set(this.onItemChildrenRefresing, this);
-        this.model.onDidRefreshItemChildren.set(this.onItemChildrenRefreshed, this);
-        this.model.onDidExpandItem.set(this.onDidExpand, this);
-        this.model.onDidCollapseItem.set(this.onDidCollapse, this);
-        this.model.onDidAddTraitItem.set(this.onItemAddTrait, this);
-        this.model.onDidRemoveTraitItem.set(this.onItemRemoveTrait, this);
+        this.model.onDidRefreshItem.add(this.onItemRefresh, this);
+        this.model.onRefreshItemChildren.add(this.onItemChildrenRefresing, this);
+        this.model.onDidRefreshItemChildren.add(this.onItemChildrenRefreshed, this);
+        this.model.onDidExpandItem.add(this.onDidExpand, this);
+        this.model.onDidCollapseItem.add(this.onDidCollapse, this);
+        this.model.onDidAddTraitItem.add(this.onItemAddTrait, this);
+        this.model.onDidRemoveTraitItem.add(this.onItemRemoveTrait, this);
     }
 
     public onClearingRoot(item: Model.Item) {
@@ -250,6 +251,10 @@ export class TreeView {
         if (viewItem) {
             viewItem.addClass(trait);
         }
+
+        if (trait === 'highlight') {
+            addClass(this.domNode, trait);
+        }
     }
 
     public onItemRemoveTrait(e: Model.IItemTraitEvent) {
@@ -258,6 +263,10 @@ export class TreeView {
         const viewItem = this.items[item.id];
         if (viewItem) {
             viewItem.removeClass(trait);
+        }
+
+        if (trait === 'highlight') {
+            removeClass(this.domNode, trait);
         }
     }
 
@@ -289,11 +298,12 @@ export class TreeView {
 
     public onItemChildrenRefresing(e: Model.IItemChildrenRefreshEvent) {
         const item = <Model.Item>e.item;
-        let child = item.firstChild;
         const children: Model.Item[] = [];
-        while (child !== null) {
+        const iter = item.getNavigator();
+        let child : Model.Item;
+
+        while (child = iter.next()) {
             children.push(child);
-            child = child.next;
         }
 
         this.previousRefreshingChildren[item.id] = children;
@@ -304,12 +314,15 @@ export class TreeView {
 
         if (!e.skip) {
             const afterRefreshingChildren: Model.Item[] = [];
-            let child = item.firstChild;
-            while (child !== null) {
+            const iter = item.getNavigator();
+            let child : Model.Item;
+
+            while (child = iter.next()) {
                 afterRefreshingChildren.push(child);
-                child = child.next;
             }
 
+            console.log(item.id);            
+            console.log(afterRefreshingChildren);
             this.onRemoveItems(new ArrayIterator<Model.Item>(this.previousRefreshingChildren[item.id]));
             this.onInsertItems(new ArrayIterator<Model.Item>(afterRefreshingChildren), item.getDepth() > 0 ? item.id : null);
         }

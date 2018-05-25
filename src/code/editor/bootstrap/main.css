@@ -25,9 +25,7 @@ body {
     overflow: hidden;
 }
 
-.sidebar {
-    background-color: #333333;
-}
+.sidebar {}
 
 .view-container {
     width: 100%;
@@ -39,21 +37,29 @@ body {
     width: 100%;
     height: 100%;
     white-space: nowrap;
+    background-color: #333333;
+    color: #cccccc;
+    
 }
 
-.tree-wrapper {
+.tree.highlight {
+    background-color: #252526;
+    color: #4D4D4D;
+}
+
+.tree>.tree-wrapper {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-.tree-rows {
+.tree>.tree-wrapper>.tree-rows {
     position: absolute;
     width: 100%;
     height: 100%;
 }
 
-.tree-row {
+.tree>.tree-wrapper>.tree-rows>.tree-row {
     cursor: pointer;
     overflow: hidden;
     width: 100%;
@@ -61,25 +67,29 @@ body {
     box-sizing: border-box;
 }
 
-.tree-row:hover {
+.tree>.tree-wrapper>.tree-rows>.tree-row:hover {
     background-color: #2A2D2E;
 }
 
-.tree-row.selected {
+.tree>.tree-wrapper>.tree-rows>.tree-row.selected {
     background-color: #094771;
 }
 
-.tree-row.has-children .content:before {
+.tree.highlight>.tree-wrapper>.tree-rows>.tree-row.selected {
+    background-color: #252526;
+}
+
+.tree>.tree-wrapper>.tree-rows>.tree-row.has-children>.content:before {
     display: inline-block;
     background-image: url('../workbench/browser/view/media/collapsed.svg');
 }
 
-.tree-row.has-children.expanded .content:before {
+.tree>.tree-wrapper>.tree-rows>.tree-row.has-children.expanded>.content:before {
     display: inline-block;
     background-image: url('../workbench/browser/view/media/expanded.svg');
 }
 
-.tree-row .content:before {
+.tree>.tree-wrapper>.tree-rows>.tree-row>.content:before {
     background-size: 16px;
     background-position: 50% 50%;
     background-repeat: no-repeat;
@@ -91,14 +101,13 @@ body {
     content: " ";
 }
 
-.tree-row>.content {
+.tree>.tree-wrapper>.tree-rows>.tree-row>.content {
     height: 100%;
     position: relative;
-    color: #cccccc;
     display: flex;
 }
 
-.tree-row>.content>.label {
+.tree>.tree-wrapper>.tree-rows>.tree-row>.content>.label {
     display: flex;
     flex: 1;
     flex-wrap: nowrap;
@@ -107,7 +116,7 @@ body {
     text-overflow: ellipsis;
 }
 
-.tree-row>.content .label-description {
+.tree>.tree-wrapper>.tree-rows>.tree-row>.content>.label>.label-description {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -115,7 +124,7 @@ body {
     line-height: 22px;
 }
 
-.tree-row>.content>.label:before {
+.tree>.tree-wrapper>.tree-rows>.tree-row>.content>.label:before {
     background-size: 16px;
     background-position: 0;
     background-repeat: no-repeat;
@@ -127,10 +136,19 @@ body {
     flex-shrink: 0;
 }
 
-.tree-row>.content>.label:after {
+.tree>.tree-wrapper>.tree-rows>.tree-row>.content>.label:after {
     opacity: .75;
     padding: 0 12px 0 5px;
     margin-left: auto;
+}
+
+.tree>.tree-wrapper>.tree-rows>.tree-row>.content>.label>input {
+    outline: 0;
+    border: 0;
+    background-color: #3C3C3C;
+    color: #969696;
+    padding: 2px 0;
+    width: 100%;
 }
 
 .sash {
@@ -152,6 +170,7 @@ body {
     box-sizing: border-box;
     background-color: #252526;
 }
+
 .tabs-container {
     display: flex;
     background-color: #252526;
@@ -214,7 +233,7 @@ body {
     background: url('../workbench/browser/parts/editor/images/close.svg') center center no-repeat;
 }
 
-.editor-container > .image-viewer-editor {
+.editor-container>.image-viewer-editor {
     display: flex;
     height: 100%;
     text-align: center;
@@ -222,6 +241,6 @@ body {
     overflow: auto;
 }
 
-.image-viewer-editor > .image {
+.image-viewer-editor>.image {
     width: 100%;
 }

@@ -1,38 +1,55 @@
+import { IDisposable, toDisposable, once } from 'code/base/common/lifecycle';
+import { LinkedList } from './linkedList';
+
 type Listener<T> = (e: T) => any;
 
 export class ChainEventStorage<T> {
-    private _relayEvent: RelayEvent<T>;
-    private pendingEvents: Event<T>[] = [];
-    private on = false;
+    private _relayEvent: Event<T>;
+    private _pendingEvents: Event<T>[];
+    private _disposable: IDisposable[];
 
     constructor() {
         this._relayEvent = null;
+        this._pendingEvents = [];
+        this._disposable = [];
     }
 
-    public set(event: RelayEvent<T>) {
+    public set(event: Event<T>): IDisposable {
         this._relayEvent = event;
-        this.on = true;
+
+        let removes = [];
+        if (this._pendingEvents.length) {
+            this._pendingEvents.forEach((e) => {
+                removes.push(this.add(e));
+            });
+            this._pendingEvents = [];
+        }
+        return toDisposable(...removes);
     }
 
-    public add(event: Event<T>) {
-        if (!this.on) {
-            this.pendingEvents.push(event);
+    public add(event: Event<T>): IDisposable {
+        if (!this._relayEvent) {
+            this._pendingEvents.push(event);
         } else {
-            if (this.pendingEvents.length) {
-                this.pendingEvents.forEach((e) => {
-                    e.add(this._relayEvent.listener, this._relayEvent.thisArg);
-                });
-                this.pendingEvents = [];
-            }
+            const remove = event.add(this._relayEvent.listener);
+            this._disposable.push(remove);
 
-            event.add(this._relayEvent.listener, this._relayEvent.thisArg);
+            return remove;
         }
+    }
+
+    public dispose() {
+        this._disposable.forEach((disposable) => {
+            disposable.dispose();
+        });
+        this._relayEvent = null;
+        this._pendingEvents = [];
     }
 }
 
 
 export class Event<T> {
-    private _listeners: (Function | [Function, any])[] = [];
+    private _listeners = new LinkedList<(Function | [Function, any])>();
 
     constructor() {
 
@@ -44,23 +61,18 @@ export class Event<T> {
         };
     }
 
-    public add(listener: Listener<T>, thisArg?: any) {
-        this._listeners.push(thisArg ? [listener, thisArg] : listener);
-    }
+    public add(listener: Listener<T>, thisArg?: any): IDisposable {
+        const remove = this._listeners.push(thisArg ? [listener, thisArg] : listener);
 
-    public remove(listener: Listener<T>) {
-        const index = this._listeners.indexOf(listener);
-        if (index !== -1) {
-            this._listeners.splice(index, 1);
-        }
+        return toDisposable(once(remove)); 
     }
 
     public fire(event?: T) {
         if (this._listeners) {
             const queue: [(Function | [Function, any]), T][] = [];
 
-            for (let i = 0; i < this._listeners.length; i++) {
-                queue.push([this._listeners[i], event]);
+            for (let iter = this._listeners.iterator(), e = iter.next(); !e.done; e = iter.next()) {
+                queue.push([e.value, event]);
             }
 
             while (queue.length > 0) {
@@ -73,19 +85,4 @@ export class Event<T> {
             }
         }
     }
-}
-
-export class RelayEvent<T> {
-    public listener: Listener<T>;
-    public thisArg: any;
-
-    constructor() {
-
-    }
-
-    public set(listener: Listener<T>, thisArg?: any) {
-        this.listener = listener;
-        this.thisArg = thisArg;
-    }
-
 }

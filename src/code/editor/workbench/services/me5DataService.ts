@@ -1,6 +1,6 @@
 import { decorator } from 'code/platform/instantiation/instantiation';
-import { Me5Group, Me5Item, IMe5Data, Me5Stat } from 'code/editor/workbench/parts/me5ItemModel';
 import { ITreeService, TreeService } from 'code/platform/tree/treeService';
+import { IMe5Data } from 'code/platform/files/me5Data';
 
 export const IMe5DataService = decorator<Me5DataService>('me5DataService');
 
@@ -19,14 +19,21 @@ export class Me5DataService {
             return;
         }
 
-        if (element instanceof Me5Stat) {
-            return;
-        }
-
         element.setEditable(true);
         lastTree.refresh(element, true).then(() => {
-            
+            lastTree.setHighlight(element);
         });
-        
+    }
+
+    public doDelete() {
+        const lastTree = this.treeService.LastFocusedTree;
+        const elements = <IMe5Data[]>lastTree.getSelection();
+
+        elements.forEach(element => {
+            const parent = element.getParent();
+            element.dispose();
+            lastTree.refresh(parent);            
+        });
+
     }
 }

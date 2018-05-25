@@ -9,7 +9,6 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerContext, {
     command: (accessor: ServicesAccessor) => {
         const me5DataService = accessor.get(IMe5DataService);
         me5DataService.doRename();
-
     },
     order: 1,
     shortcutKey: 'F2',
@@ -18,8 +17,9 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerContext, {
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerContext, {
     group: 'modification',
     label: '삭제',
-    command: () => {
-        
+    command: (accessor: ServicesAccessor) => {
+        const me5DataService = accessor.get(IMe5DataService);
+        me5DataService.doDelete();
     },
     order: 2,
     shortcutKey: 'Delete',

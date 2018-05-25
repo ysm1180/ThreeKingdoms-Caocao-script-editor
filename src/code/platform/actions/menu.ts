@@ -1,11 +1,11 @@
 import { MenuId, MenuRegistry, IMenuItem } from 'code/platform/actions/registry';
-import { MenuItem } from 'electron';
+import { ServicesAccessor } from '../instantiation/instantiation';
 
 type MenuItemGroup = [string, IMenuItem[]];
 
 export class MenuItemInfo {
     private _label: string;
-    private _command: any;
+    private _command: (accessor: ServicesAccessor) => void;
     private _accelerator: string;
 
     constructor(menu: IMenuItem) {
@@ -75,14 +75,14 @@ export class Menu {
         const groupA = a.group || 'z_end';
         const groupB = b.group || 'z_end';
 
-        if (a.group !== b.group) {
-            return a.group.localeCompare(b.group);
+        if (groupA !== groupB) {
+            return groupA.localeCompare(groupB);
         }
 
         const orderA = a.order || 0;
         const orderB = b.order || 0;
 
-        return a.order - b.order;
+        return orderA - orderB;
     }
 
 

@@ -1,6 +1,7 @@
 import { TreeContext } from 'code/base/parts/tree/browser/tree';
-import { Event, RelayEvent, ChainEventStorage } from 'code/base/common/event';
+import { Event, ChainEventStorage } from 'code/base/common/event';
 import { IIterator } from 'code/base/common/iterator';
+import { IDisposable, dispose } from 'code/base/common/lifecycle';
 
 interface IMap<T> { [id: string]: T; }
 interface IItemMap extends IMap<Item> { }
@@ -19,7 +20,7 @@ export interface IItemTraitEvent extends IBaseItemEvent {
 }
 
 export class ItemRegistry {
-    private items: IMap<{ item: Item }>;
+    private items: IMap<{ item: Item, toDispose: IDisposable[] }>;
 
     public onDidRefreshItem = new ChainEventStorage<IItemRefreshEvent>();
     public onRefreshItemChildren = new ChainEventStorage<IItemChildrenRefreshEvent>();
@@ -28,30 +29,47 @@ export class ItemRegistry {
     public onDidCollapseItem = new ChainEventStorage<IItemCollapseEvent>();
     public onDidAddTraitItem = new ChainEventStorage<IItemTraitEvent>();
     public onDidRemoveTraitItem = new ChainEventStorage<IItemTraitEvent>();
+    public onDidDisposeItem = new ChainEventStorage<Item>();
 
     constructor() {
         this.items = {};
     }
 
     public register(item: Item): void {
-        this.items[item.id] = { item };
 
-        this.onDidRefreshItem.add(item.onDidRefresh);
-        this.onRefreshItemChildren.add(item.onRefreshChildren);
-        this.onDidRefreshItemChildren.add(item.onDidRefreshChildren);
-        this.onDidExpandItem.add(item.onDidExpand);
-        this.onDidCollapseItem.add(item.onDidCollapse);
-        this.onDidAddTraitItem.add(item.onDidAddTrait);
-        this.onDidRemoveTraitItem.add(item.onDidRemoveTrait);
+        const toDispose = [
+            this.onDidRefreshItem.add(item.onDidRefresh),
+            this.onRefreshItemChildren.add(item.onRefreshChildren),
+            this.onDidRefreshItemChildren.add(item.onDidRefreshChildren),
+            this.onDidExpandItem.add(item.onDidExpand),
+            this.onDidCollapseItem.add(item.onDidCollapse),
+            this.onDidAddTraitItem.add(item.onDidAddTrait),
+            this.onDidRemoveTraitItem.add(item.onDidRemoveTrait),
+            this.onDidDisposeItem.add(item.onDidDispose),
+        ];
+
+        this.items[item.id] = { item, toDispose };
     }
 
     public deregister(item: Item): void {
+        dispose(this.items[item.id].toDispose);
         delete this.items[item.id];
     }
 
     public getItem(id: string): Item {
         const result = this.items[id];
         return result ? result.item : null;
+    }
+
+    public dispose() {
+        this.onDidRefreshItem.dispose();
+        this.onRefreshItemChildren.dispose();
+        this.onDidRefreshItemChildren.dispose();
+        this.onDidExpandItem.dispose();
+        this.onDidCollapseItem.dispose();
+        this.onDidAddTraitItem.dispose();
+        this.onDidRemoveTraitItem.dispose();
+        this.onDidDisposeItem.dispose();
     }
 }
 export class Item {
@@ -86,6 +104,7 @@ export class Item {
     public onDidCollapse = new Event<IItemCollapseEvent>();
     public onDidAddTrait = new Event<IItemTraitEvent>();
     public onDidRemoveTrait = new Event<IItemTraitEvent>();
+    public onDidDispose = new Event<Item>();
 
     constructor(id: string, registry: ItemRegistry, context: TreeContext, element: any) {
         this.id = id;
@@ -111,6 +130,18 @@ export class Item {
         this.isDisposed = false;
 
         this.traits = {};
+    }
+
+    public getAllTraits(): string[] {
+        const result: string[] = [];
+        let trait: string;
+        for (trait in this.traits) {
+            if (this.traits.hasOwnProperty(trait) && this.traits[trait]) {
+                result.push(trait);
+            }
+        }
+
+        return result;
     }
 
     public getElement(): any {
@@ -267,6 +298,7 @@ export class Item {
                     this.removeChild(this.firstChild);
                 }
 
+                console.log(children);
                 for (let i = 0, len = children.length; i < len; i++) {
                     const child = children[i];
                     const id = this.context.dataSource.getId(child);
@@ -335,6 +367,7 @@ export class Item {
         this.firstChild = null;
         this.lastChild = null;
 
+        this.onDidDispose.fire(this);
         this.registry.deregister(this);
 
         this.isDisposed = true;
@@ -454,13 +487,14 @@ export class TreeModel {
     public onSetRoot = new Event<Item>();
     public onDidSetRoot = new Event<Item>();
 
-    public onDidRefreshItem = new RelayEvent<IItemRefreshEvent>();
-    public onRefreshItemChildren = new RelayEvent<IItemChildrenRefreshEvent>();
-    public onDidRefreshItemChildren = new RelayEvent<IItemChildrenRefreshEvent>();
-    public onDidExpandItem = new RelayEvent<IItemExpandEvent>();
-    public onDidCollapseItem = new RelayEvent<IItemCollapseEvent>();
-    public onDidAddTraitItem = new RelayEvent<IItemTraitEvent>();
-    public onDidRemoveTraitItem = new RelayEvent<IItemTraitEvent>();
+    public onDidRefreshItem = new Event<IItemRefreshEvent>();
+    public onRefreshItemChildren = new Event<IItemChildrenRefreshEvent>();
+    public onDidRefreshItemChildren = new Event<IItemChildrenRefreshEvent>();
+    public onDidExpandItem = new Event<IItemExpandEvent>();
+    public onDidCollapseItem = new Event<IItemCollapseEvent>();
+    public onDidAddTraitItem = new Event<IItemTraitEvent>();
+    public onDidRemoveTraitItem = new Event<IItemTraitEvent>();
+    public onDidChangeHighlight = new Event<void>();
 
     constructor(context: TreeContext) {
         this.root = null;
@@ -481,6 +515,10 @@ export class TreeModel {
             return Promise.resolve(null);
         }
 
+        if (this.registry) {
+            this.registry.dispose();
+        }
+
         this.registry = new ItemRegistry();
 
         this.registry.onDidRefreshItem.set(this.onDidRefreshItem);
@@ -490,6 +528,15 @@ export class TreeModel {
         this.registry.onDidCollapseItem.set(this.onDidCollapseItem);
         this.registry.onDidAddTraitItem.set(this.onDidAddTraitItem);
         this.registry.onDidRemoveTraitItem.set(this.onDidRemoveTraitItem);
+
+        const removeTraits = new Event<Item>();
+        removeTraits.add((item) => {
+            const traits = item.getAllTraits();
+            traits.forEach((trait) => {
+                delete this.traitsToItems[trait][item.id];
+            });
+        });
+        this.registry.onDidDisposeItem.set(removeTraits);
 
         const id = this.context.dataSource.getId(element);
         this.root = new RootItem(id, this.registry, this.context, element);
@@ -623,6 +670,10 @@ export class TreeModel {
 
     public getSelection(): any[] {
         return this.getElementsWithTrait('selected');
+    }
+
+    public setHightlight(element?: any) {
+        this.setTraits('highlight', element ? [element]: []);
     }
 }
 

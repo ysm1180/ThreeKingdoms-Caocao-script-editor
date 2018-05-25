@@ -6,10 +6,10 @@ import { KeyCode } from 'code/base/common/keyCodes';
 import { ContextMenuEvent, Tree } from 'code/base/parts/tree/browser/tree';
 import { Menu } from 'code/platform/actions/menu';
 import { MenuId } from 'code/platform/actions/registry';
-import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
-import { IMe5Data, Me5Group, Me5Item } from 'code/editor/workbench/parts/me5ItemModel';
+import { Me5Group, Me5Item } from 'code/editor/workbench/parts/files/me5DataModel';
 import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
 import { IContextMenuService, ContextMenuService } from 'code/editor/workbench/services/contextmenuService';
+import { IMe5Data } from 'code/platform/files/me5Data';
 
 export interface IDataSource {
     getId(element: any): string;
@@ -32,7 +32,7 @@ export class Me5DataSource implements IDataSource {
         return element.getId();
     }
 
-    public getChildren(element: IMe5Data): Me5Group[] | Me5Item[] {
+    public getChildren(element: IMe5Data): IMe5Data[] {
         return element.getChildren();
     }
 
@@ -48,14 +48,12 @@ export interface IMe5TemplateData {
 
 export class Me5DataRenderer implements IDataRenderer {
     constructor(
-        @IInstantiationService private instantiationService: InstantiationService,
-
     ) {
 
     }
 
     public renderTemplate(container: HTMLElement): IMe5TemplateData {
-        const label = this.instantiationService.create(Label, container);
+        const label = new Label(container);
         return { label, container };
     }
 
@@ -70,13 +68,15 @@ export class Me5DataRenderer implements IDataRenderer {
     }
 
     private renderInput(tree: Tree, container: HTMLElement, element: IMe5Data) {
-        const label = this.instantiationService.create(Label, container);
+        const label = new Label(container);
         const input = new Input(label.element);
+        
 
         input.value = element.getName();
         input.focus();
 
         const done = (commit: boolean) => {
+            tree.clearHighlight();
             element.setEditable(false);
 
             if (commit) {
@@ -102,7 +102,7 @@ export class Me5DataRenderer implements IDataRenderer {
                 setTimeout(() => {
                     tree.focus();
                 }, 0);
-                done(false);
+                done(true);
             }),
         ];
     }

@@ -1,5 +1,7 @@
+import { ServicesAccessor } from 'code/platform/instantiation/instantiation';
+
 export interface IMenuItem {
-    command?: any;
+    command?: (accessor: ServicesAccessor) => void;
     label: string;
     visible?: boolean;
     shortcutKey?: string;

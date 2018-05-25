@@ -106,4 +106,12 @@ export class Tree {
     public focus(): void {
         this.view.focus();
     }
+
+    public setHighlight(element: any) {
+        this.model.setHightlight(element);
+    }
+
+    public clearHighlight() {
+        this.model.setHightlight();
+    }
 }

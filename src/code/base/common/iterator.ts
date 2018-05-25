@@ -1,5 +1,9 @@
 export interface IIterator<T> {
-    next() : T;
+    next(): T;
+}
+
+export interface IDoneIterator<T> {
+    next(): { readonly done: boolean, readonly value: T };
 }
 
 export class ArrayIterator<T> implements IIterator<T> {

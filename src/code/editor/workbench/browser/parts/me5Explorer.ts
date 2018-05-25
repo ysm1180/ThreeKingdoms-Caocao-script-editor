@@ -4,7 +4,7 @@ import { IView } from 'code/editor/workbench/browser/view';
 import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
 import { IEditorService, EditorPart, IEditorClosedEvent } from 'code/editor/workbench/browser/parts/editor/editorPart';
 import { Me5File } from 'code/editor/common/file';
-import { Me5Stat, Me5Group, Me5Item } from 'code/editor/workbench/parts/me5ItemModel';
+import { Me5Stat, Me5Group, Me5Item } from 'code/editor/workbench/parts/files/me5DataModel';
 import { ITreeService, TreeService } from 'code/platform/tree/treeService';
 
 export class Me5Tree extends Tree {
