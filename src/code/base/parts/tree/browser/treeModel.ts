@@ -298,7 +298,6 @@ export class Item {
                     this.removeChild(this.firstChild);
                 }
 
-                console.log(children);
                 for (let i = 0, len = children.length; i < len; i++) {
                     const child = children[i];
                     const id = this.context.dataSource.getId(child);

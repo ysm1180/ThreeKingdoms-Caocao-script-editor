@@ -20,16 +20,15 @@ export const getDefaultState = function (): IWindowState {
     };
 };
 
-export class Window {
+export class CodeWindow {
     public window: BrowserWindow;
 
     constructor(
-        config: IWindowCreationOption,
     ) {
-        this.createBrowserWindow(config);
+
     }
 
-    private createBrowserWindow(option: IWindowCreationOption) {
+    public createBrowserWindow(option: IWindowCreationOption): void {
         const options: Electron.BrowserWindowConstructorOptions = {
             width: option.state.width,
             height: option.state.height,
@@ -45,6 +44,8 @@ export class Window {
         }));
 
         client.create(this.window);
+
+        this.registerListener();
     }
 
     private registerListener() {

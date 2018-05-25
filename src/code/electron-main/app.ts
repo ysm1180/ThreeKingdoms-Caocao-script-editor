@@ -1,23 +1,38 @@
-import { Window, getDefaultState } from 'code/electron-main/window';
+import { CodeWindow, getDefaultState } from 'code/electron-main/window';
 import { AppMenu } from 'code/electron-main/menus';
-import { WindowManager } from 'code/electron-main/windows';
+import { WindowManager, IWindowMainService } from 'code/electron-main/windows';
 import { InstantiationService } from 'code/platform/instantiation/instantiationService';
+import { ServiceStorage } from '../platform/instantiation/serviceStorage';
+import { WindowChannel } from '../platform/windows/windowsIpc';
 
 export class EditorApplication {
-    private mainWindow: Window;
+    private mainWindow: CodeWindow;
     private menu: AppMenu;
     private windowManager: WindowManager;
 
     constructor() {
-        const state = getDefaultState();
 
-        const instant = new InstantiationService();
-        this.mainWindow = new Window({
-            state
-        });
-        this.windowManager = new WindowManager(this.mainWindow);
-        this.menu = instant.create(AppMenu, this.windowManager);
     }
 
+    public startup() {
+        const serviceStorage = new ServiceStorage();
+        const instantiationService = new InstantiationService(serviceStorage);
+
+        this.windowManager = instantiationService.create(WindowManager);
+        serviceStorage.set(IWindowMainService, this.windowManager);
+        
+        instantiationService.create(WindowChannel);
+        
+        this.openFirstWindow();
+
+        this.menu = instantiationService.create(AppMenu);
+    }
+
+    public openFirstWindow() {
+        const state = getDefaultState();
+        this.windowManager.openNewWindow({
+            state,
+        });
+    }
 
 }

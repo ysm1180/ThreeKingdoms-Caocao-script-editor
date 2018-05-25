@@ -1,16 +1,25 @@
 import { MenuId, MenuRegistry, IMenuItem } from 'code/platform/actions/registry';
-import { ServicesAccessor } from '../instantiation/instantiation';
+import { CommandsRegistry } from 'code/platform/commands/commands';
 
 type MenuItemGroup = [string, IMenuItem[]];
 
 export class MenuItemInfo {
     private _label: string;
-    private _command: (accessor: ServicesAccessor) => void;
+    private _command: string;
     private _accelerator: string;
 
     constructor(menu: IMenuItem) {
         this._label = menu.label;
-        this._command = menu.command;
+
+        if (menu.command.handler) {
+            const command = {
+                id: menu.command.id,
+                handler: menu.command.handler,
+            };
+            CommandsRegistry.register(command);
+        }
+
+        this._command = menu.command.id;
         this._accelerator = menu.shortcutKey;
     }
 
@@ -31,6 +40,10 @@ export class Separator extends MenuItemInfo {
     constructor() {
         super({
             label: '',
+            command: {
+                id: 'seperator',
+                handler: () => { }
+            },
         });
     }
 }

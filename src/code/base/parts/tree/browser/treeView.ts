@@ -321,8 +321,6 @@ export class TreeView {
                 afterRefreshingChildren.push(child);
             }
 
-            console.log(item.id);            
-            console.log(afterRefreshingChildren);
             this.onRemoveItems(new ArrayIterator<Model.Item>(this.previousRefreshingChildren[item.id]));
             this.onInsertItems(new ArrayIterator<Model.Item>(afterRefreshingChildren), item.getDepth() > 0 ? item.id : null);
         }

@@ -1,7 +1,10 @@
-import { ServicesAccessor } from 'code/platform/instantiation/instantiation';
+import { ICommandHandler } from 'code/platform/commands/commands';
 
 export interface IMenuItem {
-    command?: (accessor: ServicesAccessor) => void;
+    command: {
+        id: string;
+        handler?: ICommandHandler;
+    };
     label: string;
     visible?: boolean;
     shortcutKey?: string;

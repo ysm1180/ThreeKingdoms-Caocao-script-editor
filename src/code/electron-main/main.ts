@@ -5,6 +5,7 @@ import { EditorApplication } from 'code/electron-main/app';
 
 function main() {
     const app = new EditorApplication();
+    app.startup();
 }
 
 app.on('window-all-closed', () => {

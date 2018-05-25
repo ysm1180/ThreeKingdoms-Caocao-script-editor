@@ -1,14 +1,17 @@
 import { DomBuilder, $ } from 'code/base/browser/domBuilder';
+import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
+import { ServiceStorage } from 'code/platform/instantiation/serviceStorage';
+import { ITreeService, TreeService } from 'code/platform/tree/treeService';
+import { ICommandService, CommandService } from 'code/platform/commands/commandService';
+import { IKeybindingService, KeybindingService } from 'code/platform/keybindings/keybindingService';
 import { Sidebar } from 'code/editor/workbench/browser/parts/sidebar';
 import { WorkbenchLayout } from 'code/editor/workbench/browser/layout';
 import { EditorPart, IEditorService } from 'code/editor/workbench/browser/parts/editor/editorPart';
-import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
 import { TitlePart, ITitlePartService } from 'code/editor/workbench/browser/parts/titlePart';
-import { ServiceStorage } from 'code/platform/instantiation/serviceStorage';
-import { IContextMenuService, ContextMenuService } from '../services/contextmenuService';
-import { IMe5DataService, Me5DataService } from '../services/me5DataService';
-import { ITreeService, TreeService } from '../../../platform/tree/treeService';
-import { ICommandService, CommandService } from '../../../platform/commands/commandService';
+import { IContextMenuService, ContextMenuService } from 'code/editor/workbench/services/contextmenuService';
+import { IMe5DataService, Me5DataService } from 'code/editor/workbench/services/me5DataService';
+import { IWindowClientService, WindowClientService } from '../../../platform/windows/windowsIpc';
+import { IDialogService, DialogService } from '../services/electron-browser/dialogService';
 
 
 export class Workbench {
@@ -47,8 +50,13 @@ export class Workbench {
 
     private initService() {
         this.serviceStorage.set(ITreeService, this.instantiationService.create(TreeService));
+
+        this.serviceStorage.set(IWindowClientService, this.instantiationService.create(WindowClientService));
+        this.serviceStorage.set(IDialogService, this.instantiationService.create(DialogService));
+
         this.serviceStorage.set(ICommandService, this.instantiationService.create(CommandService));
         this.serviceStorage.set(IContextMenuService, this.instantiationService.create(ContextMenuService));
+        this.serviceStorage.set(IKeybindingService, this.instantiationService.create(KeybindingService, window));
 
         this.serviceStorage.set(IMe5DataService, this.instantiationService.create(Me5DataService));
 

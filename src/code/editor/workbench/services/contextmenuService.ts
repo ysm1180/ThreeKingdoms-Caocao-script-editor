@@ -1,6 +1,6 @@
 import { remote } from 'electron';
 import { IContextMenuDelegate } from 'code/base/browser/contextmenu';
-import { decorator, ServicesAccessor } from 'code/platform/instantiation/instantiation';
+import { decorator } from 'code/platform/instantiation/instantiation';
 import { MenuItemInfo, Separator } from 'code/platform/actions/menu';
 import { ICommandService, CommandService } from 'code/platform/commands/commandService';
 
@@ -47,7 +47,7 @@ export class ContextMenuService {
         return menu;
     }
 
-    private runCommand(fn: (accessor: ServicesAccessor) => any, ...args: any[]) {
-        this.commandService.run(fn, ...args);
+    private runCommand(id: string) {
+        this.commandService.run(id);
     }
 }
