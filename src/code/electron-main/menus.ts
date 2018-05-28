@@ -55,12 +55,8 @@ export class AppMenu {
     }
 
     private setEditMenuItem(editMenu: Menu) {
-        const addGroup = new MenuItem({ label: '그룹 추가(&G)', click: () => { }, accelerator: 'Control+Shift+G' });
-        const addItem = new MenuItem({ label: '이미지 추가(&I)', click: () => { }, accelerator: 'Control+Shift+A' });
 
         arrays.coalesce([
-            addGroup,
-            addItem,
         ]).forEach(menuItem => editMenu.append(menuItem));
     }
 

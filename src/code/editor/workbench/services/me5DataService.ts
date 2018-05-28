@@ -1,8 +1,9 @@
 import { decorator } from 'code/platform/instantiation/instantiation';
 import { ITreeService, TreeService } from 'code/platform/tree/treeService';
-import { IMe5Data } from 'code/platform/files/me5Data';
+import { IEditableItemData } from 'code/platform/files/me5Data';
+import { IConfirmation } from 'code/platform/dialog/dialogs';
+import { Me5Group } from 'code/editor/workbench/parts/files/me5Data';
 import { IDialogService, DialogService } from 'code/editor/workbench/services/electron-browser/dialogService';
-import { IConfirmation } from '../../../platform/dialog/dialogs';
 
 export const IMe5DataService = decorator<Me5DataService>('me5DataService');
 
@@ -14,9 +15,20 @@ export class Me5DataService {
 
     }
 
+    public doInsertGroup() {
+        const lastTree = this.treeService.LastFocusedTree;
+        const element = <IEditableItemData>lastTree.getSelection()[0];
+        const parent = element.getParent();
+
+        const newGroup = new Me5Group();
+        newGroup.build(parent, element);
+
+        lastTree.refresh(parent);
+    }
+
     public doRename() {
         const lastTree = this.treeService.LastFocusedTree;
-        const element = <IMe5Data>lastTree.getSelection()[0];
+        const element = <IEditableItemData>lastTree.getSelection()[0];
 
         if (!element) {
             return;
@@ -30,7 +42,7 @@ export class Me5DataService {
 
     public doDelete() {
         const lastTree = this.treeService.LastFocusedTree;
-        const elements = <IMe5Data[]>lastTree.getSelection();
+        const elements = <IEditableItemData[]>lastTree.getSelection();
 
         const confirmation: IConfirmation = {
             title: 'ME5 항목 삭제',

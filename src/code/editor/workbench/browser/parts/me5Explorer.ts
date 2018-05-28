@@ -1,11 +1,12 @@
-import { Tree, ITreeOptions, ITreeConfiguration } from 'code/base/parts/tree/browser/tree';
-import { Me5DataSource, Me5DataRenderer, Me5DataController } from 'code/editor/workbench/parts/me5ExplorerModel';
-import { IView } from 'code/editor/workbench/browser/view';
-import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
-import { IEditorService, EditorPart, IEditorClosedEvent } from 'code/editor/workbench/browser/parts/editor/editorPart';
-import { Me5File } from 'code/editor/common/file';
-import { Me5Stat, Me5Group, Me5Item } from 'code/editor/workbench/parts/files/me5DataModel';
+import { Disposable } from 'code/base/common/lifecycle';
 import { ITreeService, TreeService } from 'code/platform/tree/treeService';
+import { Tree, ITreeOptions, ITreeConfiguration } from 'code/base/parts/tree/browser/tree';
+import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
+import { Me5File } from 'code/editor/common/file';
+import { IView } from 'code/editor/workbench/browser/view';
+import { Me5Stat, Me5Group, Me5Item, ExplorerGroupContext } from 'code/editor/workbench/parts/files/me5Data';
+import { Me5DataSource, Me5DataRenderer, Me5DataController } from 'code/editor/workbench/parts/me5ExplorerModel';
+import { IEditorService, EditorPart, IEditorClosedEvent } from 'code/editor/workbench/browser/parts/editor/editorPart';
 
 export class Me5Tree extends Tree {
     private _cache = new Map<string, Me5Stat>();
@@ -44,7 +45,7 @@ export class Me5Tree extends Tree {
     }
 }
 
-export class Me5ExplorerView implements IView {
+export class Me5ExplorerView extends Disposable implements IView {
     private explorerViewer: Me5Tree;
     private dataSource: Me5DataSource;
     private renderer: Me5DataRenderer;
@@ -55,6 +56,8 @@ export class Me5ExplorerView implements IView {
         @IInstantiationService private instantiationService: InstantiationService,
 
     ) {
+        super();
+
         this.dataSource = this.instantiationService.create(Me5DataSource);
         this.renderer = this.instantiationService.create(Me5DataRenderer);
         this.controller = this.instantiationService.create(Me5DataController);
@@ -71,11 +74,16 @@ export class Me5ExplorerView implements IView {
             {}
         );
 
+        this.registerDispose(this.explorerViewer.onDidChangeFocus.add((e) => {
+            const focused = e.focus;
+            ExplorerGroupContext.set(focused instanceof Me5Group);
+        }));
+
         this.editorService.onEditorChanged.add(() => this.onChangeFile());
 
         this.editorService.onEditorClosed.add((e: IEditorClosedEvent) => {
             const closedEditor = e.editor;
-            this.explorerViewer.setCache(e.editor.getResource(), null);
+            this.explorerViewer.setCache(e.editor.getId(), null);
         });
     }
 
@@ -87,7 +95,7 @@ export class Me5ExplorerView implements IView {
         }
 
         let done;
-        const filePath = activeEditorInput.getResource();
+        const filePath = activeEditorInput.getId();
         const cacheData = this.explorerViewer.cache(filePath);
         if (cacheData) {
             done = Promise.resolve(cacheData);
@@ -97,10 +105,10 @@ export class Me5ExplorerView implements IView {
                 const stat = new Me5Stat(filePath);
                 for (let i = 0, groupCount = me5.getGroupCount(); i < groupCount; i++) {
                     const group = new Me5Group();
-                    group.build(stat, me5.getGroupName(i));
+                    group.build(stat, null, me5.getGroupName(i));
                     for (let j = 0, itemCount = me5.getGroupItemCount(i); j < itemCount; ++j) {
                         const item = new Me5Item();
-                        item.build(group, me5.getItemName(i, j), me5.getItemData(i, j));
+                        item.build(group, null, me5.getItemName(i, j), me5.getItemData(i, j));
                     }
                 }
 
