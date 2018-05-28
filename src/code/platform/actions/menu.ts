@@ -6,7 +6,6 @@ type MenuItemGroup = [string, IMenuItem[]];
 export class MenuItemInfo {
     private _label: string;
     private _command: string;
-    private _accelerator: string;
 
     constructor(menu: IMenuItem) {
         this._label = menu.label;
@@ -20,7 +19,6 @@ export class MenuItemInfo {
         }
 
         this._command = menu.command.id;
-        this._accelerator = menu.shortcutKey;
     }
 
     public get label(): string {
@@ -29,10 +27,6 @@ export class MenuItemInfo {
 
     public get command() {
         return this._command;
-    }
-
-    public get accelerator() {
-        return this._accelerator;
     }
 }
 
@@ -70,17 +64,28 @@ export class Menu {
 
     public getItems(): MenuItemInfo[] {
         const result: MenuItemInfo[] = [];
+
         for (let group of this.menuGroups) {
             let [id, items] = group;
 
+            const oldLength = result.length;
             for (const item of items) {
-                const menuItemInfo = new MenuItemInfo(item);
-                result.push(menuItemInfo);
+                const when = item.when ? item.when.get() : true;
+
+                if (when) {
+                    const menuItemInfo = new MenuItemInfo(item);
+                    result.push(menuItemInfo);
+                }
             }
-            result.push(new Separator());
+
+            if (oldLength !== result.length) {
+                result.push(new Separator());
+            }
         }
 
-        result.pop();
+        if (result.length) {
+            result.pop();
+        }
         return result;
     }
 

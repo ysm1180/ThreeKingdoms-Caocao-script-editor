@@ -3,13 +3,16 @@ import { IContextMenuDelegate } from 'code/base/browser/contextmenu';
 import { decorator } from 'code/platform/instantiation/instantiation';
 import { MenuItemInfo, Separator } from 'code/platform/actions/menu';
 import { ICommandService, CommandService } from 'code/platform/commands/commandService';
+import { IKeybindingService, KeybindingService } from 'code/platform/keybindings/keybindingService';
+import { KeyCodeUtils } from '../../../base/common/keyCodes';
 
 
 export const IContextMenuService = decorator<ContextMenuService>('contextmenuService');
 
 export class ContextMenuService {
     constructor(
-        @ICommandService private commandService: CommandService
+        @ICommandService private commandService: CommandService,
+        @IKeybindingService private keybindingService: KeybindingService,
     ) {
     }
 
@@ -36,8 +39,12 @@ export class ContextMenuService {
                     click: (item, window, event) => {
                         this.runCommand(entry.command);
                     },
-                    accelerator: entry.accelerator,
                 };
+
+                const keybinding = this.keybindingService.lookupKeybinding(entry.command);
+                if (keybinding) {
+                    options.accelerator = KeyCodeUtils.toString(keybinding);
+                }
 
                 const menuItem = new remote.MenuItem(options);
                 menu.append(menuItem);

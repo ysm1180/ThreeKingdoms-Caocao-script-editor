@@ -1,4 +1,5 @@
 import { ICommandHandler } from 'code/platform/commands/commands';
+import { ContextKey } from 'code/platform/contexts/contextKey';
 
 export interface IMenuItem {
     command: {
@@ -6,16 +7,15 @@ export interface IMenuItem {
         handler?: ICommandHandler;
     };
     label: string;
-    visible?: boolean;
-    shortcutKey?: string;
     group?: string;
     order?: number;
+    when?: ContextKey<boolean>;
 }
 
 export class MenuId {
     private static INDEX = 1;
 
-    static readonly Me5ExplorerContext = new MenuId();
+    static readonly Me5ExplorerTreeContext = new MenuId();
 
     public readonly id = String(MenuId.INDEX++);
 }

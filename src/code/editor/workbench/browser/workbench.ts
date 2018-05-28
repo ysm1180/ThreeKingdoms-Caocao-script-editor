@@ -55,8 +55,8 @@ export class Workbench {
         this.serviceStorage.set(IDialogService, this.instantiationService.create(DialogService));
 
         this.serviceStorage.set(ICommandService, this.instantiationService.create(CommandService));
-        this.serviceStorage.set(IContextMenuService, this.instantiationService.create(ContextMenuService));
         this.serviceStorage.set(IKeybindingService, this.instantiationService.create(KeybindingService, window));
+        this.serviceStorage.set(IContextMenuService, this.instantiationService.create(ContextMenuService));
 
         this.serviceStorage.set(IMe5DataService, this.instantiationService.create(Me5DataService));
 
@@ -125,4 +125,7 @@ export class Workbench {
 
     }
 
+    public dispose() {
+        this.sidebar.dispose();
+    }
 }
