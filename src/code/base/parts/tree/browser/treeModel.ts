@@ -19,6 +19,10 @@ export interface IItemTraitEvent extends IBaseItemEvent {
     trait: string;
 }
 
+export interface IFocusEvent {
+    focus: any;
+}
+
 export class ItemRegistry {
     private items: IMap<{ item: Item, toDispose: IDisposable[] }>;
 
@@ -485,6 +489,7 @@ export class TreeModel {
 
     public onSetRoot = new Event<Item>();
     public onDidSetRoot = new Event<Item>();
+    public onDidFocus = new Event<IFocusEvent>();
 
     public onDidRefreshItem = new Event<IItemRefreshEvent>();
     public onRefreshItemChildren = new Event<IItemChildrenRefreshEvent>();
@@ -672,7 +677,19 @@ export class TreeModel {
     }
 
     public setHightlight(element?: any) {
-        this.setTraits('highlight', element ? [element]: []);
+        this.setTraits('highlight', element ? [element] : []);
+    }
+
+    public setFocus(element?: any) {
+        this.setTraits('focused', element ? [element] : []);
+
+        const eventData: IFocusEvent = { focus: this.getFocus() };
+        this.onDidFocus.fire(eventData);
+    }
+
+    public getFocus(): any {
+        const result = this.getElementsWithTrait('focused');
+        return result.length === 0 ? null : result[0];
     }
 }
 

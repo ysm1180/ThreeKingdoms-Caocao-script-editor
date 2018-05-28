@@ -1,8 +1,9 @@
 import * as Model from 'code/base/parts/tree/browser/treeModel';
-import { TreeContext, MouseContextMenuEvent } from 'code/base/parts/tree/browser/tree';
+import { TreeContext } from 'code/base/parts/tree/browser/tree';
 import { ArrayIterator, IIterator } from 'code/base/common/iterator';
 import { StandardMouseEvent } from 'code/base/browser/mouseEvent';
 import { addClass, removeClass } from 'code/base/browser/dom';
+import { MouseContextMenuEvent } from 'code/platform/events/contextMenuEvent';
 
 export interface IRow {
     element: HTMLElement;
@@ -175,7 +176,7 @@ export class TreeView {
     private onClick(e: MouseEvent): void {
         const mouseEvent = new StandardMouseEvent(e);
         const item = this.getItemAround(mouseEvent.target);
-        
+
         if (!item) {
             return;
         }
@@ -183,7 +184,7 @@ export class TreeView {
         this.model.setSelection([item.model.getElement()]);
         this.model.toggleExpansion(item.model.getElement());
 
-        this.context.controller.onClick(item.model.getElement());
+        this.context.controller.onClick(this.context.tree, item.model.getElement());
     }
 
     private onContextMenu(e: MouseEvent): void {
@@ -197,7 +198,7 @@ export class TreeView {
         this.model.setSelection([item.model.getElement()]);
 
         const event = new MouseContextMenuEvent(mouseEvent);
-        this.context.controller.onContextMenu(item.model.getElement(), event);
+        this.context.controller.onContextMenu(this.context.tree, item.model.getElement(), event);
     }
 
     private getItemAround(element: HTMLElement): ViewItem {
@@ -300,7 +301,7 @@ export class TreeView {
         const item = <Model.Item>e.item;
         const children: Model.Item[] = [];
         const iter = item.getNavigator();
-        let child : Model.Item;
+        let child: Model.Item;
 
         while (child = iter.next()) {
             children.push(child);
@@ -315,7 +316,7 @@ export class TreeView {
         if (!e.skip) {
             const afterRefreshingChildren: Model.Item[] = [];
             const iter = item.getNavigator();
-            let child : Model.Item;
+            let child: Model.Item;
 
             while (child = iter.next()) {
                 afterRefreshingChildren.push(child);
@@ -434,5 +435,9 @@ export class TreeView {
 
     public focus(): void {
         this.domNode.focus();
+    }
+
+    public isFocused(): boolean {
+        return document.activeElement === this.domNode;
     }
 }

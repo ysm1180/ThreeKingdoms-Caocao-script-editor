@@ -1,44 +1,7 @@
-import { TreeModel } from 'code/base/parts/tree/browser/treeModel';
+import { RelayEvent } from 'code/base/common/event';
+import { TreeModel, IFocusEvent } from 'code/base/parts/tree/browser/treeModel';
 import { TreeView } from 'code/base/parts/tree/browser/treeView';
 import { IDataSource, IDataRenderer, IDataController } from 'code/editor/workbench/parts/me5ExplorerModel';
-import { StandardMouseEvent } from '../../../browser/mouseEvent';
-
-export class ContextMenuEvent {
-    public readonly posx: number;
-    public readonly posy: number;
-    public readonly target: HTMLElement;
-
-    constructor(posx: number, posy: number, target: HTMLElement) {
-        this.posx = posx;
-        this.posy = posy;
-        this.target = target;
-    }
-
-    public preventDefault(): void {
-        // no-op
-    }
-
-    public stopPropagation(): void {
-        // no-op
-    }
-}
-
-export class MouseContextMenuEvent extends ContextMenuEvent {
-    private originalEvent: StandardMouseEvent;
-
-    constructor(e: StandardMouseEvent) {
-        super(e.posx, e.posy, e.target);
-        this.originalEvent = e;
-    }
-
-    public preventDefault(): void {
-        this.originalEvent.preventDefault();
-    }
-
-    public stopPropagation(): void {
-        this.originalEvent.stopPropagation();
-    }
-}
 
 export interface ITreeConfiguration {
     dataSource: IDataSource;
@@ -73,6 +36,8 @@ export class Tree {
     private model: TreeModel;
     private view: TreeView;
 
+    public onDidChangeFocus = new RelayEvent<IFocusEvent>();
+
     constructor(
         container: HTMLElement,
         configuration: ITreeConfiguration,
@@ -85,6 +50,8 @@ export class Tree {
         this.view = new TreeView(this.context, container);
 
         this.view.setModel(this.model);
+
+        this.onDidChangeFocus.event = this.model.onDidFocus;
     }
 
     public setRoot(element: any): Promise<any> {
@@ -107,11 +74,19 @@ export class Tree {
         this.view.focus();
     }
 
+    public isDOMFocused(): boolean {
+        return this.view.isFocused();
+    }
+
     public setHighlight(element: any) {
         this.model.setHightlight(element);
     }
 
     public clearHighlight() {
         this.model.setHightlight();
+    }
+
+    public setFocus(element: any) {
+        this.model.setFocus(element);
     }
 }

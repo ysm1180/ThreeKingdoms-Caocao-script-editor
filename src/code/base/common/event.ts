@@ -86,3 +86,21 @@ export class Event<T> {
         }
     }
 }
+
+export class RelayEvent<T> {
+    private _event = new Event<T>();
+
+    constructor() {
+
+    }
+
+    public set event(event: Event<T>) {
+        event.add(this._event.listener);
+    }
+
+    public add(listener: Listener<T>, thisArg?: any): IDisposable {
+        const remove = this._event.add(listener, thisArg);
+
+        return remove; 
+    }
+}
