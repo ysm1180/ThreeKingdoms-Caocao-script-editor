@@ -1,15 +1,21 @@
 import { Disposable, IDisposable, toDisposable, once } from 'code/base/common/lifecycle';
 import { LinkedList } from 'code/base/common/linkedList';
-import { IMe5Data } from 'code/platform/files/me5Data';
+import { IEditableItemData } from 'code/platform/files/me5Data';
 
-export interface IMe5Data extends IDisposable  {
+export interface IParentItem {
     getId(): string;
 
-    getChildren(): IMe5Data[];
+    getChildren(): any[];
 
     hasChildren(): boolean;
 
-    addChild?(child: IMe5Data): IDisposable;
+    appendChild?(child: any): IDisposable;    
+
+    insertChild?(child: any, afterElement?: any): IDisposable;
+}
+
+export interface IEditableItemData extends IDisposable  {
+    getId(): string;
 
     getName?(): string;
 
@@ -19,9 +25,9 @@ export interface IMe5Data extends IDisposable  {
 
     isEditable?(): boolean;
 
-    getParent?(): IMe5Data;
+    getParent?(): IParentItem;
 
-    find?(item: IMe5Data): number;
+    find?(item: IEditableItemData): number;
 }
 
 export interface IMe5ItemData {
@@ -29,11 +35,9 @@ export interface IMe5ItemData {
     music: any;
 }
 
-
-export class BaseMe5Item extends Disposable implements IMe5Data {
+export class BaseMe5Item extends Disposable implements IEditableItemData {
     private editable: boolean;
-    private children = new LinkedList<IMe5Data>();
-    private _parent: IMe5Data;
+    private _parent: IParentItem;
     private _name: string;
 
     constructor() {
@@ -42,27 +46,18 @@ export class BaseMe5Item extends Disposable implements IMe5Data {
         this.editable = false;
     }
 
-    public build(parent: IMe5Data) {
+    public build(parent: IParentItem, itemAfter: any = null) {
         this._parent = parent;
 
-        this.registerDispose(this.getParent().addChild(this));
+        if (!itemAfter) {
+            this.registerDispose(this.getParent().appendChild(this));
+        } else {
+            this.registerDispose(this.getParent().insertChild(this, itemAfter));
+        }
     }
 
     public getId(): string {
         return null;
-    }
-
-    public addChild(child: IMe5Data): IDisposable {
-        const remove = this.children.push(child);
-        return toDisposable(once(remove));
-    }
-
-    public getChildren() {
-        return this.children.toArray();
-    }
-
-    public hasChildren(): boolean {
-        return this.children.toArray().length !== 0;
     }
 
     public getName(): string {
@@ -81,7 +76,7 @@ export class BaseMe5Item extends Disposable implements IMe5Data {
         this.editable = value;
     }
 
-    public getParent(): IMe5Data {
+    public getParent(): IParentItem {
         return this._parent;
     }
 }

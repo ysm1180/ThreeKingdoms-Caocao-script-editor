@@ -13,7 +13,7 @@ export class FileEditorInput implements IEditorInput {
         return path.basename(this.resource);
     }
 
-    public getResource(): string {
+    public getId(): string {
         return this.resource;
     }
 
@@ -22,7 +22,7 @@ export class FileEditorInput implements IEditorInput {
             return true;
         }
 
-        return this.resource === other.getResource();
+        return this.resource === other.getId();
     }
 
     public getType() : string {

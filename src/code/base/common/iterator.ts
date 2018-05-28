@@ -3,7 +3,7 @@ export interface IIterator<T> {
 }
 
 export interface IDoneIterator<T> {
-    next(): { readonly done: boolean, readonly value: T };
+    next(): { readonly done: boolean, readonly value: T, readonly node: any };
 }
 
 export class ArrayIterator<T> implements IIterator<T> {
