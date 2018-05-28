@@ -1,7 +1,7 @@
+import * as Dom from 'code/base/browser/dom';
+import { IDisposable, combinedDisposable } from 'code/base/common/lifecycle';
 import { Editors } from 'code/editor/workbench/browser/parts/editor/editors';
 import { EditorPart, IEditorService } from 'code/editor/workbench/browser/parts/editor/editorPart';
-import * as path from 'path';
-import * as Dom from 'code/base/browser/dom';
 
 export class TabControl {
     private parent: HTMLElement;
@@ -10,10 +10,14 @@ export class TabControl {
 
     private labels: HTMLElement[];
 
+    private toDispose: IDisposable[];
+
     constructor(
         @IEditorService private editorService: EditorPart
     ) {
         this.labels = [];
+        
+        this.toDispose = [];
     }
 
     public create(parent: HTMLElement): void {
@@ -55,15 +59,17 @@ export class TabControl {
     }
 
     private createTab(index: number): HTMLElement {
+        const toDispose = [];
+
         const tabContainer = document.createElement('div');
         tabContainer.className = 'tab';
 
-        tabContainer.addEventListener('mousedown', (e) => {
+        toDispose.push(Dom.addDisposableEventListener(tabContainer, 'mousedown', (e) => {
             if (e.button === 0) {
                 const editor = this.context.getEditor(index);
                 this.editorService.openEditor(editor);
             }
-        });
+        }));
 
         const label = document.createElement('div');
         label.className = 'tab-label';
@@ -81,16 +87,18 @@ export class TabControl {
         const closeIcon = document.createElement('a');
         closeIcon.className = 'close-icon';
         closeIcon.setAttribute('title', '닫기');
-        closeIcon.addEventListener('mousedown', (e) => {
+        toDispose.push(Dom.addDisposableEventListener(closeIcon, 'mousedown', (e) => {
             if (e.button === 0) {
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 const editor = this.context.getEditor(index);
                 this.editorService.closeEditor(editor);
             }
-        });
+        }));
         iconContainer.appendChild(closeIcon);
+
+        this.toDispose.push(combinedDisposable(toDispose));
 
         return tabContainer;
     }

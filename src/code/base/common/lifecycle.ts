@@ -39,6 +39,10 @@ export function dispose<T extends IDisposable>(first: T | T[], ...rest: T[]): T 
     }
 }
 
+export function combinedDisposable(disposables: IDisposable[]): IDisposable {
+    return { dispose: () => dispose(disposables) };
+}
+
 export function toDisposable(...fns: (() => void)[]): IDisposable {
     return {
         dispose() {

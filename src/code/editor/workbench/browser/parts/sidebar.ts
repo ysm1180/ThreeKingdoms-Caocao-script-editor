@@ -1,12 +1,15 @@
 import { DomBuilder, $ } from 'code/base/browser/domBuilder';
-import { Me5ExplorerView } from 'code/editor/workbench/browser/parts/me5Explorer';
+import { IDisposable, dispose } from 'code/base/common/lifecycle';
+import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
 import { Part } from 'code/editor/workbench/browser/part';
 import { IView } from 'code/editor/workbench/browser/view';
-import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
+import { Me5ExplorerView } from 'code/editor/workbench/browser/parts/me5Explorer';
 
 export class Sidebar extends Part {
     private viewContainer: DomBuilder;
     private views: DomBuilder[];
+
+    private toDispose: IDisposable[];
 
     constructor(
         @IInstantiationService private instantiationService: InstantiationService
@@ -15,6 +18,8 @@ export class Sidebar extends Part {
 
         this.viewContainer = null;
         this.views = [];
+
+        this.toDispose = [];
     }
 
     public create(parent: DomBuilder) {
@@ -37,6 +42,8 @@ export class Sidebar extends Part {
             viewItem.create(view.getHTMLElement());
             this.views.push(view);
         });
+
+        this.toDispose.push(...viewItems);
     }
 
     public layout(width: number, height: number) {
@@ -45,5 +52,9 @@ export class Sidebar extends Part {
         this.views.forEach((view) => {
             view.size(undefined, height / this.views.length);
         });
+    }
+
+    public dispose() {
+        dispose(this.toDispose);
     }
 }
