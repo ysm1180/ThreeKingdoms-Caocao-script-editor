@@ -62,6 +62,10 @@ export class Tree {
         return this.model.getRoot();
     }
 
+    public setSelection(elements: any[]): void {
+        this.model.setSelection(elements);
+    }
+
     public getSelection(): any[] {
         return this.model.getSelection();
     }
@@ -88,5 +92,9 @@ export class Tree {
 
     public setFocus(element: any) {
         this.model.setFocus(element);
+    }
+
+    public expand(element: any) {
+        return this.model.expand(element);
     }
 }

@@ -1,6 +1,7 @@
 import { IWindowClientService, WindowClientService } from 'code/platform/windows/windowsIpc';
-import { IConfirmation, IConfirmationResult } from 'code/platform/dialog/dialogs';
+import { IConfirmation, IConfirmationResult, IOpenningFile, getFileFilters } from 'code/platform/dialogs/dialogs';
 import { decorator } from 'code/platform/instantiation/instantiation';
+import { IOpenFileRequest } from 'code/platform/windows/windows';
 
 export const IDialogService = decorator<DialogService>('dialogService');
 
@@ -10,6 +11,30 @@ export class DialogService {
         @IWindowClientService private windowService: WindowClientService,
     ) {
 
+    }
+
+    public openFile(openning: IOpenningFile): Promise<IOpenFileRequest> {
+        const options = this.getOpenFileOptions(openning);
+
+        return this.windowService.showOpenDialog(options);
+    }
+
+    private getOpenFileOptions(openning: IOpenningFile): Electron.OpenDialogOptions {
+        if (!openning.extensions) {
+            openning.extensions = ['*'];
+        }
+
+        const options: Electron.OpenDialogOptions = {
+            title: openning.title,
+            properties: ['openFile', 'showHiddenFiles'],
+            filters: getFileFilters(...openning.extensions),
+        };
+
+        if (openning.multi) {
+            options.properties.push('multiSelections');
+        }
+
+        return options;
     }
 
     public confirm(confirmation: IConfirmation): Promise<IConfirmationResult> {

@@ -2,8 +2,9 @@ import { CodeWindow, getDefaultState } from 'code/electron-main/window';
 import { AppMenu } from 'code/electron-main/menus';
 import { WindowManager, IWindowMainService } from 'code/electron-main/windows';
 import { InstantiationService } from 'code/platform/instantiation/instantiationService';
-import { ServiceStorage } from '../platform/instantiation/serviceStorage';
-import { WindowChannel } from '../platform/windows/windowsIpc';
+import { ServiceStorage } from 'code/platform/instantiation/serviceStorage';
+import { WindowChannel } from 'code/platform/windows/windowsIpc';
+import { IFileStorageService, FileStorageService } from 'code/platform/files/node/fileStorageService';
 
 export class EditorApplication {
     private mainWindow: CodeWindow;
@@ -18,11 +19,13 @@ export class EditorApplication {
         const serviceStorage = new ServiceStorage();
         const instantiationService = new InstantiationService(serviceStorage);
 
+        serviceStorage.set(IFileStorageService, instantiationService.create(FileStorageService, '.'));
+
         this.windowManager = instantiationService.create(WindowManager);
         serviceStorage.set(IWindowMainService, this.windowManager);
-        
+
         instantiationService.create(WindowChannel);
-        
+
         this.openFirstWindow();
 
         this.menu = instantiationService.create(AppMenu);
@@ -34,5 +37,4 @@ export class EditorApplication {
             state,
         });
     }
-
 }

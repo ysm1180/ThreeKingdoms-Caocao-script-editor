@@ -1,11 +1,12 @@
 import { MenuRegistry, MenuId } from 'code/platform/actions/registry';
 import { ServicesAccessor } from 'code/platform/instantiation/instantiation';
 import { IMe5DataService } from 'code/editor/workbench/services/me5DataService';
-import { KeybindingsRegistry } from '../../../../platform/keybindings/keybindingsRegistry';
+import { KeybindingsRegistry } from 'code/platform/keybindings/keybindingsRegistry';
 import { KeyCode } from 'code/base/common/keyCodes';
 import { ExplorerGroupContext } from '../files/me5Data';
 
 const insertGroup = 'INSERT_GROUP';
+const appendImage = 'APPEND_IMAGE';
 const renameId = 'RENAME_COMMAND';
 const deleteItemId = 'DELETE_COMMAND';
 
@@ -38,6 +39,20 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
         },
     },
     order: 1,
+    when: ExplorerGroupContext,
+});
+
+MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
+    group: 'insert',
+    label: '새 이미지',
+    command: {
+        id: appendImage,
+        handler: (accessor: ServicesAccessor) => {
+            const me5DataService = accessor.get(IMe5DataService);
+            me5DataService.doAppendImageItem();
+        },
+    },
+    order: 2,
     when: ExplorerGroupContext,
 });
 

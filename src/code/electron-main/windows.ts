@@ -1,16 +1,22 @@
-import { FileFilter, BrowserWindow, dialog } from 'electron';
+import * as path from 'path';
+import { BrowserWindow, dialog } from 'electron';
 import { CodeWindow, IWindowCreationOption } from 'code/electron-main/window';
-import { IOpenFileRequest, IMessageBoxResult } from 'code/platform/windows/windows';
+import { getFileFilters } from 'code/platform/dialogs/dialogs';
 import { decorator } from 'code/platform/instantiation/instantiation';
+import { IOpenFileRequest, IMessageBoxResult } from 'code/platform/windows/windows';
 import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
+import { IFileStorageService, FileStorageService } from 'code/platform/files/node/fileStorageService';
 
 export const IWindowMainService = decorator<WindowManager>('windowManager');
 
 export class WindowManager {
+    public static workingPathKey = 'workingPath';
+
     private dialog: Dialog;
     public static win: CodeWindow;
 
     constructor(
+        @IFileStorageService private fileStorageService: FileStorageService,
         @IInstantiationService private instantiationService: InstantiationService,
     ) {
         this.dialog = new Dialog();
@@ -31,45 +37,38 @@ export class WindowManager {
         return this.dialog.showMessageBox(options, WindowManager.win.window);
     }
 
-    public openWorkingFiles(): Promise<string[]> {
+    public openWorkingFiles(): Promise<IOpenFileRequest> {
+        const recentWorkingPath: string = this.fileStorageService.get(WindowManager.workingPathKey);
+
         return this.showOpenDialog({
             title: '파일을 선택해주세요',
-            filters: this.dialog.getFilters('me5', 'lua'),
-            properties: ['multiSelections']
-        }).then((paths: string[]) => {
-            const data: IOpenFileRequest = {
-                files: paths
-            };
+            filters: getFileFilters('me5', 'lua'),
+            properties: ['multiSelections'],
+            defaultPath: recentWorkingPath,
+        }).then((data: IOpenFileRequest) => {
+            if (data.files && data.files.length > 0) {
+                const dir = path.dirname(data.files[0]);
+                this.fileStorageService.store(WindowManager.workingPathKey, dir);
+            }
+
             WindowManager.win.send('editor:openFiles', data);
 
-            return paths;
+            return data;
         });
     }
 }
 
 export class Dialog {
-    constructor() {
+    constructor(
+
+    ) {
 
     }
 
-    public getFilters(...extensions: string[]): FileFilter[] {
-        const filters: FileFilter[] = [];
-
-        for (let i = 0; i < extensions.length; i++) {
-            const extensionName = `${extensions[i][0].toUpperCase()}${extensions[i].slice(1)}`;
-            filters.push({
-                name: `${extensionName} 파일 (*.${extensions[i]})`,
-                extensions: [extensions[i]],
-            });
-        }
-
-        return filters;
-    }
-
-    public showOpenDialog(options: Electron.OpenDialogOptions, window?: BrowserWindow) {
+    public showOpenDialog(options: Electron.OpenDialogOptions, window?: BrowserWindow): Promise<IOpenFileRequest> {
         return new Promise((c, e) => {
             dialog.showOpenDialog(window ? window : void 0, options, paths => {
-                c(paths);
+                c({ files: paths });
             });
         });
     }

@@ -593,14 +593,14 @@ export class TreeModel {
         }
     }
 
-    public expand(element: any) {
+    public expand(element: any): Promise<void> {
         const item = this.getItem(element);
 
         if (!item) {
-            return;
+            return Promise.resolve(null);
         }
 
-        item.expand();
+        return item.expand();
     }
 
     public collapse(element: any) {
