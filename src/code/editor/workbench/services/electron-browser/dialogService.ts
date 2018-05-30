@@ -1,14 +1,14 @@
-import { IWindowClientService, WindowClientService } from 'code/platform/windows/windowsIpc';
 import { IConfirmation, IConfirmationResult, IOpenningFile, getFileFilters } from 'code/platform/dialogs/dialogs';
 import { decorator } from 'code/platform/instantiation/instantiation';
 import { IOpenFileRequest } from 'code/platform/windows/windows';
+import { IWindowService } from 'code/electron-main/windows';
 
 export const IDialogService = decorator<DialogService>('dialogService');
 
 
 export class DialogService {
     constructor(
-        @IWindowClientService private windowService: WindowClientService,
+        @IWindowService private windowService: IWindowService,
     ) {
 
     }
@@ -21,7 +21,11 @@ export class DialogService {
 
     private getOpenFileOptions(openning: IOpenningFile): Electron.OpenDialogOptions {
         if (!openning.extensions) {
-            openning.extensions = ['*'];
+            openning.extensions = [
+                {
+                    extensions: '*',
+                },
+            ];
         }
 
         const options: Electron.OpenDialogOptions = {

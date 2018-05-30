@@ -11,6 +11,7 @@ import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/
 import { IContextMenuService, ContextMenuService } from 'code/editor/workbench/services/contextmenuService';
 import { IEditableItemData, IParentItem } from 'code/platform/files/me5Data';
 import { ContextMenuEvent } from 'code/platform/events/contextMenuEvent';
+import { strToBytes } from '../../../base/common/convert';
 
 export interface IDataSource {
     getId(element: any): string;

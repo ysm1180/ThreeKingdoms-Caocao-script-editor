@@ -31,10 +31,16 @@ export class ImageViewEditor extends BaseEditor {
     }
 
     public setInput(input: IEditorInput) {
+        if (!input) {
+            this.image.attr('src', '');
+            return;
+        }
+
         input.resolve().then((data : { image: Image, music }) => {
             if (data.image) {
                 const base64 = data.image.encodeToBase64();
-                this.image.attr('src', ' data:image/png;base64,' + base64);
+
+                this.image.attr('src', `data:image/${data.image.type};base64,` + base64);
             }
         });
     }

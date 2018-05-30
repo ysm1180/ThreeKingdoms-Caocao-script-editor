@@ -2,6 +2,11 @@ export interface IOpenFileRequest {
     files: string[];
 }
 
+export interface ISaveFileRequest {
+    file: string;
+    created?: boolean;
+}
+
 export interface OpenDialogOptions {
     title?: string;
     defaultPath?: string;

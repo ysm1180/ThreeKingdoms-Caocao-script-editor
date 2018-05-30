@@ -4,7 +4,7 @@ import { IEditableItemData } from 'code/platform/files/me5Data';
 export interface IParentItem {
     getId(): string;
 
-    getChildren(): any[];
+    getChildren(filter?: (element: any) => boolean): any[];
 
     hasChildren(): boolean;
 
@@ -26,7 +26,7 @@ export interface IEditableItemData extends IDisposable  {
 
     getParent?(): IParentItem;
 
-    find?(item: IEditableItemData): number;
+    index?(): number;
 }
 
 export interface IMe5ItemData {
@@ -78,4 +78,6 @@ export class BaseMe5Item extends Disposable implements IEditableItemData {
     public getParent(): IParentItem {
         return this._parent;
     }
+
+    
 }

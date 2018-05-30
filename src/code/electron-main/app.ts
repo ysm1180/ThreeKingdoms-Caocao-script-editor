@@ -1,6 +1,6 @@
 import { CodeWindow, getDefaultState } from 'code/electron-main/window';
 import { AppMenu } from 'code/electron-main/menus';
-import { WindowManager, IWindowMainService } from 'code/electron-main/windows';
+import { WindowManager, IWindowService } from 'code/electron-main/windows';
 import { InstantiationService } from 'code/platform/instantiation/instantiationService';
 import { ServiceStorage } from 'code/platform/instantiation/serviceStorage';
 import { WindowChannel } from 'code/platform/windows/windowsIpc';
@@ -22,7 +22,7 @@ export class EditorApplication {
         serviceStorage.set(IFileStorageService, instantiationService.create(FileStorageService, '.'));
 
         this.windowManager = instantiationService.create(WindowManager);
-        serviceStorage.set(IWindowMainService, this.windowManager);
+        serviceStorage.set(IWindowService, this.windowManager);
 
         instantiationService.create(WindowChannel);
 

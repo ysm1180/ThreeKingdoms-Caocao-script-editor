@@ -24,8 +24,13 @@ export class Me5Stat implements IParentItem {
         return toDisposable(once(remove));
     }
 
-    public getChildren() {
-        return this.children.toArray();
+    public getChildren(filter?: (group: Me5Group) => boolean): Me5Group[] {
+        const result = this.children.toArray();
+
+        if (!filter) {
+            filter = () => true;
+        }
+        return result.filter(filter);
     }
 
     public hasChildren(): boolean {
@@ -78,11 +83,23 @@ export class Me5Group extends BaseMe5Item implements IParentItem {
         const remove = this.children.insertBefore(child, itemAfter);
         return toDisposable(once(remove));
     }
+
+    public index(): number {
+        const parent = this.getParent() as Me5Stat;
+        if (parent) {
+            const items = parent.getChildren((group) => group.getChildren().length !== 0);
+            return items.indexOf(this);
+        } else {
+            return -1;
+        }
+    }
 }
 
 export class Me5Item extends BaseMe5Item implements IEditorInput {
     private static INDEX = 1;
     private readonly id = String(Me5Item.INDEX++);
+
+    private type: string;
 
     private image: Image;
 
@@ -93,7 +110,7 @@ export class Me5Item extends BaseMe5Item implements IEditorInput {
     }
 
     public getType() {
-        return this.image !== null ? 'image' : 'music';
+        return this.type;
     }
 
     public resolve() {
@@ -116,9 +133,29 @@ export class Me5Item extends BaseMe5Item implements IEditorInput {
         }
         this.setName(name);
 
-        if (Image.getType(data)) {
+        if (Image.getImageType(data)) {
+            this.type = 'image';
+
             this.image = new Image();
             this.image.build(data);
+        }
+    }
+
+    public get data(): Uint8Array {
+        if (this.image) {
+            return this.image.data;
+        } else {
+            return null;
+        }
+    }
+
+    public index(): number {
+        const parent = this.getParent() as Me5Group;
+        if (parent) {
+            const items = parent.getChildren();
+            return items.indexOf(this);
+        } else {
+            return -1;
         }
     }
 }

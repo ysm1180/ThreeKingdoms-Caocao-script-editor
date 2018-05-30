@@ -26,10 +26,6 @@ export class EditorPart extends Part {
         this.currentEditor = null;
     }
 
-    public init() {
-
-    }
-
     public getEditors() {
         return this.editors;
     }

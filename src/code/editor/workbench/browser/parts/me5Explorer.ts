@@ -7,7 +7,7 @@ import { IView } from 'code/editor/workbench/browser/view';
 import { Me5Stat, Me5Group, Me5Item, ExplorerGroupContext } from 'code/editor/workbench/parts/files/me5Data';
 import { Me5DataSource, Me5DataRenderer, Me5DataController } from 'code/editor/workbench/parts/me5ExplorerModel';
 import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
-import { IEditorClosedEvent } from '../../../../platform/editor/editor';
+import { IEditorClosedEvent } from 'code/platform/editor/editor';
 
 export class Me5Tree extends Tree {
     private _cache = new Map<string, Me5Stat>();
@@ -87,6 +87,7 @@ export class Me5ExplorerView extends Disposable implements IView {
         this.registerDispose(this.editorService.onEditorClosed.add((e: IEditorClosedEvent) => {
             const closedEditor = e.editor;
             this.explorerViewer.setCache(closedEditor.getId(), null);
+            this.editorService.setInput(null);
         }));
     }
 

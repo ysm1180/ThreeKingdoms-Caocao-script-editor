@@ -1,51 +1,19 @@
-import * as fs from 'fs';
+import * as Convert from 'code/base/common/convert';
+import { BinaryFile } from 'code/platform/files/file';
+import { Me5Group, Me5Stat, Me5Item } from 'code/editor/workbench/parts/files/me5Data';
 
-export class BinaryFile {
-    public data: Buffer;
-    private path: string;
-
-    constructor(path: string) {
-        this.path = path;
-    }
-
-    public open(): Promise<void | Buffer> {
-        return new Promise<Buffer>((c, e) => {
-            fs.readFile(this.path, {}, (err, data) => {
-                if (err) {
-                    e(err);
-                    return;
-                }
-
-                this.data = data;
-
-                c(data);
-            });
-        });
-    }
-
-    public readNumber(offset: number): number {
-        const bytes: ArrayBuffer = this.data.buffer.slice(offset, offset + 4);
-        return new Uint32Array(bytes)[0];
-    }
-
-    public readByte(offset: number): number {
-        return this.data.buffer[offset];
-    }
-
-    public readString(offset: number, length: number) {
-        return this.data.toString('utf-8', offset, offset+ length);
-    }
-
-    public readBytes(offset: number, length: number): Uint8Array {
-        return new Uint8Array(this.data.buffer.slice(offset, offset + length));
-    }
+export interface ISaveMe5Data {
+    stat: Me5Stat;
 }
 
 export class Me5File extends BinaryFile {
-    private readonly ITEM_HEADER_SIZE = 12;
-    private readonly GROUP_HEADER_SIZE = 12;
+    private static readonly ALL_ITEM_COUNT_OFFSET = 1;
+    private static readonly GROUP_COUNT_OFFSET = 5;
 
-    private groupInfoStartOffset = 9;
+    private static readonly ITEM_HEADER_SIZE = 12;
+    private static readonly GROUP_HEADER_SIZE = 12;
+
+    private static readonly GROUP_INFO_START_OFFSET = 9;
     private itemInfoStartOffset: number;
 
     constructor(path: string) {
@@ -54,7 +22,7 @@ export class Me5File extends BinaryFile {
 
     public open(): Promise<void | Buffer> {
         return super.open().then((data) => {
-            this.itemInfoStartOffset = this.getGroupCount() * this.GROUP_HEADER_SIZE + this.groupInfoStartOffset;
+            this.itemInfoStartOffset = this.getGroupCount() * Me5File.GROUP_HEADER_SIZE + Me5File.GROUP_INFO_START_OFFSET;
             return data;
         }, (e: NodeJS.ErrnoException) => {
         });
@@ -65,19 +33,19 @@ export class Me5File extends BinaryFile {
     }
 
     public getAllItemCount(): number {
-        return this.readNumber(1);
+        return this.readNumber(Me5File.ALL_ITEM_COUNT_OFFSET);
     }
 
     public getGroupCount(): number {
-        return this.readNumber(5);
+        return this.readNumber(Me5File.GROUP_COUNT_OFFSET);
     }
 
     private getFirstItemIndexInGroup(groupIndex: number) {
-        return this.readNumber(this.groupInfoStartOffset + 4 + groupIndex * this.GROUP_HEADER_SIZE);
+        return this.readNumber(Me5File.GROUP_INFO_START_OFFSET + 4 + groupIndex * Me5File.GROUP_HEADER_SIZE);
     }
 
     private getLastItemIndexInGroup(groupIndex: number) {
-        return this.readNumber(this.groupInfoStartOffset + 8 + groupIndex * this.GROUP_HEADER_SIZE);
+        return this.readNumber(Me5File.GROUP_INFO_START_OFFSET + 8 + groupIndex * Me5File.GROUP_HEADER_SIZE);
     }
 
     public getGroupItemCount(groupIndex: number) {
@@ -86,7 +54,7 @@ export class Me5File extends BinaryFile {
 
     private getOffsetByItemIndex(itemIndex: number): number {
         const groupCount = this.getGroupCount();
-        return this.readNumber(this.itemInfoStartOffset + itemIndex * this.ITEM_HEADER_SIZE);
+        return this.readNumber(this.itemInfoStartOffset + itemIndex * Me5File.ITEM_HEADER_SIZE);
     }
 
     private getItemOffset(groupIndex: number, subItemIndex: number): number {
@@ -95,12 +63,12 @@ export class Me5File extends BinaryFile {
     }
 
     public getGroupNameLength(groupIndex: number): number {
-        return this.readNumber(this.groupInfoStartOffset + groupIndex * this.GROUP_HEADER_SIZE);
+        return this.readNumber(Me5File.GROUP_INFO_START_OFFSET + groupIndex * Me5File.GROUP_HEADER_SIZE);
     }
 
     public getItemNameLength(groupIndex: number, subItemIndex: number) {
         const firstItemIndex = this.getFirstItemIndexInGroup(groupIndex);
-        return this.readNumber(this.itemInfoStartOffset + 4 + (firstItemIndex + subItemIndex) * this.ITEM_HEADER_SIZE);
+        return this.readNumber(this.itemInfoStartOffset + 4 + (firstItemIndex + subItemIndex) * Me5File.ITEM_HEADER_SIZE);
     }
 
     public getGroupName(groupIndex: number): string {
@@ -118,7 +86,7 @@ export class Me5File extends BinaryFile {
 
     public getItemSize(groupIndex: number, subItemIndex: number): number {
         const firstItemIndex = this.getFirstItemIndexInGroup(groupIndex);
-        return this.readNumber(this.itemInfoStartOffset + 8 + (firstItemIndex + subItemIndex) * this.ITEM_HEADER_SIZE);
+        return this.readNumber(this.itemInfoStartOffset + 8 + (firstItemIndex + subItemIndex) * Me5File.ITEM_HEADER_SIZE);
     }
 
     public getItemData(groupIndex: number, subItemIndex: number): Uint8Array {
@@ -128,5 +96,79 @@ export class Me5File extends BinaryFile {
         return this.readBytes(offset + itemNameLength, itemSize);
     }
 
+    public save(data: ISaveMe5Data) {
+        const groups = data.stat.getChildren((group) => group.getChildren().length !== 0);
+        
+        const itemLengths = groups.map((group) => group.getChildren().length);
+        this.setAllItemCount(itemLengths.reduce((pre, cur) => pre + cur, 0));
+        this.setGroupCount(groups.length);
 
+        this.itemInfoStartOffset = groups.length * Me5File.GROUP_HEADER_SIZE + Me5File.GROUP_INFO_START_OFFSET;
+        
+        let baseItemIndex = 0;
+        for (const group of groups) {
+            this.setGroupInfo(group, baseItemIndex);
+
+            const items = group.getChildren();
+            for (const item of items) {
+                this.setItemInfo(item, baseItemIndex);
+            }
+            baseItemIndex += items.length;
+        }
+
+        let offset = this.itemInfoStartOffset + baseItemIndex * Me5File.ITEM_HEADER_SIZE;
+        baseItemIndex = 0;
+        for (const group of groups) {
+            offset += this.setGroup(offset, group);
+
+            const items = group.getChildren();
+            for (const item of items) {
+                offset += this.setItem(offset, item, baseItemIndex);
+            }
+            baseItemIndex += items.length;
+        }
+    }
+
+    private setAllItemCount(count: number) {
+        this.writeInt(Me5File.ALL_ITEM_COUNT_OFFSET, count);
+    }
+
+    private setGroupCount(count: number) {
+        this.writeInt(Me5File.GROUP_COUNT_OFFSET, count);
+    }
+
+    private setGroupInfo(group: Me5Group, baseItemIndex: number) {
+        const offset = Me5File.GROUP_INFO_START_OFFSET + group.index() * Me5File.GROUP_HEADER_SIZE;
+        this.writeInt(offset + 4, baseItemIndex); // Item Begin Index
+        this.writeInt(offset + 8, baseItemIndex + group.getChildren().length - 1); // Item End Index
+        this.writeInt(offset, Convert.getByteLength(group.getName()));
+    }
+
+    private setItemInfo(item: Me5Item, baseItemIndex: number) {
+        const offset = this.itemInfoStartOffset + (baseItemIndex + item.index()) * Me5File.ITEM_HEADER_SIZE;
+        this.writeInt(offset, 0); // item offset
+        this.writeInt(offset + 4, Convert.getByteLength(item.getName()));
+        this.writeInt(offset + 8, item.data.length); // item size
+    }
+
+    private setGroup(offset: number, group: Me5Group): number {
+        const name = group.getName();
+        const length = Convert.getByteLength(name);
+        
+        this.write(offset, length, Convert.strToBytes(name));
+
+        return length;
+    }
+
+    private setItem(offset: number, item: Me5Item, baseItemIndex: number): number {
+        const name = item.getName();
+        const length = Convert.getByteLength(name);
+
+        const startItemOffset = this.itemInfoStartOffset + (baseItemIndex + item.index()) * Me5File.ITEM_HEADER_SIZE;
+        this.writeInt(startItemOffset, offset);
+        this.write(offset, length, Convert.strToBytes(name));
+        this.write(offset + length, item.data.length, item.data);
+
+        return length + item.data.length;
+    }
 }

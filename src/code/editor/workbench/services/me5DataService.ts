@@ -1,12 +1,12 @@
+import { BinaryFile } from 'code/platform/files/file';
 import { decorator } from 'code/platform/instantiation/instantiation';
+import { IConfirmation } from 'code/platform/dialogs/dialogs';
 import { ITreeService, TreeService } from 'code/platform/tree/treeService';
 import { IEditableItemData, IParentItem } from 'code/platform/files/me5Data';
-import { IConfirmation } from 'code/platform/dialogs/dialogs';
 import { Me5Group, Me5Item } from 'code/editor/workbench/parts/files/me5Data';
+import { Me5DataController } from 'code/editor/workbench/parts/me5ExplorerModel';
 import { IDialogService, DialogService } from 'code/editor/workbench/services/electron-browser/dialogService';
-import { BinaryFile } from 'code/editor/common/file';
-import { Me5DataController } from '../parts/me5ExplorerModel';
-import { IInstantiationService, InstantiationService } from '../../../platform/instantiation/instantiationService';
+import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
 
 export const IMe5DataService = decorator<Me5DataService>('me5DataService');
 
@@ -30,7 +30,12 @@ export class Me5DataService {
         this.dialogService.openFile({
             title: '이미지 파일을 선택해주세요.',
             multi: true,
-            extensions: ['png'],
+            extensions: [
+                {name: '이미지', extensions: 'png;jpg;bmp'},
+                {extensions: 'png'},
+                {extensions: 'jpg'},
+                {extensions: 'bmp'},
+            ],
         }).then((req) => {
             if (!req.files) {
                 return [];

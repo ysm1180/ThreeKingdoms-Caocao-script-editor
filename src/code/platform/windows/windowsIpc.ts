@@ -1,13 +1,11 @@
 import { ipcRenderer, ipcMain, IpcMessageEvent } from 'electron';
-import { decorator } from 'code/platform/instantiation/instantiation';
 import { MessageBoxOptions, IMessageBoxResult, OpenDialogOptions, IOpenFileRequest } from 'code/platform/windows/windows';
-import { IWindowMainService, WindowManager } from 'code/electron-main/windows';
+import { WindowManager, IWindowService } from 'code/electron-main/windows';
 
-export const IWindowClientService = decorator<WindowClientService>('windowClientService');
 
 export class WindowChannel {
     constructor(
-        @IWindowMainService private windowMainService: WindowManager,
+        @IWindowService private windowMainService: WindowManager,
     ) {
         this.listener();
     }
@@ -28,7 +26,7 @@ export class WindowChannel {
 }
 
 
-export class WindowClientService {
+export class WindowClientService implements IWindowService {
     constructor(private channel: WindowChannel) {
         
     }

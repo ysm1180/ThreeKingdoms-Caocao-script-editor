@@ -1,15 +1,20 @@
 import * as path from 'path';
 import { BrowserWindow, dialog } from 'electron';
 import { CodeWindow, IWindowCreationOption } from 'code/electron-main/window';
-import { getFileFilters } from 'code/platform/dialogs/dialogs';
+import { getFileFilters, IFileExtension } from 'code/platform/dialogs/dialogs';
 import { decorator } from 'code/platform/instantiation/instantiation';
 import { IOpenFileRequest, IMessageBoxResult } from 'code/platform/windows/windows';
 import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
 import { IFileStorageService, FileStorageService } from 'code/platform/files/node/fileStorageService';
 
-export const IWindowMainService = decorator<WindowManager>('windowManager');
+export const IWindowService = decorator<IWindowService>('windowService');
 
-export class WindowManager {
+export interface IWindowService {
+    showOpenDialog(options: Electron.OpenDialogOptions);
+    showMessageBox(options: Electron.MessageBoxOptions);
+}
+
+export class WindowManager implements IWindowService {
     public static workingPathKey = 'workingPath';
 
     private dialog: Dialog;
@@ -39,10 +44,18 @@ export class WindowManager {
 
     public openWorkingFiles(): Promise<IOpenFileRequest> {
         const recentWorkingPath: string = this.fileStorageService.get(WindowManager.workingPathKey);
+        const filters: IFileExtension[] = [
+            {
+                extensions: 'me5',
+            },
+            {
+                extensions: 'lua',
+            },
+        ];
 
         return this.showOpenDialog({
             title: '파일을 선택해주세요',
-            filters: getFileFilters('me5', 'lua'),
+            filters: getFileFilters(...filters),
             properties: ['multiSelections'],
             defaultPath: recentWorkingPath,
         }).then((data: IOpenFileRequest) => {
@@ -55,6 +68,10 @@ export class WindowManager {
 
             return data;
         });
+    }
+
+    public saveFile() {
+        WindowManager.win.send('editor:saveFile');
     }
 }
 

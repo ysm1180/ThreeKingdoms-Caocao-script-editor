@@ -10,8 +10,9 @@ import { EditorPart, IEditorService } from 'code/editor/workbench/browser/parts/
 import { TitlePart, ITitlePartService } from 'code/editor/workbench/browser/parts/titlePart';
 import { IContextMenuService, ContextMenuService } from 'code/editor/workbench/services/contextmenuService';
 import { IMe5DataService, Me5DataService } from 'code/editor/workbench/services/me5DataService';
-import { IWindowClientService, WindowClientService } from '../../../platform/windows/windowsIpc';
+import { WindowClientService } from 'code/platform/windows/windowsIpc';
 import { IDialogService, DialogService } from '../services/electron-browser/dialogService';
+import { IWindowService } from 'code/electron-main/windows';
 
 
 export class Workbench {
@@ -51,7 +52,7 @@ export class Workbench {
     private initService() {
         this.serviceStorage.set(ITreeService, this.instantiationService.create(TreeService));
 
-        this.serviceStorage.set(IWindowClientService, this.instantiationService.create(WindowClientService));
+        this.serviceStorage.set(IWindowService, this.instantiationService.create(WindowClientService));
         this.serviceStorage.set(IDialogService, this.instantiationService.create(DialogService));
 
         this.serviceStorage.set(ICommandService, this.instantiationService.create(CommandService));
