@@ -6,13 +6,12 @@ import { Image } from 'code/editor/browser/image';
 import { ContextKey } from 'code/platform/contexts/contextKey';
 
 export const ExplorerGroupContext = new ContextKey<boolean>(false);
+export const ExplorerRootOrGroupContext = new ContextKey<boolean>(false);
 
 export class Me5Stat implements IParentItem {
     private children = new LinkedList<Me5Group>();
-    private url: string;
 
-    constructor(url: string) {
-        this.url = url;
+    constructor(private url: string) {
     }
 
     public getId(): string {

@@ -1,10 +1,10 @@
 export interface IOpenFileRequest {
     files: string[];
+    new?: boolean;
 }
 
 export interface ISaveFileRequest {
     file: string;
-    created?: boolean;
 }
 
 export interface OpenDialogOptions {
@@ -38,4 +38,14 @@ export interface MessageBoxOptions {
 export interface IMessageBoxResult {
     button: number;
     checkboxChecked?: boolean;
+}
+
+export interface SaveDialogOptions {
+    title?: string;
+    defaultPath?: string;
+    buttonLabel?: string;
+    filters?: FileFilter[];
+    message?: string;
+    nameFieldLabel?: string;
+    showsTagField?: boolean;
 }

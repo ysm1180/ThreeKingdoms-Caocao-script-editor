@@ -1,4 +1,4 @@
-import { IConfirmation, IConfirmationResult, IOpenningFile, getFileFilters } from 'code/platform/dialogs/dialogs';
+import { IConfirmation, IConfirmationResult, IOpenningFile, getFileFilters, ISavingFile } from 'code/platform/dialogs/dialogs';
 import { decorator } from 'code/platform/instantiation/instantiation';
 import { IOpenFileRequest } from 'code/platform/windows/windows';
 import { IWindowService } from 'code/electron-main/windows';
@@ -23,6 +23,7 @@ export class DialogService {
         if (!openning.extensions) {
             openning.extensions = [
                 {
+                    name: '모든',
                     extensions: '*',
                 },
             ];
@@ -85,6 +86,31 @@ export class DialogService {
             options.checkboxLabel = confirmation.checkbox.label;
             options.checkboxChecked = confirmation.checkbox.checked;
         }
+
+        return options;
+    }
+
+    public save(saving: ISavingFile) {
+        const options = this.getSavingFileOptions(saving);
+
+        return this.windowService.showSaveDialog(options);
+    }
+
+    private getSavingFileOptions(saving: ISavingFile): Electron.SaveDialogOptions {
+        if (!saving.extensions) {
+            saving.extensions = [
+                {
+                    name: '모든',
+                    extensions: '*',
+                },
+            ];
+        }
+
+        const options: Electron.SaveDialogOptions = {
+            title: saving.title,
+            defaultPath: saving.name,
+            filters: getFileFilters(...saving.extensions),
+        };
 
         return options;
     }

@@ -3,7 +3,7 @@ import { ServicesAccessor } from 'code/platform/instantiation/instantiation';
 import { IMe5DataService } from 'code/editor/workbench/services/me5DataService';
 import { KeybindingsRegistry } from 'code/platform/keybindings/keybindingsRegistry';
 import { KeyCode } from 'code/base/common/keyCodes';
-import { ExplorerGroupContext } from '../files/me5Data';
+import { ExplorerGroupContext, ExplorerRootOrGroupContext } from '../files/me5Data';
 
 const insertGroup = 'INSERT_GROUP';
 const appendImage = 'APPEND_IMAGE';
@@ -39,7 +39,7 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
         },
     },
     order: 1,
-    when: ExplorerGroupContext,
+    when: ExplorerRootOrGroupContext,
 });
 
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {

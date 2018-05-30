@@ -24,6 +24,12 @@ export interface IOpenningFile {
     extensions?: IFileExtension[];
 }
 
+export interface ISavingFile {
+    title: string;
+    extensions?: IFileExtension[];
+    name?: string;
+}
+
 
 export interface IFileExtension {
     name?: string;

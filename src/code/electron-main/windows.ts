@@ -3,15 +3,18 @@ import { BrowserWindow, dialog } from 'electron';
 import { CodeWindow, IWindowCreationOption } from 'code/electron-main/window';
 import { getFileFilters, IFileExtension } from 'code/platform/dialogs/dialogs';
 import { decorator } from 'code/platform/instantiation/instantiation';
-import { IOpenFileRequest, IMessageBoxResult } from 'code/platform/windows/windows';
+import { IOpenFileRequest, IMessageBoxResult, ISaveFileRequest } from 'code/platform/windows/windows';
 import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
 import { IFileStorageService, FileStorageService } from 'code/platform/files/node/fileStorageService';
 
 export const IWindowService = decorator<IWindowService>('windowService');
 
 export interface IWindowService {
-    showOpenDialog(options: Electron.OpenDialogOptions);
-    showMessageBox(options: Electron.MessageBoxOptions);
+    showOpenDialog(options: Electron.OpenDialogOptions): Promise<IOpenFileRequest>;
+
+    showMessageBox(options: Electron.MessageBoxOptions): Promise<IMessageBoxResult>;
+
+    showSaveDialog(options: Electron.SaveDialogOptions): Promise<ISaveFileRequest>;
 }
 
 export class WindowManager implements IWindowService {
@@ -19,6 +22,8 @@ export class WindowManager implements IWindowService {
 
     private dialog: Dialog;
     public static win: CodeWindow;
+
+    public static NEW_INDEX = 1;
 
     constructor(
         @IFileStorageService private fileStorageService: FileStorageService,
@@ -42,8 +47,22 @@ export class WindowManager implements IWindowService {
         return this.dialog.showMessageBox(options, WindowManager.win.window);
     }
 
+    public showSaveDialog(options?: Electron.SaveDialogOptions) {
+        return this.dialog.showSaveDialog(options, WindowManager.win.window);
+    }
+
+    public openNewFile() {
+        const request: IOpenFileRequest = {
+            files: [`New File ${WindowManager.NEW_INDEX++}.me5`],
+            new: true,
+        };
+
+        WindowManager.win.send('editor:openFiles', request);
+    }
+
     public openWorkingFiles(): Promise<IOpenFileRequest> {
         const recentWorkingPath: string = this.fileStorageService.get(WindowManager.workingPathKey);
+    
         const filters: IFileExtension[] = [
             {
                 extensions: 'me5',
@@ -94,6 +113,14 @@ export class Dialog {
         return new Promise((c, e) => {
             dialog.showMessageBox(window ? window : void 0, options, (response: number, checkboxChecked: boolean) => {
                 c({ button: response, checkboxChecked });
+            });
+        });
+    }
+
+    public showSaveDialog(options: Electron.SaveDialogOptions, window?: BrowserWindow): Promise<ISaveFileRequest> {
+        return new Promise((c, e) => {
+            dialog.showSaveDialog(window ? window : void 0, options, path => {
+                c({ file: path });
             });
         });
     }

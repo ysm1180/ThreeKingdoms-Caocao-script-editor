@@ -31,10 +31,10 @@ export class Me5DataService {
             title: '이미지 파일을 선택해주세요.',
             multi: true,
             extensions: [
-                {name: '이미지', extensions: 'png;jpg;bmp'},
-                {extensions: 'png'},
-                {extensions: 'jpg'},
-                {extensions: 'bmp'},
+                { name: '이미지', extensions: 'png;jpg;bmp' },
+                { extensions: 'png' },
+                { extensions: 'jpg' },
+                { extensions: 'bmp' },
             ],
         }).then((req) => {
             if (!req.files) {
@@ -74,11 +74,20 @@ export class Me5DataService {
 
     public doInsertGroup() {
         const lastTree = this.treeService.LastFocusedTree;
-        const element = <IEditableItemData>lastTree.getSelection()[0];
-        const parent = element.getParent();
+        const element = lastTree.getSelection()[0];
+
+        let parent;
+        let itemAfter;
+        if (element instanceof Me5Group) {
+            parent = element.getParent();
+            itemAfter = element;
+        } else {
+            parent = element;
+            itemAfter = null;
+        }
 
         const newGroup = new Me5Group();
-        newGroup.build(parent, element);
+        newGroup.build(parent, itemAfter);
 
         lastTree.refresh(parent);
     }

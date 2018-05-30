@@ -40,7 +40,7 @@ export class AppMenu {
     }
 
     private setFileMenuItem(fileMenu: Menu) {
-        const newFile = new MenuItem({ label: '새 파일(&N)', click: () => { }, accelerator: 'Control+N' });
+        const newFile = new MenuItem({ label: '새 파일(&N)', click: () => { this.windowMainService.openNewFile(); }, accelerator: 'Control+N' });
         const openFile = new MenuItem({ label: '파일 열기(&O)', click: () => { this.windowMainService.openWorkingFiles(); }, accelerator: 'Control+O' });
         const saveFile = new MenuItem({ label: '저장 (&S)', click: () => { this.windowMainService.saveFile(); }, accelerator: 'Control+S' });
         const exit = new MenuItem({ label: '종료(&X)', click: null });

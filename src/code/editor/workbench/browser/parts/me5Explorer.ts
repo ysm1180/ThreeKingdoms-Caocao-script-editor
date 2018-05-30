@@ -4,7 +4,7 @@ import { Tree, ITreeOptions, ITreeConfiguration } from 'code/base/parts/tree/bro
 import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
 import { Me5File } from 'code/editor/common/file';
 import { IView } from 'code/editor/workbench/browser/view';
-import { Me5Stat, Me5Group, Me5Item, ExplorerGroupContext } from 'code/editor/workbench/parts/files/me5Data';
+import { Me5Stat, Me5Group, Me5Item, ExplorerGroupContext, ExplorerRootOrGroupContext } from 'code/editor/workbench/parts/files/me5Data';
 import { Me5DataSource, Me5DataRenderer, Me5DataController } from 'code/editor/workbench/parts/me5ExplorerModel';
 import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
 import { IEditorClosedEvent } from 'code/platform/editor/editor';
@@ -79,6 +79,7 @@ export class Me5ExplorerView extends Disposable implements IView {
 
         this.registerDispose(this.explorerViewer.onDidChangeFocus.add((e) => {
             const focused = e.focus;
+            ExplorerRootOrGroupContext.set(focused instanceof Me5Group || focused instanceof Me5Stat);
             ExplorerGroupContext.set(focused instanceof Me5Group);
         }));
 
@@ -110,7 +111,12 @@ export class Me5ExplorerView extends Disposable implements IView {
             done = Promise.resolve(cacheData);
         } else {
             const me5 = new Me5File(filePath);
-            done = me5.open().then(() => {
+            done = me5.open().then((data) => {
+                if (!data) {
+                    throw new Error();
+                }
+
+                console.log(data);
                 const stat = new Me5Stat(filePath);
                 for (let i = 0, groupCount = me5.getGroupCount(); i < groupCount; i++) {
                     const group = new Me5Group();
@@ -121,12 +127,19 @@ export class Me5ExplorerView extends Disposable implements IView {
                     }
                 }
 
-                this.explorerViewer.setCache(filePath, stat);
+                return stat;
+            }).catch(() => {
+                const stat = new Me5Stat(filePath);
+                const group = new Me5Group();
+                group.build(stat, null, 'NEW GROUP');
+                
                 return stat;
             });
         }
 
         done.then((stat) => {
+            this.explorerViewer.setCache(filePath, stat);
+            
             this.explorerViewer.setRoot(stat).then(() => {
                 const toExpand = this.toExpandElements[stat.getId()];
                 if (toExpand) {
