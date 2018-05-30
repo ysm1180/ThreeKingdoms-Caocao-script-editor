@@ -97,4 +97,12 @@ export class Tree {
     public expand(element: any) {
         return this.model.expand(element);
     }
+
+    public expandAll(elements: any[]) {
+        return this.model.expandAll(elements);
+    }
+
+    public getExpandedElements(): any[] {
+        return this.model.getExpandedElements();
+    }
 }

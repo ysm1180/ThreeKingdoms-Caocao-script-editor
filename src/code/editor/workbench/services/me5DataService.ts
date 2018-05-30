@@ -59,7 +59,7 @@ export class Me5DataService {
             lastTree.refresh(element).then(() => {
                 return lastTree.expand(element);
             }).then(() => {
-                lastTree.setSelection(selectItems[0]);
+                lastTree.setSelection(selectItems);
 
                 const controller: Me5DataController = this.instantiationService.create(Me5DataController);
                 controller.onClick(lastTree, selectItems[0]);

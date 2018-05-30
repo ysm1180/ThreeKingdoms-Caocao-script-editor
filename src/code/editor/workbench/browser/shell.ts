@@ -3,7 +3,8 @@ import { Workbench } from 'code/editor/workbench/browser/workbench';
 import { ElectronWindow } from 'code/editor/workbench/window';
 import { InstantiationService } from 'code/platform/instantiation/instantiationService';
 import { ServiceStorage } from 'code/platform/instantiation/serviceStorage';
-import { IWindowMainService, WindowManager } from '../../../electron-main/windows';
+import { IWindowMainService, WindowManager } from 'code/electron-main/windows';
+import { IStorageService, StorageService } from 'code/editor/workbench/services/electron-browser/storageService';
 
 export class WorkbenchShell {
     private container: HTMLElement;
@@ -46,10 +47,12 @@ export class WorkbenchShell {
         const serviceStorage = new ServiceStorage();
         const instantiationService = new InstantiationService(serviceStorage);
 
+        serviceStorage.set(IStorageService, instantiationService.create(StorageService, window.localStorage));
         serviceStorage.set(IWindowMainService, instantiationService.create(WindowManager));
 
         this.workbench = this.createWorkbench(instantiationService, serviceStorage, parent.getHTMLElement(), workbenchContainer.getHTMLElement());
         this.workbench.startup();
+
         instantiationService.create(ElectronWindow);
 
         return workbenchContainer;

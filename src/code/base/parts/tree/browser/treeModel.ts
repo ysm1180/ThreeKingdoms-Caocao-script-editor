@@ -563,7 +563,7 @@ export class TreeModel {
         return item.refresh(skipRenderChildren);
     }
 
-    public getItem(element: any): Item {
+    public getItem(element: any = null): Item {
         if (element === null) {
             return this.root;
         } else if (element instanceof Item) {
@@ -603,6 +603,16 @@ export class TreeModel {
         return item.expand();
     }
 
+    public expandAll(elements: any[]): Promise<any> {
+        const done = [];
+
+        for (let i = 0, len = elements.length; i < len; i++) {
+            done.push(this.expand(elements[i]));
+        }
+
+        return Promise.all(done);
+    }
+
     public collapse(element: any) {
         const item = this.getItem(element);
 
@@ -611,6 +621,20 @@ export class TreeModel {
         }
 
         item.collapse();
+    }
+
+    public getExpandedElements(): any[] {
+        const result = [];
+        const iter = this.getItem().getNavigator();
+        
+        let item;
+        while (item = iter.next()) {
+            if (item.isExpanded()) {
+                result.push(item.getElement());
+            }
+        }
+
+        return result;
     }
 
     public addTraits(trait: string, elements: any[]) {

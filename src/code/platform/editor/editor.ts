@@ -1,3 +1,7 @@
+export interface IEditorClosedEvent {
+    editor: IEditorInput;
+}
+
 export interface IEditorInput {
     getId(): any;
 

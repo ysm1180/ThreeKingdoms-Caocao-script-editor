@@ -1,6 +1,6 @@
 import { DomBuilder, $ } from 'code/base/browser/domBuilder';
 import { Event } from 'code/base/common/event';
-import { IEditorInput } from 'code/platform/editor/editor';
+import { IEditorInput, IEditorClosedEvent } from 'code/platform/editor/editor';
 import { Part } from 'code/editor/workbench/browser/part';
 import { Editors } from 'code/editor/workbench/browser/parts/editor/editors';
 import { BaseEditor } from 'code/editor/workbench/browser/parts/editor/baseEditor';
@@ -8,10 +8,6 @@ import { ImageViewEditor } from 'code/editor/workbench/browser/parts/editor/imag
 import { decorator } from 'code/platform/instantiation/instantiation';
 
 export const IEditorService = decorator<EditorPart>('editorPart');
-
-export interface IEditorClosedEvent {
-    editor: IEditorInput;
-}
 
 export class EditorPart extends Part {
     private editorContainer: DomBuilder;

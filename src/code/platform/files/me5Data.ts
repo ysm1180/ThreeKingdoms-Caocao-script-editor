@@ -1,5 +1,4 @@
 import { Disposable, IDisposable, toDisposable, once } from 'code/base/common/lifecycle';
-import { LinkedList } from 'code/base/common/linkedList';
 import { IEditableItemData } from 'code/platform/files/me5Data';
 
 export interface IParentItem {
