@@ -330,6 +330,7 @@ export class Item {
 
     public refresh(skipRenderChildren: boolean = false): Promise<any> {
         const event: IItemRefreshEvent = { item: this };
+        this.doesHaveChildren = this.context.dataSource.hasChildren(this.element);        
         this.onDidRefresh.fire(event);
 
         return this.refreshChildren(skipRenderChildren);
