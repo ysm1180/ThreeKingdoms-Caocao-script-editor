@@ -3,9 +3,6 @@
         "class-name": true,
         "curly":[true, "ignore-same-line"],
         "debug-assert": true,
-        "indent": [true,
-            "spaces"
-        ],
         "no-unused-expression": true,
 		"no-duplicate-variable": true,
 		"quotemark" : [true, "single"],

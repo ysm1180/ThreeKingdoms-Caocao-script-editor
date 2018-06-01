@@ -13,6 +13,7 @@ import { IMe5DataService, Me5DataService } from 'code/editor/workbench/services/
 import { WindowClientService } from 'code/platform/windows/windowsIpc';
 import { IDialogService, DialogService } from '../services/electron-browser/dialogService';
 import { IWindowService } from 'code/electron-main/windows';
+import { IContextKeyService, ContextKeyService } from 'code/platform/contexts/contextKeyService';
 
 
 export class Workbench {
@@ -50,6 +51,8 @@ export class Workbench {
     }
 
     private initService() {
+        this.serviceStorage.set(IContextKeyService, this.instantiationService.create(ContextKeyService));
+
         this.serviceStorage.set(ITreeService, this.instantiationService.create(TreeService));
 
         this.serviceStorage.set(IWindowService, this.instantiationService.create(WindowClientService));

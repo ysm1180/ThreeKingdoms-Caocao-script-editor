@@ -173,8 +173,14 @@ const generalMap = new KeyCodeStringMap();
     generalMap.define(KeyCode.F10, 'F10');
     generalMap.define(KeyCode.F11, 'F11');
     generalMap.define(KeyCode.F12, 'F12');
-    
+
 })();
+
+export const enum KeyMode {
+    Ctrl = (1 << 8),
+    Alt = (1 << 9),
+    Shift = (1 << 10),
+}
 
 export namespace KeyCodeUtils {
     export function toString(keyCode: KeyCode): string {
@@ -182,3 +188,42 @@ export namespace KeyCodeUtils {
     }
 }
 
+export class Keybinding {
+    public readonly ctrlKey: boolean;
+    public readonly shiftKey: boolean;
+    public readonly altKey: boolean;
+    public readonly keyCode: KeyCode;
+
+    constructor(ctrlKey: boolean, shiftKey: boolean, altKey: boolean, keyCode: KeyCode) {
+        this.ctrlKey = ctrlKey;
+        this.shiftKey = shiftKey;
+        this.altKey = altKey;
+        this.keyCode = keyCode;
+    }
+
+    public equals(other: Keybinding): boolean {
+        return (
+            this.ctrlKey === other.ctrlKey
+            && this.shiftKey === other.shiftKey
+            && this.altKey === other.altKey
+            && this.keyCode === other.keyCode
+        );
+    }
+
+    public electronShortKey(): string {
+        let result = '';
+        if (this.ctrlKey) {
+            result += 'Ctrl+';
+        }
+
+        if (this.altKey) {
+            result += 'Alt+';
+        }
+
+        if (this.shiftKey) {
+            result += 'Shift';
+        }
+
+        return result + KeyCodeUtils.toString(this.keyCode);
+    }
+}

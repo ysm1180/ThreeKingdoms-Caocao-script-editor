@@ -4,10 +4,18 @@ import { Tree, ITreeOptions, ITreeConfiguration } from 'code/base/parts/tree/bro
 import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
 import { Me5File } from 'code/editor/common/file';
 import { IView } from 'code/editor/workbench/browser/view';
-import { Me5Stat, Me5Group, Me5Item, ExplorerGroupContext, ExplorerRootOrGroupContext } from 'code/editor/workbench/parts/files/me5Data';
+import { Me5Stat, Me5Group, Me5Item } from 'code/editor/workbench/parts/files/me5Data';
 import { Me5DataSource, Me5DataRenderer, Me5DataController } from 'code/editor/workbench/parts/me5ExplorerModel';
 import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
 import { IEditorClosedEvent } from 'code/platform/editor/editor';
+import { ContextKey, IContextKeyService, ContextKeyService } from 'code/platform/contexts/contextKeyService';
+import { RawContextKey } from 'code/platform/contexts/contextKey';
+
+export const explorerItemIsMe5GroupId = 'explorerItemIsMe5Group';
+export const explorerItemIsMe5StatId = 'explorerItemIsMe5Stat';
+
+export const explorerGroupContext = new RawContextKey<boolean>(explorerItemIsMe5GroupId, false);
+export const explorerRootContext = new RawContextKey<boolean>(explorerItemIsMe5StatId, false);
 
 export class Me5Tree extends Tree {
     private _cache = new Map<string, Me5Stat>();
@@ -54,7 +62,11 @@ export class Me5ExplorerView extends Disposable implements IView {
 
     private toExpandElements = {};
 
+    private groupContext: ContextKey<boolean>;
+    private rootContext: ContextKey<boolean>;
+
     constructor(
+        @IContextKeyService contextKeyService: ContextKeyService,
         @IEditorService private editorService: EditorPart,
         @IInstantiationService private instantiationService: InstantiationService,
 
@@ -64,6 +76,9 @@ export class Me5ExplorerView extends Disposable implements IView {
         this.dataSource = this.instantiationService.create(Me5DataSource);
         this.renderer = this.instantiationService.create(Me5DataRenderer);
         this.controller = this.instantiationService.create(Me5DataController);
+
+        this.groupContext = explorerGroupContext.bindTo(contextKeyService);
+        this.rootContext = explorerRootContext.bindTo(contextKeyService);
     }
 
     public create(container: HTMLElement) {
@@ -79,8 +94,8 @@ export class Me5ExplorerView extends Disposable implements IView {
 
         this.registerDispose(this.explorerViewer.onDidChangeFocus.add((e) => {
             const focused = e.focus;
-            ExplorerRootOrGroupContext.set(focused instanceof Me5Group || focused instanceof Me5Stat);
-            ExplorerGroupContext.set(focused instanceof Me5Group);
+            this.groupContext.set(focused instanceof Me5Group);
+            this.rootContext.set(focused instanceof Me5Stat);
         }));
 
         this.registerDispose(this.editorService.onEditorChanged.add(() => this.onChangeFile()));

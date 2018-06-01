@@ -1,15 +1,17 @@
 import { addDisposableEventListener } from 'code/base/browser/dom';
 import { StandardKeyboardEvent } from 'code/base/browser/keyboardEvent';
-import { KeyCode } from 'code/base/common/keyCodes';
+import { KeyCode, Keybinding, KeyMode } from 'code/base/common/keyCodes';
 import { decorator } from 'code/platform/instantiation/instantiation';
 import { KeybindingsRegistry } from 'code/platform/keybindings/keybindingsRegistry';
 import { ICommandService, CommandService } from 'code/platform/commands/commandService';
+import { IContextKeyService, ContextKeyService } from 'code/platform/contexts/contextKeyService';
 
 export const IKeybindingService = decorator<KeybindingService>('keybindingService');
 
 export class KeybindingService {
     constructor(
         windowElement: Window,
+        @IContextKeyService private contextKeyService: ContextKeyService,
         @ICommandService private commandService: CommandService,
     ) {
         addDisposableEventListener(windowElement, 'keydown', (e: KeyboardEvent) => {
@@ -20,21 +22,41 @@ export class KeybindingService {
 
     private dispatch(event: StandardKeyboardEvent, target: HTMLElement) {
         const items = KeybindingsRegistry.getKeybindings();
+        const keyboard = this.resolveKeyboardEvent(event);
+
         for (let i = 0, len = items.length; i < len; i++) {
             const item = items[i];
-            const when = (item.when ? item.when.get() : true);
-            const keybinding = item.keybinding;
-            if (item.keybinding === event.keyCode && when) {
+            const when = (item.when ? item.when.evaluate(this.contextKeyService.getContext()) : true);
+            const keybinding = this.resolveKeybinding(item.keybinding);
+            if (keybinding.equals(keyboard) && when) {
                 this.commandService.run(item.command, item.commandArgs);
             }
         }
     }
 
-    public lookupKeybinding(id: string): KeyCode {
+    private resolveKeyboardEvent(e: StandardKeyboardEvent) {
+        const ctrlKey = e.ctrlKey;
+        const shiftKey = e.shiftKey;
+        const altKey = e.altKey;
+        const keyCode = e.keyCode;
+
+        return new Keybinding(ctrlKey, shiftKey, altKey, keyCode);
+    }
+
+    public resolveKeybinding(keybinding: number) {
+        const ctrlKey = keybinding & KeyMode.Ctrl ? true : false;
+        const shiftKey = keybinding & KeyMode.Shift ? true : false;
+        const altKey = keybinding & KeyMode.Alt ? true : false;
+        const keyCode = keybinding & 0xFF;
+
+        return new Keybinding(ctrlKey, shiftKey, altKey, keyCode);
+    }
+
+    public lookupKeybinding(id: string): Keybinding {
         const items = KeybindingsRegistry.getKeybindings();
         for (const item of items) {
             if (item.command === id) {
-                return item.keybinding;
+                return this.resolveKeybinding(item.keybinding);
             }
         }
 

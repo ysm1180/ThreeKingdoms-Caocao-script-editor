@@ -3,10 +3,6 @@ import { LinkedList } from 'code/base/common/linkedList';
 import { IEditorInput } from 'code/platform/editor/editor';
 import { BaseMe5Item, IParentItem } from 'code/platform/files/me5Data';
 import { Image } from 'code/editor/browser/image';
-import { ContextKey } from 'code/platform/contexts/contextKey';
-
-export const ExplorerGroupContext = new ContextKey<boolean>(false);
-export const ExplorerRootOrGroupContext = new ContextKey<boolean>(false);
 
 export class Me5Stat implements IParentItem {
     private children = new LinkedList<Me5Group>();

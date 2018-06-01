@@ -1,19 +1,19 @@
 import { KeyCode } from 'code/base/common/keyCodes';
-import { ContextKey } from 'code/platform/contexts/contextKey';
+import { ContextKeyExpr } from 'code/platform/contexts/contextKey';
 import { ICommandHandler, CommandsRegistry } from 'code/platform/commands/commands';
 
 export interface IKeybindingRule {
     id: string;
     primary: KeyCode;
     handler: ICommandHandler;
-    when?: ContextKey<any>;
+    when?: ContextKeyExpr;
 }
 
 export interface IKeybindingItem {
     command: string;
     commandArgs?: any;
     keybinding: KeyCode;
-    when: ContextKey<any>;
+    when: ContextKeyExpr;
 }
 
 export const KeybindingsRegistry = new class {

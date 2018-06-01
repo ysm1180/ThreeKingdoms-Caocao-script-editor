@@ -2,16 +2,18 @@ import { BinaryFile } from 'code/platform/files/file';
 import { decorator } from 'code/platform/instantiation/instantiation';
 import { IConfirmation } from 'code/platform/dialogs/dialogs';
 import { ITreeService, TreeService } from 'code/platform/tree/treeService';
-import { IEditableItemData, IParentItem } from 'code/platform/files/me5Data';
+import { IEditableItemData } from 'code/platform/files/me5Data';
 import { Me5Group, Me5Item } from 'code/editor/workbench/parts/files/me5Data';
 import { Me5DataController } from 'code/editor/workbench/parts/me5ExplorerModel';
 import { IDialogService, DialogService } from 'code/editor/workbench/services/electron-browser/dialogService';
 import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
+import { IContextKeyService, ContextKeyService } from 'code/platform/contexts/contextKeyService';
 
 export const IMe5DataService = decorator<Me5DataService>('me5DataService');
 
 export class Me5DataService {
     constructor(
+        @IContextKeyService private contextKeyService: ContextKeyService
         @ITreeService private treeService: TreeService,
         @IDialogService private dialogService: DialogService,
         @IInstantiationService private instantiationService: InstantiationService,

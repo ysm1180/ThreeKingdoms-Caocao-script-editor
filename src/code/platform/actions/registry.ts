@@ -1,5 +1,5 @@
 import { ICommandHandler } from 'code/platform/commands/commands';
-import { ContextKey } from 'code/platform/contexts/contextKey';
+import { ContextKeyExpr } from 'code/platform/contexts/contextKey';
 
 export interface IMenuItem {
     command: {
@@ -9,7 +9,7 @@ export interface IMenuItem {
     label: string;
     group?: string;
     order?: number;
-    when?: ContextKey<boolean>;
+    when?: ContextKeyExpr;
 }
 
 export class MenuId {
