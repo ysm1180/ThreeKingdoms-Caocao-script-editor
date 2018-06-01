@@ -34,8 +34,8 @@ export class ContextMenuService {
 
         entries.forEach((entry, index) => {
             if (entry instanceof Separator) {
-                if (!isDuplicatedSeparator){
-                    menuItems.push(new remote.MenuItem({type: 'separator'}));
+                if (!isDuplicatedSeparator) {
+                    menuItems.push(new remote.MenuItem({ type: 'separator' }));
                 }
                 isDuplicatedSeparator = true;
 
@@ -44,8 +44,10 @@ export class ContextMenuService {
                     return;
                 }
 
-                const options: Electron.MenuItemConstructorOptions  = {
+                let options: Electron.MenuItemConstructorOptions;
+                options = {
                     label: entry.label,
+                    role: entry.role,
                     click: (item, window, event) => {
                         this.runCommand(entry.command);
                     },

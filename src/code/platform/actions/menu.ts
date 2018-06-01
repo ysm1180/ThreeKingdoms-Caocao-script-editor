@@ -8,10 +8,12 @@ export class MenuItemInfo {
     private _label: string;
     private _command: string;
     private _when: ContextKeyExpr;
+    private _role: string;
 
     constructor(menu: IMenuItem) {
-        this._label = menu.label;
-
+        if (menu.command.role) {
+            this._role = menu.command.id;
+        }
         if (menu.command.handler) {
             const command = {
                 id: menu.command.id,
@@ -20,6 +22,7 @@ export class MenuItemInfo {
             CommandsRegistry.register(command);
         }
 
+        this._label = menu.label;
         this._command = menu.command.id;
         this._when = menu.when;
     }
@@ -35,15 +38,18 @@ export class MenuItemInfo {
     public get context() {
         return this._when;
     }
+
+    public get role() {
+        return this._role;
+    }
 }
 
 export class Separator extends MenuItemInfo {
     constructor() {
         super({
-            label: '',
             command: {
                 id: 'seperator',
-                handler: () => { }
+                role: true,
             },
         });
     }

@@ -5,8 +5,9 @@ export interface IMenuItem {
     command: {
         id: string;
         handler?: ICommandHandler;
+        role?: boolean,
     };
-    label: string;
+    label?: string;
     group?: string;
     order?: number;
     when?: ContextKeyExpr;

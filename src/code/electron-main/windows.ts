@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { BrowserWindow, dialog } from 'electron';
+import { BrowserWindow, dialog, app } from 'electron';
 import { CodeWindow, IWindowCreationOption } from 'code/electron-main/window';
 import { getFileFilters, IFileExtension } from 'code/platform/dialogs/dialogs';
 import { decorator } from 'code/platform/instantiation/instantiation';
@@ -91,6 +91,10 @@ export class WindowManager implements IWindowService {
 
     public saveFile() {
         WindowManager.win.send('editor:saveFile');
+    }
+
+    public quit() {
+        app.quit();
     }
 }
 

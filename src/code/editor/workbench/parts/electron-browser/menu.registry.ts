@@ -12,6 +12,7 @@ const MODIFICATION_ID = 'MODIFICATION';
 const APPEND_IMAGE_ID = 'APPEND_IMAGE';
 const RENAME_ID = 'RENAME_COMMAND';
 const DELETE_ID = 'DELETE_COMMAND';
+const COPY_TEXT_ID = 'COPY_TEXT';
 
 KeybindingsRegistry.registerKeybindingRule({
     id: RENAME_ID,
@@ -98,4 +99,115 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
     },
     order: 3,
     when: ContextKeyExpr.and(explorerRootContext.not(), explorerEditContext.not()),
+});
+
+
+
+// Edit Shortcut
+KeybindingsRegistry.registerKeybindingRule({
+    id: 'undo',
+    primary: KeyMode.Ctrl | KeyCode.KEY_Z,
+    handler: undefined,
+    when: explorerEditContext,
+});
+
+KeybindingsRegistry.registerKeybindingRule({
+    id: 'redo',
+    primary: KeyMode.Ctrl | KeyCode.KEY_Y,
+    handler: undefined,
+    when: explorerEditContext,
+});
+
+KeybindingsRegistry.registerKeybindingRule({
+    id: 'cut',
+    primary: KeyMode.Ctrl | KeyCode.KEY_X,
+    handler: undefined,
+    when: explorerEditContext,
+});
+
+KeybindingsRegistry.registerKeybindingRule({
+    id: 'copy',
+    primary: KeyMode.Ctrl | KeyCode.KEY_C,
+    handler: undefined,
+    when: explorerEditContext,
+});
+
+KeybindingsRegistry.registerKeybindingRule({
+    id: 'paste',
+    primary: KeyMode.Ctrl | KeyCode.KEY_V,
+    handler: undefined,
+    when: explorerEditContext,
+});
+
+KeybindingsRegistry.registerKeybindingRule({
+    id: 'selectall',
+    primary: KeyMode.Ctrl | KeyCode.KEY_A,
+    handler: undefined,
+    when: explorerEditContext,
+});
+
+MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
+    group: '1_undoredo',
+    label: '실행 취소',
+    command: {
+        id: 'undo',
+        role: true,
+    },
+    order: 1,
+    when: explorerEditContext,
+});
+
+MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
+    group: '1_undoredo',
+    label: '다시 실행',
+    command: {
+        id: 'redo',
+        role: true,
+    },
+    order: 2,
+    when: explorerEditContext,
+});
+
+MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
+    group: '2_cutcopypaste',
+    label: '잘라내기',
+    command: {
+        id: 'cut',
+        role: true,
+    },
+    order: 1,
+    when: explorerEditContext,
+});
+
+MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
+    group: '2_cutcopypaste',
+    label: '복사',
+    command: {
+        id: 'copy',
+        role: true,
+    },
+    order: 2,
+    when: explorerEditContext,
+});
+
+MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
+    group: '2_cutcopypaste',
+    label: '붙여넣기',
+    command: {
+        id: 'paste',
+        role: true,
+    },
+    order: 3,
+    when: explorerEditContext,
+});
+
+MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
+    group: '3_select_all',
+    label: '모두 선택',
+    command: {
+        id: 'selectall',
+        role: true,
+    },
+    order: 1,
+    when: explorerEditContext,
 });
