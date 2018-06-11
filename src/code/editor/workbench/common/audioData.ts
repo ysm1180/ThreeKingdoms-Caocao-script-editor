@@ -1,15 +1,18 @@
-export class Image {
+export const enum AudioType {
+    Mp3 = 'mpeg',
+    Wav = 'wav',
+}
+
+export class AudioData {
     private _data: Uint8Array;
-    private width: number;
-    private height: number;
-    private _type: string;
+    private _type: AudioType;
 
     constructor() {
     }
 
     public build(data: Uint8Array) {
         this._data = data;
-        this._type = Image.getImageType(this._data);
+        this._type = AudioData.getMusicType(this._data);
     }
 
     public encodeToBase64() {
@@ -25,7 +28,7 @@ export class Image {
         return null;
     }
 
-    public get type(): string {
+    public get type(): AudioType {
         return this._type;
     }
 
@@ -33,16 +36,12 @@ export class Image {
         return this._data;
     }
 
-    static getImageType(data: Uint8Array): string {
-        let type: string;
-        if (data[0] === 'B'.charCodeAt(0) && data[1] === 'M'.charCodeAt(0)) {
-            type = 'bmp';
-        } else if (data[0] === 0xFF && data[1] === 0xD8) {
-            type = 'jpg';
-        } else if (data[0] === 0x89 && data[1] === 0x50) {
-            type = 'png';
-        } else {
-            type = null;
+    static getMusicType(data: Uint8Array): AudioType {
+        let type: AudioType;
+        if (data[0] === 0x49 && data[1] === 0x44 && data[2] === 0x33) {
+            type = AudioType.Mp3;
+        } else if (data[0] === 0x52 && data[1] === 0x49 && data[2] === 0x46) {
+            type = AudioType.Wav;
         }
 
         return type;

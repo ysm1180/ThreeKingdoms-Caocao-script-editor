@@ -2,7 +2,7 @@ import { BinaryFile } from 'code/platform/files/file';
 import { decorator } from 'code/platform/instantiation/instantiation';
 import { IConfirmation } from 'code/platform/dialogs/dialogs';
 import { ITreeService, TreeService } from 'code/platform/tree/treeService';
-import { IEditableItemData, IParentItem } from 'code/platform/files/me5Data';
+import { IEditableItem, BaseMe5Item } from 'code/platform/files/me5Data';
 import { Me5Group, Me5Item } from 'code/editor/workbench/parts/files/me5Data';
 import { Me5DataController } from 'code/editor/workbench/parts/me5ExplorerModel';
 import { IDialogService, DialogService } from 'code/editor/workbench/services/electron-browser/dialogService';
@@ -19,22 +19,38 @@ export class Me5DataService {
 
     }
 
-    public doAppendImageItem() {
+    public doChangeItem() {
         const lastTree = this.treeService.LastFocusedTree;
-        const element = <Me5Group>lastTree.getSelection()[0];
+        const element = <Me5Item>lastTree.getSelection()[0];
 
         if (!element) {
             return;
         }
 
+    }
+
+    public doInsertItem(isSelectionAfter?: boolean) {
+        const lastTree = this.treeService.LastFocusedTree;
+        let element = <BaseMe5Item>lastTree.getSelection()[0];
+        let parent: IEditableItem;
+
+        if (!element) {
+            return;
+        }
+
+        if (!element.isGroup) {
+            parent = element.getParent();
+        } else {
+            parent = element;
+        }
+
         this.dialogService.openFile({
-            title: '이미지 파일을 선택해주세요.',
+            title: '추가할 파일을 선택해주세요.',
             multi: true,
             extensions: [
+                {name: '추가 가능한 파일', extensions: 'png;jpg;bmp;mp3;wav'},
                 { name: '이미지', extensions: 'png;jpg;bmp' },
-                { extensions: 'png' },
-                { extensions: 'jpg' },
-                { extensions: 'bmp' },
+                { name: '음악', extensions: 'mp3;wav' },
             ],
         }).then((req) => {
             if (!req.files) {
@@ -55,14 +71,18 @@ export class Me5DataService {
                 if (value) {
                     const item = new Me5Item();
                     const data = new Uint8Array(value.slice(0));
-                    item.build(element, null, 'NEW IMAGE', data);
+                    if (isSelectionAfter) {
+                        item.build(<Me5Group>parent, element, 'NEW ITEM', data);
+                    } else {
+                        item.build(<Me5Group>parent, null, 'NEW ITEM', data);                        
+                    }
 
                     selectItems.push(item);
                 }
             }
 
-            lastTree.refresh(element).then(() => {
-                return lastTree.expand(element);
+            lastTree.refresh(parent).then(() => {
+                return lastTree.expand(parent);
             }).then(() => {
                 lastTree.setSelection(selectItems);
 
@@ -94,7 +114,7 @@ export class Me5DataService {
 
     public doRename() {
         const lastTree = this.treeService.LastFocusedTree;
-        const element = <IEditableItemData>lastTree.getSelection()[0];
+        const element = <IEditableItem>lastTree.getSelection()[0];
 
         if (!element) {
             return;
@@ -108,7 +128,7 @@ export class Me5DataService {
 
     public doDelete() {
         const lastTree = this.treeService.LastFocusedTree;
-        const elements = <IEditableItemData[]>lastTree.getSelection();
+        const elements = <IEditableItem[]>lastTree.getSelection();
 
         const confirmation: IConfirmation = {
             title: 'ME5 항목 삭제',

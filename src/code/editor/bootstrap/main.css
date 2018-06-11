@@ -25,8 +25,6 @@ body {
     overflow: hidden;
 }
 
-.sidebar {}
-
 .view-container {
     width: 100%;
     height: 100%;
@@ -234,7 +232,7 @@ body {
     background: url('../workbench/browser/parts/editor/images/close.svg') center center no-repeat;
 }
 
-.editor-container>.image-viewer-editor {
+.editor-container>.item-viewer-editor {
     display: flex;
     height: 100%;
     text-align: center;
@@ -242,6 +240,135 @@ body {
     overflow: auto;
 }
 
-.image-viewer-editor>.image {
+.item-viewer-editor>.image-view {
+    position: relative;
     width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.item-viewer-editor>.image-view>img {
+    position: absolute;
+    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.statusbar {
+    box-sizing: border-box;
+    width: 100%;
+    height: 22px;
+    padding: 0 10px;
+    background-color: #F2F2F2;
+    color: #333333;
+}
+
+.audio-player {
+    width: 100%;
+    padding: 1em;
+}
+
+.audio-track {
+    display: inline-block;
+    width: 100%;
+    height: 100px;
+    position: relative;
+}
+
+.audio-track>.audio-button {
+    position: absolute;
+    
+    width: 32px;
+    height: 32px;
+    border: none;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    outline: none;
+    cursor: pointer;
+}
+
+.audio-track>.audio-button.play {
+    background-image: url('../../base/browser/ui/assets/play.svg');
+
+    top: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.audio-track>.audio-button.pause {
+    background-image: url('../../base/browser/ui/assets/pause.svg');
+
+    top: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.audio-track>.audio-button.replay {
+    background-image: url('../../base/browser/ui/assets/refresh_disabled.svg');
+
+    top: 35px;
+    left: 25%;
+}
+
+.audio-track>.audio-button.replay.active {
+    background-image: url('../../base/browser/ui/assets/refresh.svg');
+}
+
+.audio-track>.audio-timeline:before {
+    content: '';
+    position: absolute;
+    display: block;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 1);
+}
+
+.audio-track>.audio-timeline {
+    position: absolute;
+    display: block;
+    top: 14px;
+    left: 0;
+    width: 100%;
+    height: 21px;
+    cursor: pointer;
+}
+
+.audio-track>.audio-timeline>.audio-progress {
+    position: absolute;
+    top: 10px;
+    height: 1px;
+    background-color: #00c6ff;
+}
+
+.audio-track>.audio-timeline>.audio-progress:before {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 9px;
+    height: 9px;
+    top: -4px;
+    right: -4px;
+    background-image: url('../../base/browser/ui/assets/circle.svg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+}
+
+.audio-track>.audio-duration {
+    position: absolute;
+    top: 37px;
+    right: 1px;
+    color: #ffffff;
+}
+
+.audio-track>.audio-elapsed {
+    position: absolute;
+    top: 37px;
+    left: 2px;
+    font-weight: bold;
+    color: #ffffff;
 }

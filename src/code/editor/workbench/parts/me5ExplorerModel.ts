@@ -9,9 +9,8 @@ import { MenuId } from 'code/platform/actions/registry';
 import { Me5Group, Me5Item } from 'code/editor/workbench/parts/files/me5Data';
 import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
 import { IContextMenuService, ContextMenuService } from 'code/editor/workbench/services/contextmenuService';
-import { IEditableItemData, IParentItem } from 'code/platform/files/me5Data';
+import { IEditableItem } from 'code/platform/files/me5Data';
 import { ContextMenuEvent } from 'code/platform/events/contextMenuEvent';
-import { strToBytes } from '../../../base/common/convert';
 
 export interface IDataSource {
     getId(element: any): string;
@@ -30,11 +29,11 @@ export interface IDataController {
 }
 
 export class Me5DataSource implements IDataSource {
-    public getId(element: IEditableItemData): string {
+    public getId(element: IEditableItem): string {
         return element.getId();
     }
 
-    public getChildren(element: IParentItem): IEditableItemData[] {
+    public getChildren(element: IEditableItem): IEditableItem[] {
         if (!element || !element.getChildren) {
             return [];
         }
@@ -42,7 +41,7 @@ export class Me5DataSource implements IDataSource {
         return element.getChildren();
     }
 
-    public hasChildren(element: IParentItem): boolean {
+    public hasChildren(element: IEditableItem): boolean {
         if (!element || !element.hasChildren) {
             return false;
         }
@@ -67,7 +66,7 @@ export class Me5DataRenderer implements IDataRenderer {
         return { label, container };
     }
 
-    public render(tree: Tree, element: IEditableItemData, templateData: IMe5TemplateData) {
+    public render(tree: Tree, element: IEditableItem, templateData: IMe5TemplateData) {
         if (element.isEditable()) {
             templateData.label.element.style.display = 'none';
             this.renderInput(tree, templateData.container, element);
@@ -77,7 +76,7 @@ export class Me5DataRenderer implements IDataRenderer {
         }
     }
 
-    private renderInput(tree: Tree, container: HTMLElement, element: IEditableItemData) {
+    private renderInput(tree: Tree, container: HTMLElement, element: IEditableItem) {
         const label = new Label(container);
         const input = new Input(label.element);
         

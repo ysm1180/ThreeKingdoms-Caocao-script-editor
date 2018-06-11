@@ -1,19 +1,6 @@
 import { Disposable, IDisposable, toDisposable, once } from 'code/base/common/lifecycle';
-import { IEditableItemData } from 'code/platform/files/me5Data';
 
-export interface IParentItem {
-    getId(): string;
-
-    getChildren(filter?: (element: any) => boolean): any[];
-
-    hasChildren(): boolean;
-
-    appendChild?(child: any): IDisposable;    
-
-    insertChild?(child: any, afterElement?: any): IDisposable;
-}
-
-export interface IEditableItemData extends IDisposable  {
+export interface IEditableItem extends IDisposable  {
     getId(): string;
 
     getName?(): string;
@@ -24,9 +11,17 @@ export interface IEditableItemData extends IDisposable  {
 
     isEditable?(): boolean;
 
-    getParent?(): IParentItem;
+    getParent?(): IEditableItem;
 
     index?(): number;
+
+    getChildren(filter?: (element: any) => boolean): IEditableItem[];
+
+    hasChildren(): boolean;
+
+    appendChild?(child: any): IDisposable;    
+
+    insertChild?(child: any, afterElement?: any): IDisposable;
 }
 
 export interface IMe5ItemData {
@@ -34,18 +29,20 @@ export interface IMe5ItemData {
     music: any;
 }
 
-export class BaseMe5Item extends Disposable implements IEditableItemData {
+export abstract class BaseMe5Item extends Disposable implements IEditableItem {
     private editable: boolean;
-    private _parent: IParentItem;
+    private _parent: IEditableItem;
     private _name: string;
+    private _isGroup: boolean;
 
-    constructor() {
+    constructor(group: boolean) {
         super();
 
         this.editable = false;
+        this._isGroup = group;
     }
 
-    public build(parent: IParentItem, itemAfter: any = null) {
+    public build(parent: IEditableItem, itemAfter: any = null) {
         this._parent = parent;
 
         if (!itemAfter) {
@@ -75,9 +72,14 @@ export class BaseMe5Item extends Disposable implements IEditableItemData {
         this.editable = value;
     }
 
-    public getParent(): IParentItem {
+    public getParent(): IEditableItem {
         return this._parent;
     }
 
-    
+    public get isGroup() {
+        return this._isGroup;
+    }
+
+    public abstract getChildren(filter?: (element: any) => boolean) : IEditableItem[];
+    public abstract hasChildren(): boolean;
 }

@@ -4,7 +4,7 @@ import { IEditorInput, IEditorClosedEvent } from 'code/platform/editor/editor';
 import { Part } from 'code/editor/workbench/browser/part';
 import { Editors } from 'code/editor/workbench/browser/parts/editor/editors';
 import { BaseEditor } from 'code/editor/workbench/browser/parts/editor/baseEditor';
-import { ImageViewEditor } from 'code/editor/workbench/browser/parts/editor/imageViewEditor';
+import { Me5ItemViewEditor } from 'code/editor/workbench/browser/parts/editor/me5ItemViewEditor';
 import { decorator } from 'code/platform/instantiation/instantiation';
 
 export const IEditorService = decorator<EditorPart>('editorPart');
@@ -47,7 +47,7 @@ export class EditorPart extends Part {
     public openEditor(editor: IEditorInput) {
         function describe(dataType: string): string {
             if (dataType === 'me5') {
-                return ImageViewEditor.ID;
+                return Me5ItemViewEditor.ID;
             }
 
             return 'editor.baseeditor';
@@ -61,7 +61,7 @@ export class EditorPart extends Part {
 
         const editorId = describe(editor.getType());
         if (this.currentEditor && this.currentEditor.getId() === editorId) {
-
+            
         } else {
             if (!this.createViewEditor(editorId, editor.getType())) {
                 return;
@@ -79,9 +79,13 @@ export class EditorPart extends Part {
     }
 
     private createViewEditor(id: string, type: string): BaseEditor {
+        if (this.currentEditor) {
+            this.currentEditor.dispose();
+        }
+
         let editor: BaseEditor = null;
         if (type === 'me5') {
-            editor = new ImageViewEditor(id);
+            editor = new Me5ItemViewEditor(id);
         } else if (type === 'lua') {
 
         }
