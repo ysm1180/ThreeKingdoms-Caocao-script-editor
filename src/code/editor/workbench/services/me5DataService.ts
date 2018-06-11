@@ -27,6 +27,43 @@ export class Me5DataService {
             return;
         }
 
+        const parent = element.getParent() as Me5Group;
+
+        this.dialogService.openFile({
+            title: '파일을 선택해주세요.',
+            extensions: [
+                {name: 'ME5 아이템', extensions: 'png;jpg;bmp;mp3;wav'},
+                { name: '이미지', extensions: 'png;jpg;bmp' },
+                { name: '음악', extensions: 'mp3;wav' },
+            ],
+        }).then((req) => {
+            if (!req.files) {
+                return [];
+            }
+
+            const promises = [];
+            for (let path of req.files) {
+                const file = new BinaryFile(path);
+                const promise = file.open();
+                promises.push(promise);
+            }
+
+            return Promise.all(promises);
+        }).then((values: Buffer[]) => {
+            for (const value of values) {
+                if (value) {
+                    const data = new Uint8Array(value.slice(0));
+                    element.setData(data);
+                }
+            }
+
+            lastTree.refresh(element).then(() => {
+                return lastTree.expand(parent);
+            }).then(() => {
+                const controller: Me5DataController = this.instantiationService.create(Me5DataController);
+                controller.onClick(lastTree, element);
+            });
+        });
     }
 
     public doInsertItem(isSelectionAfter?: boolean) {
@@ -48,7 +85,7 @@ export class Me5DataService {
             title: '추가할 파일을 선택해주세요.',
             multi: true,
             extensions: [
-                {name: '추가 가능한 파일', extensions: 'png;jpg;bmp;mp3;wav'},
+                {name: 'ME5 아이템', extensions: 'png;jpg;bmp;mp3;wav'},
                 { name: '이미지', extensions: 'png;jpg;bmp' },
                 { name: '음악', extensions: 'mp3;wav' },
             ],

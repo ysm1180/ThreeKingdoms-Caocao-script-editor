@@ -37,7 +37,8 @@ KeybindingsRegistry.registerKeybindingRule({
     id: MODIFICATION_ID,
     primary: KeyMode.Ctrl | KeyCode.KEY_E,
     handler: (accessor: ServicesAccessor) => {
-
+        const me5DataService = accessor.get(IMe5DataService);
+        me5DataService.doChangeItem();
     },
     when: ContextKeyExpr.and(ContextKeyExpr.not(ContextKeyExpr.or(explorerGroupContext, explorerRootContext)), explorerEditContext.not()),
 });
