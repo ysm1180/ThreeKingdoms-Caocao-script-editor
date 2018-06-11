@@ -11,6 +11,8 @@ import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/
 import { IContextMenuService, ContextMenuService } from 'code/editor/workbench/services/contextmenuService';
 import { IEditableItem } from 'code/platform/files/me5Data';
 import { ContextMenuEvent } from 'code/platform/events/contextMenuEvent';
+import { RawContextKey } from 'code/platform/contexts/contextKey';
+import { ContextKey, IContextKeyService, ContextKeyService } from 'code/platform/contexts/contextKeyService';
 
 export interface IDataSource {
     getId(element: any): string;
@@ -27,6 +29,9 @@ export interface IDataController {
     onClick(tree: Tree, element: any);
     onContextMenu(tree: Tree, element: any, event: ContextMenuEvent);
 }
+
+export const explorerEditableItemId = 'explorerRename';
+export const explorerEditContext = new RawContextKey<boolean>(explorerEditableItemId, false);
 
 export class Me5DataSource implements IDataSource {
     public getId(element: IEditableItem): string {
@@ -56,9 +61,12 @@ export interface IMe5TemplateData {
 }
 
 export class Me5DataRenderer implements IDataRenderer {
-    constructor(
-    ) {
+    private editContext: ContextKey<boolean>;
 
+    constructor(
+        @IContextKeyService contextKeyService: ContextKeyService,
+    ) {
+        this.editContext = explorerEditContext.bindTo(contextKeyService);
     }
 
     public renderTemplate(container: HTMLElement): IMe5TemplateData {
@@ -70,6 +78,7 @@ export class Me5DataRenderer implements IDataRenderer {
         if (element.isEditable()) {
             templateData.label.element.style.display = 'none';
             this.renderInput(tree, templateData.container, element);
+            this.editContext.set(true);            
         } else {
             templateData.label.element.style.display = 'flex';
             templateData.label.setValue(element.getName());
@@ -80,7 +89,6 @@ export class Me5DataRenderer implements IDataRenderer {
         const label = new Label(container);
         const input = new Input(label.element);
         
-
         input.value = element.getName();
         input.focus();
 
@@ -94,7 +102,9 @@ export class Me5DataRenderer implements IDataRenderer {
 
             dispose(toDispose);
             container.removeChild(label.element);
-
+            
+            this.editContext.set(false);
+            
             tree.refresh(element, true);
         };
 

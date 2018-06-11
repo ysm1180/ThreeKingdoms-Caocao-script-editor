@@ -1,11 +1,13 @@
 import { MenuId, MenuRegistry, IMenuItem } from 'code/platform/actions/registry';
 import { CommandsRegistry } from 'code/platform/commands/commands';
+import { ContextKeyExpr } from 'code/platform/contexts/contextKey';
 
 type MenuItemGroup = [string, IMenuItem[]];
 
 export class MenuItemInfo {
     private _label: string;
     private _command: string;
+    private _when: ContextKeyExpr;
 
     constructor(menu: IMenuItem) {
         this._label = menu.label;
@@ -19,6 +21,7 @@ export class MenuItemInfo {
         }
 
         this._command = menu.command.id;
+        this._when = menu.when;
     }
 
     public get label(): string {
@@ -27,6 +30,10 @@ export class MenuItemInfo {
 
     public get command() {
         return this._command;
+    }
+
+    public get context() {
+        return this._when;
     }
 }
 
@@ -70,12 +77,8 @@ export class Menu {
 
             const oldLength = result.length;
             for (const item of items) {
-                const when = item.when ? item.when.get() : true;
-
-                if (when) {
-                    const menuItemInfo = new MenuItemInfo(item);
-                    result.push(menuItemInfo);
-                }
+                const menuItemInfo = new MenuItemInfo(item);
+                result.push(menuItemInfo);
             }
 
             if (oldLength !== result.length) {

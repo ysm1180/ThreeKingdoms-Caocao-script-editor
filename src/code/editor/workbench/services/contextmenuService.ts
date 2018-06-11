@@ -4,13 +4,13 @@ import { decorator } from 'code/platform/instantiation/instantiation';
 import { MenuItemInfo, Separator } from 'code/platform/actions/menu';
 import { ICommandService, CommandService } from 'code/platform/commands/commandService';
 import { IKeybindingService, KeybindingService } from 'code/platform/keybindings/keybindingService';
-import { KeyCodeUtils } from '../../../base/common/keyCodes';
-
+import { IContextKeyService, ContextKeyService } from 'code/platform/contexts/contextKeyService';
 
 export const IContextMenuService = decorator<ContextMenuService>('contextmenuService');
 
 export class ContextMenuService {
     constructor(
+        @IContextKeyService private contextKeyService: ContextKeyService,
         @ICommandService private commandService: CommandService,
         @IKeybindingService private keybindingService: KeybindingService,
     ) {
@@ -28,12 +28,22 @@ export class ContextMenuService {
     }
 
     private createMenu(entries: MenuItemInfo[]) {
+        let isDuplicatedSeparator = true;
+        const menuItems = [];
         const menu = new remote.Menu();
 
-        entries.forEach(entry => {
+        entries.forEach((entry, index) => {
             if (entry instanceof Separator) {
-                menu.append(new remote.MenuItem({type: 'separator'}));
+                if (!isDuplicatedSeparator){
+                    menuItems.push(new remote.MenuItem({type: 'separator'}));
+                }
+                isDuplicatedSeparator = true;
+
             } else {
+                if (entry.context && !entry.context.evaluate(this.contextKeyService.getContext())) {
+                    return;
+                }
+
                 const options: Electron.MenuItemConstructorOptions  = {
                     label: entry.label,
                     click: (item, window, event) => {
@@ -43,12 +53,22 @@ export class ContextMenuService {
 
                 const keybinding = this.keybindingService.lookupKeybinding(entry.command);
                 if (keybinding) {
-                    options.accelerator = KeyCodeUtils.toString(keybinding);
+                    options.accelerator = keybinding.electronShortKey();
                 }
 
                 const menuItem = new remote.MenuItem(options);
-                menu.append(menuItem);
+                menuItems.push(menuItem);
+
+                isDuplicatedSeparator = false;
             }
+        });
+
+        if (isDuplicatedSeparator) {
+            menuItems.pop();
+        }
+
+        menuItems.forEach(menuItem => {
+            menu.append(menuItem);
         });
 
         return menu;

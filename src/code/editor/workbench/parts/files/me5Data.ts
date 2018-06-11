@@ -2,14 +2,9 @@ import { isNull } from 'code/base/common/types';
 import { LinkedList } from 'code/base/common/linkedList';
 import { IDisposable, toDisposable, once } from 'code/base/common/lifecycle';
 import { IEditorInput } from 'code/platform/editor/editor';
-import { ContextKey } from 'code/platform/contexts/contextKey';
 import { BaseMe5Item, IEditableItem } from 'code/platform/files/me5Data';
 import { ImageData } from 'code/editor/workbench/common/imageData';
 import { AudioData } from 'code/editor/workbench/common/audioData';
-
-export const ExplorerItemContext = new ContextKey<boolean>(false);
-export const ExplorerGroupContext = new ContextKey<boolean>(false);
-export const ExplorerRootOrGroupContext = new ContextKey<boolean>(false);
 
 export class Me5Stat extends BaseMe5Item {
     private children = new LinkedList<IEditableItem>();
