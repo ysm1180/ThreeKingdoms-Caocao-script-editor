@@ -4,7 +4,7 @@ import { ServiceStorage } from 'code/platform/instantiation/serviceStorage';
 import { ITreeService, TreeService } from 'code/platform/tree/treeService';
 import { ICommandService, CommandService } from 'code/platform/commands/commandService';
 import { IKeybindingService, KeybindingService } from 'code/platform/keybindings/keybindingService';
-import { Sidebar } from 'code/editor/workbench/browser/parts/sidebar';
+import { SidebarPart } from 'code/editor/workbench/browser/parts/sidebar';
 import { WorkbenchLayout } from 'code/editor/workbench/browser/layout';
 import { EditorPart, IEditorService } from 'code/editor/workbench/browser/parts/editor/editorPart';
 import { TitlePart, ITitlePartService } from 'code/editor/workbench/browser/parts/titlePart';
@@ -13,6 +13,7 @@ import { IMe5DataService, Me5DataService } from 'code/editor/workbench/services/
 import { WindowClientService } from 'code/platform/windows/windowsIpc';
 import { IDialogService, DialogService } from '../services/electron-browser/dialogService';
 import { IWindowService } from 'code/electron-main/windows';
+import { StatusbarPart } from 'code/editor/workbench/browser/parts/statusPart';
 
 
 export class Workbench {
@@ -23,8 +24,9 @@ export class Workbench {
     private workbenchLayout: WorkbenchLayout;
 
     private title: TitlePart;
-    private sidebar: Sidebar;
+    private sidebar: SidebarPart;
     private editor: EditorPart;
+    private statusbar: StatusbarPart;
 
     private serviceStorage: ServiceStorage;
 
@@ -61,12 +63,14 @@ export class Workbench {
 
         this.serviceStorage.set(IMe5DataService, this.instantiationService.create(Me5DataService));
 
-        this.sidebar = this.instantiationService.create(Sidebar);
+        this.sidebar = this.instantiationService.create(SidebarPart);
         this.editor = this.instantiationService.create(EditorPart);
         this.serviceStorage.set(IEditorService, this.editor);
 
         this.title = this.instantiationService.create(TitlePart);
         this.serviceStorage.set(ITitlePartService, this.title);
+
+        this.statusbar = this.instantiationService.create(StatusbarPart);
     }
 
     private createWorkbench() {
@@ -80,6 +84,7 @@ export class Workbench {
         this.createTitle();
         this.createSidebar();
         this.createEditor();
+        this.createStatusbar();
 
         this.workbenchContainer.build(this.container);
     }
@@ -107,6 +112,14 @@ export class Workbench {
         this.editor.create(editorContainer);
     }
 
+    private createStatusbar(): void {
+        const statusbarContainer = $(this.workbench).div({
+            class: 'statusbar'
+        });
+
+        this.statusbar.create(statusbarContainer);
+    }
+
     private createLayout(): void {
         this.workbenchLayout = new WorkbenchLayout(
             $(this.container),
@@ -115,6 +128,7 @@ export class Workbench {
                 title: this.title,
                 sidebar: this.sidebar,
                 editor: this.editor,
+                statusbar: this.statusbar,
             });
     }
 

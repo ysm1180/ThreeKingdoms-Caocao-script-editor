@@ -21,7 +21,7 @@ export class Part {
         this.content = this.createContent(parent);
     }
 
-    private createContent(parent: DomBuilder) {
+    protected createContent(parent: DomBuilder) {
         return $(parent).div({
             class: 'content'
         });
