@@ -1,5 +1,7 @@
-import { isHtmlElement, createStyleSheetTag } from 'code/base/browser/dom';
+import { IDisposable, dispose } from 'code/base/common/lifecycle';
 import { isString, isObject, isNullOrUndefined } from 'code/base/common/types';
+import { isHtmlElement, createStyleSheetTag, addDisposableEventListener } from 'code/base/browser/dom';
+import { isArray } from 'util';
 
 export interface QuickDomBuilder {
     (): DomBuilder;
@@ -24,7 +26,7 @@ export class DomBuilder {
     private currentElement: HTMLElement;
     private createdElements: HTMLElement[];
 
-    private listeners: { [type: string]: any[] };
+    private toUnbind: { [type: string]: IDisposable[] };
 
     constructor(element?: HTMLElement) {
         this.container = element;
@@ -32,33 +34,33 @@ export class DomBuilder {
         this.currentElement = element;
         this.createdElements = [];
 
-        this.listeners = {};
+        this.toUnbind = {};
     }
 
-    public on(type: string, listener: (e) => void): DomBuilder {
-        this.currentElement.addEventListener(type, listener);
-        if (!this.listeners[type]) {
-            this.listeners[type] = [];
+    public on(type: string, fn: (e) => void): DomBuilder {
+        const unbind: IDisposable = addDisposableEventListener(this.currentElement, type, (e) => {
+            fn(e);
+        });
+
+        if (!this.toUnbind[type]) {
+            this.toUnbind[type] = [];
         }
-        this.listeners[type].push(listener);
+        this.toUnbind[type].push(unbind);
+
         return this;
     }
 
-    public once(type: string, listener: (e) => void): DomBuilder {
-        const fn = (e) => {
-            listener(e);
-            this.currentElement.removeEventListener(type, fn);
-        };
-        this.currentElement.addEventListener(type, fn);
+    public once(type: string, fn: (e) => void): DomBuilder {
+        const unbind: IDisposable = addDisposableEventListener(this.currentElement, type, (e) => {
+            fn(e);
+            unbind.dispose();
+        });
 
         return this;
     }
 
     public off(type: string): DomBuilder {
-        this.listeners[type].forEach((listener) => {
-            this.currentElement.removeEventListener(type, listener);
-        });
-        this.listeners[type] = [];
+        this.toUnbind[type] = dispose(this.toUnbind[type]);
         return this;
     }
 
@@ -342,6 +344,29 @@ export class DomBuilder {
         }
 
         return value;
+    }
+
+    public destroy(): void {
+        if (this.currentElement) {
+            if (this.currentElement.parentNode) {
+                this.currentElement.parentNode.removeChild(this.currentElement);
+            }
+
+            if (this.container === null) {
+                this.createdElements = [];
+            }
+        }
+
+        for (const type in this.toUnbind) {
+            if (this.toUnbind.hasOwnProperty(type) && isArray(this.toUnbind[type])) {
+                this.toUnbind[type] = dispose(this.toUnbind[type]);
+            }
+        }
+
+        this.currentElement = null;
+        this.container = null;
+        this.createdElements = null;
+        this.toUnbind = null;
     }
 }
 
