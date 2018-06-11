@@ -1,7 +1,6 @@
 import { IDisposable, dispose } from 'code/base/common/lifecycle';
-import { isString, isObject, isNullOrUndefined } from 'code/base/common/types';
+import { isString, isObject, isNullOrUndefined, isArray } from 'code/base/common/types';
 import { isHtmlElement, createStyleSheetTag, addDisposableEventListener } from 'code/base/browser/dom';
-import { isArray } from 'util';
 
 export interface QuickDomBuilder {
     (): DomBuilder;
