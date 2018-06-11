@@ -131,7 +131,6 @@ export class Me5ExplorerView extends Disposable implements IView {
                     throw new Error();
                 }
 
-                console.log(data);
                 const stat = new Me5Stat(filePath);
                 for (let i = 0, groupCount = me5.getGroupCount(); i < groupCount; i++) {
                     const group = new Me5Group();

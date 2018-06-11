@@ -4,18 +4,20 @@ import { BaseEditor } from 'code/editor/workbench/browser/parts/editor/baseEdito
 import { ImageData } from 'code/editor/workbench/common/imageData';
 import { AudioData } from 'code/editor/workbench/common/audioData';
 import { Me5ItemType } from 'code/editor/workbench/parts/files/me5Data';
-import { Audio } from 'code/base/browser/ui/audio';
+import { AudioPlayer } from 'code/base/browser/ui/audio';
 
 export class Me5ItemViewEditor extends BaseEditor {
     static ID = 'editor.itemviewer';
 
     private viewer: DomBuilder;
     private audioContainer: DomBuilder;
-    private audio: Audio;
+    private audio: AudioPlayer;
     private imageContainer: DomBuilder;
     private image: DomBuilder;
 
-    constructor(id: string) {
+    constructor(
+        id: string
+    ) {
         super(id);
 
         this.audio = null;
@@ -48,25 +50,23 @@ export class Me5ItemViewEditor extends BaseEditor {
             return;
         }
 
-        input.resolve().then((data : { type: Me5ItemType, image: ImageData, music: AudioData }) => {
+        input.resolve().then((data : { type: Me5ItemType, image: ImageData, audio: AudioData }) => {
             if (this.audio) {
                 this.audio.dispose();
                 this.audio = null;
             }
 
             if (data.type === Me5ItemType.Image) {
-                
-
                 const base64 = data.image.encodeToBase64();
                 this.image.attr('src', `data:image/${data.image.type};base64,${base64}`);
 
                 this.imageContainer.style('display', '');
                 this.audioContainer.style('display', 'none');
-            } else if (data.type === Me5ItemType.Music) {
-                this.audio = new Audio(this.audioContainer.getHTMLElement());
+            } else if (data.type === Me5ItemType.Audio) {
+                this.audio = new AudioPlayer(this.audioContainer.getHTMLElement());
 
-                const base64 = data.music.encodeToBase64();
-                this.audio.src =  `data:audio/${data.music.type};base64,${base64}`;
+                const base64 = data.audio.encodeToBase64();
+                this.audio.src =  `data:audio/${data.audio.type};base64,${base64}`;
                 
                 this.audioContainer.style('display', '');
                 this.imageContainer.style('display', 'none');

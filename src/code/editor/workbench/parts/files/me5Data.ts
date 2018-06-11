@@ -97,7 +97,7 @@ export class Me5Group extends BaseMe5Item {
 
 export const enum Me5ItemType {
     Image,
-    Music,
+    Audio,
 }
 
 export class Me5Item extends BaseMe5Item implements IEditorInput {
@@ -107,7 +107,7 @@ export class Me5Item extends BaseMe5Item implements IEditorInput {
     private type: Me5ItemType;
 
     private image: ImageData;
-    private music: AudioData;
+    private audio: AudioData;
 
     constructor() {
         super(false);
@@ -123,7 +123,7 @@ export class Me5Item extends BaseMe5Item implements IEditorInput {
         return Promise.resolve({
             type: this.type,
             image: this.image,
-            music: this.music,
+            audio: this.audio,
         });
     }
 
@@ -149,12 +149,12 @@ export class Me5Item extends BaseMe5Item implements IEditorInput {
             this.image = new ImageData();
             this.image.build(bytes);
 
-            this.music = null;
+            this.audio = null;
         } else if (!isNull(AudioData.getMusicType(bytes))) {
-            this.type = Me5ItemType.Music;
+            this.type = Me5ItemType.Audio;
 
-            this.music = new AudioData();
-            this.music.build(bytes);
+            this.audio = new AudioData();
+            this.audio.build(bytes);
 
             this.image = null;
         }
@@ -164,7 +164,7 @@ export class Me5Item extends BaseMe5Item implements IEditorInput {
         if (this.image) {
             return this.image.data;
         } else {
-            return null;
+            return this.audio.data;
         }
     }
 

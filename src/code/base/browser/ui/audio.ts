@@ -3,7 +3,7 @@ import { Disposable, IDisposable, dispose } from 'code/base/common/lifecycle';
 import { addDisposableEventListener, removeClass, addClass } from 'code/base/browser/dom';
 import { StandardMouseEvent } from '../mouseEvent';
 
-export class Audio extends Disposable {
+export class AudioPlayer extends Disposable {
     private parent: HTMLElement;
     private container: HTMLElement;
     private playButton: HTMLElement;
@@ -147,7 +147,6 @@ export class Audio extends Disposable {
             dispose(unbind);
         }));
 
-        console.log(mouseEvent.posx);
         this._audio.currentTime = this._audio.duration * ((mouseEvent.posx - this.timeline.getBoundingClientRect().left) / this.timeline.offsetWidth);
     }
 
