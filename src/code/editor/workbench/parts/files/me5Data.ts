@@ -96,6 +96,7 @@ export class Me5Group extends BaseMe5Item {
 
 
 export const enum Me5ItemType {
+    Unknown,
     Image,
     Audio,
 }

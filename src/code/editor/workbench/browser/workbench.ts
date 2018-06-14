@@ -13,7 +13,7 @@ import { IMe5DataService, Me5DataService } from 'code/editor/workbench/services/
 import { WindowClientService } from 'code/platform/windows/windowsIpc';
 import { IDialogService, DialogService } from '../services/electron-browser/dialogService';
 import { IWindowService } from 'code/electron-main/windows';
-import { StatusbarPart } from 'code/editor/workbench/browser/parts/statusPart';
+import { StatusbarPart, IStatusbarService } from 'code/editor/workbench/browser/parts/statusbarPart';
 import { IContextKeyService, ContextKeyService } from 'code/platform/contexts/contextKeyService';
 
 export class Workbench {
@@ -73,6 +73,7 @@ export class Workbench {
         this.serviceStorage.set(ITitlePartService, this.title);
 
         this.statusbar = this.instantiationService.create(StatusbarPart);
+        this.serviceStorage.set(IStatusbarService, this.statusbar);
     }
 
     private createWorkbench() {
@@ -139,7 +140,9 @@ export class Workbench {
     }
 
     public registerListeners() {
-
+        this.editor.onEditorInputChanged.add(() => {
+            this.statusbar.update();
+        });
     }
 
     public dispose() {

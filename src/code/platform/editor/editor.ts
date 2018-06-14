@@ -1,4 +1,4 @@
-export interface IEditorClosedEvent {
+export interface IEditorEvent {
     editor: IEditorInput;
 }
 

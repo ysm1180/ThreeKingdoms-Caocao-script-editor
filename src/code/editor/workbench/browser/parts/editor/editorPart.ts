@@ -1,11 +1,12 @@
 import { DomBuilder, $ } from 'code/base/browser/domBuilder';
 import { Event } from 'code/base/common/event';
-import { IEditorInput, IEditorClosedEvent } from 'code/platform/editor/editor';
+import { IEditorInput, IEditorEvent } from 'code/platform/editor/editor';
 import { Part } from 'code/editor/workbench/browser/part';
 import { Editors } from 'code/editor/workbench/browser/parts/editor/editors';
 import { BaseEditor } from 'code/editor/workbench/browser/parts/editor/baseEditor';
 import { Me5ItemViewEditor } from 'code/editor/workbench/browser/parts/editor/me5ItemViewEditor';
 import { decorator } from 'code/platform/instantiation/instantiation';
+import { IInstantiationService, InstantiationService } from '../../../../../platform/instantiation/instantiationService';
 
 export const IEditorService = decorator<EditorPart>('editorPart');
 
@@ -16,9 +17,11 @@ export class EditorPart extends Part {
     private currentEditor: BaseEditor;
 
     public onEditorChanged = new Event<void>();
-    public onEditorClosed = new Event<IEditorClosedEvent>();
+    public onEditorInputChanged = new Event<IEditorEvent>();
+    public onEditorClosed = new Event<IEditorEvent>();
 
     constructor(
+        @IInstantiationService private instantiationService: InstantiationService,
     ) {
         super();
 
@@ -61,7 +64,7 @@ export class EditorPart extends Part {
 
         const editorId = describe(editor.getType());
         if (this.currentEditor && this.currentEditor.getId() === editorId) {
-            
+
         } else {
             if (!this.createViewEditor(editorId, editor.getType())) {
                 return;
@@ -75,7 +78,12 @@ export class EditorPart extends Part {
     }
 
     public setInput(input: IEditorInput) {
-        this.currentEditor.setInput(input);
+        this.currentEditor.setInput(input).then(() => {
+            const eventData : IEditorEvent = {
+                editor: input,
+            };
+            this.onEditorInputChanged.fire(eventData);    
+        });
     }
 
     private createViewEditor(id: string, type: string): BaseEditor {
@@ -85,7 +93,7 @@ export class EditorPart extends Part {
 
         let editor: BaseEditor = null;
         if (type === 'me5') {
-            editor = new Me5ItemViewEditor(id);
+            editor = this.instantiationService.create(Me5ItemViewEditor, id);
         } else if (type === 'lua') {
 
         }
@@ -106,7 +114,7 @@ export class EditorPart extends Part {
             this.closeInactiveEditor(input);
         }
 
-        const closeEventData: IEditorClosedEvent = {
+        const closeEventData: IEditorEvent = {
             editor: input
         };
         this.onEditorClosed.fire(closeEventData);

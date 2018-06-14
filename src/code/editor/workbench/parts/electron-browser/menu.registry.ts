@@ -3,7 +3,7 @@ import { ServicesAccessor } from 'code/platform/instantiation/instantiation';
 import { IMe5DataService } from 'code/editor/workbench/services/me5DataService';
 import { KeybindingsRegistry } from 'code/platform/keybindings/keybindingsRegistry';
 import { KeyCode, KeyMode } from 'code/base/common/keyCodes';
-import { explorerRootContext, explorerGroupContext } from 'code/editor/workbench/browser/parts/me5Explorer';
+import { explorerRootContext, explorerGroupContext, explorerItemContext } from 'code/editor/workbench/browser/parts/me5Explorer';
 import { ContextKeyExpr } from 'code/platform/contexts/contextKey';
 import { explorerEditContext } from 'code/editor/workbench/parts/me5ExplorerModel';
 
@@ -40,7 +40,7 @@ KeybindingsRegistry.registerKeybindingRule({
         const me5DataService = accessor.get(IMe5DataService);
         me5DataService.doChangeItem();
     },
-    when: ContextKeyExpr.and(ContextKeyExpr.not(ContextKeyExpr.or(explorerGroupContext, explorerRootContext)), explorerEditContext.not()),
+    when: ContextKeyExpr.and(explorerItemContext, explorerEditContext.not()),
 });
 
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
@@ -54,7 +54,7 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
         },
     },
     order: 1,
-    when: ContextKeyExpr.and(ContextKeyExpr.or(explorerGroupContext, explorerRootContext), explorerEditContext.not()),
+    when: ContextKeyExpr.and(ContextKeyExpr.not(explorerItemContext), explorerEditContext.not()),
 });
 
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
@@ -78,7 +78,7 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
         id: MODIFICATION_ID,
     },
     order: 1,
-    when: ContextKeyExpr.and(ContextKeyExpr.not(ContextKeyExpr.or(explorerGroupContext, explorerRootContext)), explorerEditContext.not()),
+    when: ContextKeyExpr.and(explorerItemContext, explorerEditContext.not()),
 });
 
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {

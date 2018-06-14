@@ -264,6 +264,20 @@ body {
     color: #333333;
 }
 
+.statusbar > .statusbar-item {
+    height: 22px;
+    display: inline-block;
+    cursor: default;
+}
+
+.statusbar > .statusbar-item.left {
+    float: left;
+}
+
+.statusbar > .statusbar-item.right {
+    float: right;
+}
+
 .audio-player {
     width: 100%;
     padding: 1em;

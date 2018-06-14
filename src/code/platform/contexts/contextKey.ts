@@ -17,6 +17,10 @@ export abstract class ContextKeyExpr {
         return new ContextKeyOrExpr(...expr);
     }
 
+    public static equal(key: string, value: any) {
+        return new ContextKeyEqualExpr(key, value);
+    }
+
     public abstract evaluate(context: Context): boolean;
 }
 
@@ -27,7 +31,7 @@ export class ContextKeyHasExpr implements ContextKeyExpr {
     }
 
     public evaluate(context: Context): boolean {
-        return context.getValue<boolean>(this.key);
+        return !!context.getValue(this.key);
     }
 }
 
@@ -47,7 +51,7 @@ export class ContextKeyAndExpr implements ContextKeyExpr {
     private expressions: ContextKeyExpr[];
 
     constructor(
-        ...expr: ContextKeyExpr[],
+        ...expr: ContextKeyExpr[]
     ) {
         this.expressions = expr;
     }
@@ -68,7 +72,7 @@ export class ContextKeyOrExpr implements ContextKeyExpr {
     private expressions: ContextKeyExpr[];
 
     constructor(
-        ...expr: ContextKeyExpr[],
+        ...expr: ContextKeyExpr[]
     ) {
         this.expressions = expr;
     }
@@ -84,6 +88,18 @@ export class ContextKeyOrExpr implements ContextKeyExpr {
     }
 }
 
+export class ContextKeyEqualExpr implements ContextKeyExpr {
+    constructor(
+        private key: string,
+        private value: any,
+    ) {
+        
+    }
+
+    public evaluate(context: Context): boolean {
+        return context.getValue(this.key) === this.value;
+    }
+}
 
 export class RawContextKey<T> extends ContextKeyHasExpr {
     private defaultValue: T;

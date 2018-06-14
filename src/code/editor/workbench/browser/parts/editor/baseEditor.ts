@@ -2,10 +2,11 @@ import { DomBuilder } from 'code/base/browser/domBuilder';
 import { IEditorInput } from 'code/platform/editor/editor';
 import { Disposable } from 'code/base/common/lifecycle';
 
-export class BaseEditor extends Disposable {
+export abstract class BaseEditor extends Disposable {
     private parent: DomBuilder;
 
     private id: string;
+
 
     constructor(id: string) {
         super();
@@ -26,9 +27,7 @@ export class BaseEditor extends Disposable {
         return this.parent;
     }
 
-    public setInput(input: IEditorInput) {
-        // do-nothing
-    }
+    public abstract setInput(input: IEditorInput): Promise<void>;
 
     public dispose() {
         this.parent = null;

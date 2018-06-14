@@ -3,7 +3,7 @@ import { DomBuilder, Size } from 'code/base/browser/domBuilder';
 import { Sash, ISashLayoutProvider } from 'code/base/browser/ui/sash';
 import { EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
 import { TitlePart } from 'code/editor/workbench/browser/parts/titlePart';
-import { StatusbarPart } from 'code/editor/workbench/browser/parts/statusPart';
+import { StatusbarPart } from 'code/editor/workbench/browser/parts/statusbarPart';
 
 const TITLE_HEIGHT = 35;
 const SIDEBAR_HEIGHT = 22;

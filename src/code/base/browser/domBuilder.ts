@@ -82,6 +82,18 @@ export class DomBuilder {
         return this;
     }
 
+    public append(child: HTMLElement) : DomBuilder;
+    public append(child: DomBuilder) : DomBuilder;
+    public append(child: any): DomBuilder {
+        if (!isNullOrUndefined(child) && !isHtmlElement(child)) {
+            child = (<DomBuilder>child).getHTMLElement();
+        }
+
+        this.getHTMLElement().appendChild(child);
+
+        return this;
+    }
+
     public appendTo(container: DomBuilder): DomBuilder;
     public appendTo(container: HTMLElement): DomBuilder;
     public appendTo(container: any): DomBuilder {

@@ -19,7 +19,11 @@ export class InstantiationService  {
     }
 
     public create(param: any, ...rest: any[]): any {
-        return this._create(new ClassDescriptor(param), rest);
+        if (param instanceof ClassDescriptor) {
+            return this._create(param, rest);
+        } else {
+            return this._create(new ClassDescriptor(param), rest);
+        }
     }
 
     private _create<T>(descriptor: ClassDescriptor<T>, args: any[]): T {
