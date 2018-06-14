@@ -1,13 +1,16 @@
-import { IDisposable, toDisposable, once } from 'code/base/common/lifecycle';
+import { isNull } from 'code/base/common/types';
 import { LinkedList } from 'code/base/common/linkedList';
+import { IDisposable, toDisposable, once } from 'code/base/common/lifecycle';
 import { IEditorInput } from 'code/platform/editor/editor';
-import { BaseMe5Item, IParentItem } from 'code/platform/files/me5Data';
-import { Image } from 'code/editor/browser/image';
+import { BaseMe5Item, IEditableItem } from 'code/platform/files/me5Data';
+import { ImageData } from 'code/editor/workbench/common/imageData';
+import { AudioData } from 'code/editor/workbench/common/audioData';
 
-export class Me5Stat implements IParentItem {
-    private children = new LinkedList<Me5Group>();
+export class Me5Stat extends BaseMe5Item {
+    private children = new LinkedList<IEditableItem>();
 
     constructor(private url: string) {
+        super(true);
     }
 
     public getId(): string {
@@ -19,12 +22,13 @@ export class Me5Stat implements IParentItem {
         return toDisposable(once(remove));
     }
 
-    public getChildren(filter?: (group: Me5Group) => boolean): Me5Group[] {
+    public getChildren(filter?: (group: IEditableItem) => boolean): IEditableItem[] {
         const result = this.children.toArray();
 
         if (!filter) {
             filter = () => true;
         }
+
         return result.filter(filter);
     }
 
@@ -38,21 +42,21 @@ export class Me5Stat implements IParentItem {
     }
 }
 
-export class Me5Group extends BaseMe5Item implements IParentItem {
+export class Me5Group extends BaseMe5Item {
     private static INDEX = 1;
     private readonly id = String(Me5Group.INDEX++);
 
     private children = new LinkedList<Me5Item>();
 
     constructor() {
-        super();
+        super(true);
     }
 
     public getId(): string {
         return `${this.getParent().getId()}:group-${this.id}`;
     }
 
-    public build(parent: IParentItem, itemAfter = null, name?: string) {
+    public build(parent: IEditableItem, itemAfter = null, name?: string) {
         super.build(parent, itemAfter);
 
         if (!name) {
@@ -90,28 +94,37 @@ export class Me5Group extends BaseMe5Item implements IParentItem {
     }
 }
 
+
+export const enum Me5ItemType {
+    Unknown,
+    Image,
+    Audio,
+}
+
 export class Me5Item extends BaseMe5Item implements IEditorInput {
     private static INDEX = 1;
     private readonly id = String(Me5Item.INDEX++);
 
-    private type: string;
+    private type: Me5ItemType;
 
-    private image: Image;
+    private image: ImageData;
+    private audio: AudioData;
 
     constructor() {
-        super();
+        super(false);
 
         this.image = null;
     }
 
-    public getType() {
+    public getType(): Me5ItemType {
         return this.type;
     }
 
     public resolve() {
         return Promise.resolve({
+            type: this.type,
             image: this.image,
-            music: null,
+            audio: this.audio,
         });
     }
 
@@ -127,12 +140,24 @@ export class Me5Item extends BaseMe5Item implements IEditorInput {
             name = `ITEM_${index}`;
         }
         this.setName(name);
+        this.setData(data);
+    }
 
-        if (Image.getImageType(data)) {
-            this.type = 'image';
+    public setData(bytes: Uint8Array) {
+        if (!isNull(ImageData.getImageType(bytes))) {
+            this.type = Me5ItemType.Image;
 
-            this.image = new Image();
-            this.image.build(data);
+            this.image = new ImageData();
+            this.image.build(bytes);
+
+            this.audio = null;
+        } else if (!isNull(AudioData.getMusicType(bytes))) {
+            this.type = Me5ItemType.Audio;
+
+            this.audio = new AudioData();
+            this.audio.build(bytes);
+
+            this.image = null;
         }
     }
 
@@ -140,7 +165,7 @@ export class Me5Item extends BaseMe5Item implements IEditorInput {
         if (this.image) {
             return this.image.data;
         } else {
-            return null;
+            return this.audio.data;
         }
     }
 
@@ -152,5 +177,13 @@ export class Me5Item extends BaseMe5Item implements IEditorInput {
         } else {
             return -1;
         }
+    }
+
+    public hasChildren(): boolean {
+        return false;
+    }
+
+    public getChildren() {
+        return [];
     }
 }

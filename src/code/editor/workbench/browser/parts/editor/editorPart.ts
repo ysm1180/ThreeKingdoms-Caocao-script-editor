@@ -1,11 +1,12 @@
 import { DomBuilder, $ } from 'code/base/browser/domBuilder';
 import { Event } from 'code/base/common/event';
-import { IEditorInput, IEditorClosedEvent } from 'code/platform/editor/editor';
+import { IEditorInput, IEditorEvent } from 'code/platform/editor/editor';
 import { Part } from 'code/editor/workbench/browser/part';
 import { Editors } from 'code/editor/workbench/browser/parts/editor/editors';
 import { BaseEditor } from 'code/editor/workbench/browser/parts/editor/baseEditor';
-import { ImageViewEditor } from 'code/editor/workbench/browser/parts/editor/imageViewEditor';
+import { Me5ItemViewEditor } from 'code/editor/workbench/browser/parts/editor/me5ItemViewEditor';
 import { decorator } from 'code/platform/instantiation/instantiation';
+import { IInstantiationService, InstantiationService } from '../../../../../platform/instantiation/instantiationService';
 
 export const IEditorService = decorator<EditorPart>('editorPart');
 
@@ -16,9 +17,11 @@ export class EditorPart extends Part {
     private currentEditor: BaseEditor;
 
     public onEditorChanged = new Event<void>();
-    public onEditorClosed = new Event<IEditorClosedEvent>();
+    public onEditorInputChanged = new Event<IEditorEvent>();
+    public onEditorClosed = new Event<IEditorEvent>();
 
     constructor(
+        @IInstantiationService private instantiationService: InstantiationService,
     ) {
         super();
 
@@ -47,7 +50,7 @@ export class EditorPart extends Part {
     public openEditor(editor: IEditorInput) {
         function describe(dataType: string): string {
             if (dataType === 'me5') {
-                return ImageViewEditor.ID;
+                return Me5ItemViewEditor.ID;
             }
 
             return 'editor.baseeditor';
@@ -75,13 +78,22 @@ export class EditorPart extends Part {
     }
 
     public setInput(input: IEditorInput) {
-        this.currentEditor.setInput(input);
+        this.currentEditor.setInput(input).then(() => {
+            const eventData : IEditorEvent = {
+                editor: input,
+            };
+            this.onEditorInputChanged.fire(eventData);    
+        });
     }
 
     private createViewEditor(id: string, type: string): BaseEditor {
+        if (this.currentEditor) {
+            this.currentEditor.dispose();
+        }
+
         let editor: BaseEditor = null;
         if (type === 'me5') {
-            editor = new ImageViewEditor(id);
+            editor = this.instantiationService.create(Me5ItemViewEditor, id);
         } else if (type === 'lua') {
 
         }
@@ -102,7 +114,7 @@ export class EditorPart extends Part {
             this.closeInactiveEditor(input);
         }
 
-        const closeEventData: IEditorClosedEvent = {
+        const closeEventData: IEditorEvent = {
             editor: input
         };
         this.onEditorClosed.fire(closeEventData);

@@ -5,7 +5,7 @@ import { Part } from 'code/editor/workbench/browser/part';
 import { IView } from 'code/editor/workbench/browser/view';
 import { Me5ExplorerView } from 'code/editor/workbench/browser/parts/me5Explorer';
 
-export class Sidebar extends Part {
+export class SidebarPart extends Part {
     private viewContainer: DomBuilder;
     private views: DomBuilder[];
 

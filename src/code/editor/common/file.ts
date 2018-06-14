@@ -98,7 +98,7 @@ export class Me5File extends BinaryFile {
     }
 
     public save(data: ISaveMe5Data) {
-        const groups = data.stat.getChildren((group) => group.getChildren().length !== 0);
+        const groups = data.stat.getChildren((group) => group.getChildren().length !== 0) as Me5Group[];
         
         const itemLengths = groups.map((group) => group.getChildren().length);
         this.setAllItemCount(itemLengths.reduce((pre, cur) => pre + cur, 0));

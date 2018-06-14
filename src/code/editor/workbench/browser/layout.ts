@@ -1,10 +1,12 @@
-import { Sidebar } from 'code/editor/workbench/browser/parts/sidebar';
+import { SidebarPart } from 'code/editor/workbench/browser/parts/sidebar';
 import { DomBuilder, Size } from 'code/base/browser/domBuilder';
 import { Sash, ISashLayoutProvider } from 'code/base/browser/ui/sash';
 import { EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
 import { TitlePart } from 'code/editor/workbench/browser/parts/titlePart';
+import { StatusbarPart } from 'code/editor/workbench/browser/parts/statusbarPart';
 
 const TITLE_HEIGHT = 35;
+const SIDEBAR_HEIGHT = 22;
 
 export class WorkbenchLayout implements ISashLayoutProvider {
     private parent: DomBuilder;
@@ -13,12 +15,16 @@ export class WorkbenchLayout implements ISashLayoutProvider {
     private workbenchSize: Size;
 
     private title: TitlePart;
+    private titleHeight: number;
 
-    private sidebar: Sidebar;
+    private sidebar: SidebarPart;
     private sidebarWidth: number;
     private sidebarHeight: number;
-    private titleHeight: number;
+    
     private editor: EditorPart;
+
+    private statusbar: StatusbarPart;
+    private statusbarHeight: number;
 
     private sashX: Sash;
 
@@ -27,8 +33,9 @@ export class WorkbenchLayout implements ISashLayoutProvider {
         workbench: DomBuilder,
         parts: {
             title: TitlePart,
-            sidebar: Sidebar,
+            sidebar: SidebarPart,
             editor: EditorPart,
+            statusbar: StatusbarPart,
         }
     ) {
         this.parent = parent;
@@ -36,6 +43,7 @@ export class WorkbenchLayout implements ISashLayoutProvider {
         this.title = parts.title;
         this.sidebar = parts.sidebar;
         this.editor = parts.editor;
+        this.statusbar = parts.statusbar;
 
         this.sidebarWidth = -1;
 
@@ -54,11 +62,12 @@ export class WorkbenchLayout implements ISashLayoutProvider {
             .size(this.workbenchSize.width, this.workbenchSize.height);
 
         this.titleHeight = TITLE_HEIGHT;
+        this.statusbarHeight = SIDEBAR_HEIGHT;
 
         if (this.sidebarWidth === -1) {
             this.sidebarWidth = this.workbenchSize.width / 4;
         }
-        this.sidebarHeight = this.workbenchSize.height - this.titleHeight;
+        this.sidebarHeight = this.workbenchSize.height - this.titleHeight - this.statusbarHeight;
 
         const titleWidth = this.workbenchSize.width;
         this.title.getContainer().position(0, 0)
@@ -69,10 +78,13 @@ export class WorkbenchLayout implements ISashLayoutProvider {
         this.sidebar.getContainer().size(this.sidebarWidth, this.sidebarHeight);
         this.sidebar.layout(this.sidebarWidth, this.sidebarHeight);
 
-        const editorSize = new Size(this.workbenchSize.width - this.sidebarWidth, this.workbenchSize.height - this.titleHeight);
+        const editorSize = new Size(this.workbenchSize.width - this.sidebarWidth, this.sidebarHeight);
         this.editor.getContainer().position(this.titleHeight, this.sidebarWidth);
         this.editor.getContainer().size(editorSize.width, editorSize.height);
         this.editor.layout(editorSize.width, editorSize.height);
+
+        this.statusbar.getContainer().position(this.titleHeight + this.sidebarHeight, 0);
+        this.statusbar.layout(this.workbenchSize.width, this.statusbarHeight);
 
         this.sashX.layout();
     }

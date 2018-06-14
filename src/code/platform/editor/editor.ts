@@ -1,4 +1,4 @@
-export interface IEditorClosedEvent {
+export interface IEditorEvent {
     editor: IEditorInput;
 }
 
@@ -7,7 +7,7 @@ export interface IEditorInput {
 
     getName(): string;
 
-    getType(): string;
+    getType(): any;
 
     matches?(other: any): boolean;
 

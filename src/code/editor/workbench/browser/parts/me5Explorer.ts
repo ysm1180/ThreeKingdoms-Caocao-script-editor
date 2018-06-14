@@ -7,15 +7,17 @@ import { IView } from 'code/editor/workbench/browser/view';
 import { Me5Stat, Me5Group, Me5Item } from 'code/editor/workbench/parts/files/me5Data';
 import { Me5DataSource, Me5DataRenderer, Me5DataController } from 'code/editor/workbench/parts/me5ExplorerModel';
 import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
-import { IEditorClosedEvent } from 'code/platform/editor/editor';
+import { IEditorEvent } from 'code/platform/editor/editor';
 import { ContextKey, IContextKeyService, ContextKeyService } from 'code/platform/contexts/contextKeyService';
-import { RawContextKey } from 'code/platform/contexts/contextKey';
+import { RawContextKey, ContextKeyExpr } from 'code/platform/contexts/contextKey';
 
 export const explorerItemIsMe5GroupId = 'explorerItemIsMe5Group';
 export const explorerItemIsMe5StatId = 'explorerItemIsMe5Stat';
 
 export const explorerGroupContext = new RawContextKey<boolean>(explorerItemIsMe5GroupId, false);
 export const explorerRootContext = new RawContextKey<boolean>(explorerItemIsMe5StatId, false);
+
+export const explorerItemContext = ContextKeyExpr.not(ContextKeyExpr.or(explorerGroupContext, explorerRootContext));
 
 export class Me5Tree extends Tree {
     private _cache = new Map<string, Me5Stat>();
@@ -100,7 +102,7 @@ export class Me5ExplorerView extends Disposable implements IView {
 
         this.registerDispose(this.editorService.onEditorChanged.add(() => this.onChangeFile()));
 
-        this.registerDispose(this.editorService.onEditorClosed.add((e: IEditorClosedEvent) => {
+        this.registerDispose(this.editorService.onEditorClosed.add((e: IEditorEvent) => {
             const closedEditor = e.editor;
             this.explorerViewer.setCache(closedEditor.getId(), null);
             this.editorService.setInput(null);
@@ -131,7 +133,6 @@ export class Me5ExplorerView extends Disposable implements IView {
                     throw new Error();
                 }
 
-                console.log(data);
                 const stat = new Me5Stat(filePath);
                 for (let i = 0, groupCount = me5.getGroupCount(); i < groupCount; i++) {
                     const group = new Me5Group();
