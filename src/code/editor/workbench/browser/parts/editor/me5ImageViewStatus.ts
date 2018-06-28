@@ -7,7 +7,6 @@ import { combinedDisposable } from '../../../../../base/common/lifecycle';
 
 export class ImageViewStatus implements IStatusbarItem {
     private imageSize: HTMLElement;
-    private imageSizeText: string;
 
     public static ID = 'STATUS_IMAGE_VIEW';
 
