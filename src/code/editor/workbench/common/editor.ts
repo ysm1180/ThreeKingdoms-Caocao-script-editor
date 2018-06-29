@@ -1,7 +1,6 @@
 import { IEditorInput } from 'code/platform/editor/editor';
 import * as path from 'path';
 
-
 export class FileEditorInput implements IEditorInput {
     private resource: string;
 

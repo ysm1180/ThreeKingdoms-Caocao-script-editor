@@ -2,8 +2,8 @@ import { IStatusbarItem, IStatusbarEntry, StatusbarItemAlignment } from 'code/pl
 import { ContextKeyExpr } from 'code/platform/contexts/contextKey';
 import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
 import { IEditorEvent } from 'code/platform/editor/editor';
-import { Me5Item } from '../../../parts/files/me5Data';
-import { combinedDisposable } from '../../../../../base/common/lifecycle';
+import { Me5Item } from 'code/editor/workbench/parts/files/me5Data';
+import { combinedDisposable, IDisposable } from 'code/base/common/lifecycle';
 
 export class ImageViewStatus implements IStatusbarItem {
     private imageSize: HTMLElement;
@@ -24,7 +24,7 @@ export class ImageViewStatus implements IStatusbarItem {
         return this.entry.when;
     }
 
-    public render(element: HTMLElement) {
+    public render(element: HTMLElement): IDisposable {
         const dispose = [];
 
         this.imageSize = document.createElement('span');

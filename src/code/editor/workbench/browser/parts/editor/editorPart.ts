@@ -6,7 +6,8 @@ import { Editors } from 'code/editor/workbench/browser/parts/editor/editors';
 import { BaseEditor } from 'code/editor/workbench/browser/parts/editor/baseEditor';
 import { Me5ItemViewEditor } from 'code/editor/workbench/browser/parts/editor/me5ItemViewEditor';
 import { decorator } from 'code/platform/instantiation/instantiation';
-import { IInstantiationService, InstantiationService } from '../../../../../platform/instantiation/instantiationService';
+import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
+import { TextEditor } from 'code/editor/workbench/browser/parts/editor/textEditor';
 
 export const IEditorService = decorator<EditorPart>('editorPart');
 
@@ -95,7 +96,7 @@ export class EditorPart extends Part {
         if (type === 'me5') {
             editor = this.instantiationService.create(Me5ItemViewEditor, id);
         } else if (type === 'lua') {
-
+            editor = this.instantiationService.create(TextEditor, id);
         }
 
         this.currentEditor = editor;

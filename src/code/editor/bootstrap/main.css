@@ -25,9 +25,12 @@ body {
     overflow: hidden;
 }
 
-.view-container {
-    width: 100%;
+.composite {
     height: 100%;
+}
+
+.sidebar {
+    background-color: #252526;
 }
 
 .tree {

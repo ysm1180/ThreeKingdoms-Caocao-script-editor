@@ -1,11 +1,12 @@
 import { DomBuilder, $ } from 'code/base/browser/domBuilder';
+import { Disposable } from 'code/base/common/lifecycle';
 
-export class Part {
+export class Part extends Disposable {
     private parent: DomBuilder;
     private content: DomBuilder;
 
     constructor() {
-
+        super();
     }
 
     public getContainer(): DomBuilder {

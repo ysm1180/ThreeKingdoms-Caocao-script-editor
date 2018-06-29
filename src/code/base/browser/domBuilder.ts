@@ -379,6 +379,16 @@ export class DomBuilder {
         this.createdElements = null;
         this.toUnbind = null;
     }
+
+    public offDOM() {
+        if (this.currentElement) {
+            if (this.currentElement.parentNode) {
+                this.currentElement.parentNode.removeChild(this.currentElement);
+            }
+        }
+        
+        return this;
+    }
 }
 
 const SELECTOR_REGEX = /([\w\-]+)?(#([\w\-]+))?((.([\w\-]+))*)/;

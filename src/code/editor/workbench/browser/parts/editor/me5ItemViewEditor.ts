@@ -96,11 +96,14 @@ export class Me5ItemViewEditor extends BaseEditor {
         });
     }
 
-    public dispoe() {
-        this.audio.dispose();
-        this.viewer.destroy();
-
-        this.audio = null;
+    public dispose() {
+        if (this.audio) {
+            this.audio.dispose();
+            this.audio = null;
+        }
+        if (this.viewer) {
+            this.viewer.destroy();
+        }
 
         super.dispose();
     }

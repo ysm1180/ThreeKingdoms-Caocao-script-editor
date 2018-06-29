@@ -1,4 +1,4 @@
-import { SidebarPart } from 'code/editor/workbench/browser/parts/sidebar';
+import { SidebarPart } from 'code/editor/workbench/browser/parts/sidebarPart';
 import { DomBuilder, Size } from 'code/base/browser/domBuilder';
 import { Sash, ISashLayoutProvider } from 'code/base/browser/ui/sash';
 import { EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';

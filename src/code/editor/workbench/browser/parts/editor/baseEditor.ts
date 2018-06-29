@@ -7,7 +7,6 @@ export abstract class BaseEditor extends Disposable {
 
     private id: string;
 
-
     constructor(id: string) {
         super();
 

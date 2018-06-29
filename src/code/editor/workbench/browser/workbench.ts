@@ -4,7 +4,7 @@ import { ServiceStorage } from 'code/platform/instantiation/serviceStorage';
 import { ITreeService, TreeService } from 'code/platform/tree/treeService';
 import { ICommandService, CommandService } from 'code/platform/commands/commandService';
 import { IKeybindingService, KeybindingService } from 'code/platform/keybindings/keybindingService';
-import { SidebarPart } from 'code/editor/workbench/browser/parts/sidebar';
+import { SidebarPart } from 'code/editor/workbench/browser/parts/sidebarPart';
 import { WorkbenchLayout } from 'code/editor/workbench/browser/layout';
 import { EditorPart, IEditorService } from 'code/editor/workbench/browser/parts/editor/editorPart';
 import { TitlePart, ITitlePartService } from 'code/editor/workbench/browser/parts/titlePart';
@@ -15,6 +15,7 @@ import { IDialogService, DialogService } from '../services/electron-browser/dial
 import { IWindowService } from 'code/electron-main/windows';
 import { StatusbarPart, IStatusbarService } from 'code/editor/workbench/browser/parts/statusbarPart';
 import { IContextKeyService, ContextKeyService } from 'code/platform/contexts/contextKeyService';
+import { ICompositeViewService, CompositeViewService } from '../services/view/compositeViewService';
 
 export class Workbench {
     private container: HTMLElement;
@@ -65,9 +66,12 @@ export class Workbench {
 
         this.serviceStorage.set(IMe5DataService, this.instantiationService.create(Me5DataService));
 
-        this.sidebar = this.instantiationService.create(SidebarPart);
         this.editor = this.instantiationService.create(EditorPart);
         this.serviceStorage.set(IEditorService, this.editor);
+        
+        this.sidebar = this.instantiationService.create(SidebarPart);
+
+        this.serviceStorage.set(ICompositeViewService, this.instantiationService.create(CompositeViewService, this.sidebar));
 
         this.title = this.instantiationService.create(TitlePart);
         this.serviceStorage.set(ITitlePartService, this.title);

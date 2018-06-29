@@ -1,6 +1,12 @@
 import * as fs from 'fs';
 import * as Convert from 'code/base/common/convert';
 
+export const FILE_TYPE = {
+    ME5: 'me5',
+    LUA: 'lua',
+    DLG: 'dlg',
+};
+
 export class BinaryFile {
     public data: Buffer = new Buffer([]);
     private path: string;
