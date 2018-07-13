@@ -1,9 +1,9 @@
-import * as Convert from 'code/base/common/convert';
-import { BinaryFile } from 'code/platform/files/file';
-import { Me5Group, Me5Stat, Me5Item } from 'code/editor/workbench/parts/files/me5Data';
+import * as Convert from '../../base/common/convert';
+import { BinaryFile } from '../../platform/files/file';
+import { Me5Stat, FilterFuntion } from '../workbench/parts/files/me5Data';
 
 export interface ISaveMe5Data {
-    stat: Me5Stat;
+    root: Me5Stat;
 }
 
 export class Me5File extends BinaryFile {
@@ -54,7 +54,6 @@ export class Me5File extends BinaryFile {
     }
 
     private getOffsetByItemIndex(itemIndex: number): number {
-        const groupCount = this.getGroupCount();
         return this.readNumber(this.itemInfoStartOffset + itemIndex * Me5File.ITEM_HEADER_SIZE);
     }
 
@@ -97,8 +96,8 @@ export class Me5File extends BinaryFile {
         return this.readBytes(offset + itemNameLength, itemSize);
     }
 
-    public save(data: ISaveMe5Data) {
-        const groups = data.stat.getChildren((group) => group.getChildren().length !== 0) as Me5Group[];
+    public save(data: ISaveMe5Data, filter?: FilterFuntion<Me5Stat>) {
+        const groups = data.root.getChildren(filter);
         
         const itemLengths = groups.map((group) => group.getChildren().length);
         this.setAllItemCount(itemLengths.reduce((pre, cur) => pre + cur, 0));
@@ -108,7 +107,7 @@ export class Me5File extends BinaryFile {
         
         let baseItemIndex = 0;
         for (const group of groups) {
-            this.setGroupInfo(group, baseItemIndex);
+            this.setGroupInfo(group, baseItemIndex, filter);
 
             const items = group.getChildren();
             for (const item of items) {
@@ -138,22 +137,22 @@ export class Me5File extends BinaryFile {
         this.writeInt(Me5File.GROUP_COUNT_OFFSET, count);
     }
 
-    private setGroupInfo(group: Me5Group, baseItemIndex: number) {
-        const offset = Me5File.GROUP_INFO_START_OFFSET + group.index() * Me5File.GROUP_HEADER_SIZE;
+    private setGroupInfo(group: Me5Stat, baseItemIndex: number, filter?: FilterFuntion<Me5Stat>) {
+        const offset = Me5File.GROUP_INFO_START_OFFSET + group.getIndex(filter) * Me5File.GROUP_HEADER_SIZE;
         this.writeInt(offset + 4, baseItemIndex); // Item Begin Index
         this.writeInt(offset + 8, baseItemIndex + group.getChildren().length - 1); // Item End Index
-        this.writeInt(offset, Convert.getByteLength(group.getName()));
+        this.writeInt(offset, Convert.getByteLength(group.name));
     }
 
-    private setItemInfo(item: Me5Item, baseItemIndex: number) {
-        const offset = this.itemInfoStartOffset + (baseItemIndex + item.index()) * Me5File.ITEM_HEADER_SIZE;
+    private setItemInfo(item: Me5Stat, baseItemIndex: number, filter?: FilterFuntion<Me5Stat>) {
+        const offset = this.itemInfoStartOffset + (baseItemIndex + item.getIndex(filter)) * Me5File.ITEM_HEADER_SIZE;
         this.writeInt(offset, 0); // item offset
-        this.writeInt(offset + 4, Convert.getByteLength(item.getName()));
+        this.writeInt(offset + 4, Convert.getByteLength(item.name));
         this.writeInt(offset + 8, item.data.length); // item size
     }
 
-    private setGroup(offset: number, group: Me5Group): number {
-        const name = group.getName();
+    private setGroup(offset: number, group: Me5Stat): number {
+        const name = group.name;
         const length = Convert.getByteLength(name);
         
         this.write(offset, length, Convert.strToBytes(name));
@@ -161,11 +160,11 @@ export class Me5File extends BinaryFile {
         return length;
     }
 
-    private setItem(offset: number, item: Me5Item, baseItemIndex: number): number {
-        const name = item.getName();
+    private setItem(offset: number, item: Me5Stat, baseItemIndex: number, filter?: FilterFuntion<Me5Stat>): number {
+        const name = item.name;
         const length = Convert.getByteLength(name);
 
-        const startItemOffset = this.itemInfoStartOffset + (baseItemIndex + item.index()) * Me5File.ITEM_HEADER_SIZE;
+        const startItemOffset = this.itemInfoStartOffset + (baseItemIndex + item.getIndex(filter)) * Me5File.ITEM_HEADER_SIZE;
         this.writeInt(startItemOffset, offset);
         this.write(offset, length, Convert.strToBytes(name));
         this.write(offset + length, item.data.length, item.data);

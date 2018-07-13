@@ -1,7 +1,23 @@
-import { RelayEvent } from 'code/base/common/event';
-import { TreeModel, IFocusEvent } from 'code/base/parts/tree/browser/treeModel';
-import { TreeView } from 'code/base/parts/tree/browser/treeView';
-import { IDataSource, IDataRenderer, IDataController } from 'code/editor/workbench/parts/me5ExplorerModel';
+import { RelayEvent } from '../../../common/event';
+import { TreeModel, IFocusEvent } from './treeModel';
+import { TreeView } from './treeView';
+import { ContextMenuEvent } from '../../../../platform/events/contextMenuEvent';
+
+export interface IDataSource {
+    getId(element: any): string;
+    getChildren(element: any): any[];
+    hasChildren(element: any): boolean;
+}
+
+export interface IDataRenderer {
+    renderTemplate(container: HTMLElement): any;
+    render(tree: Tree, element: any, templateData: any): void;
+}
+
+export interface IDataController {
+    onClick(tree: Tree, element: any);
+    onContextMenu(tree: Tree, element: any, event: ContextMenuEvent);
+}
 
 export interface ITreeConfiguration {
     dataSource: IDataSource;

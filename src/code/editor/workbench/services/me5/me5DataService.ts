@@ -1,12 +1,11 @@
-import { BinaryFile } from 'code/platform/files/file';
-import { decorator } from 'code/platform/instantiation/instantiation';
-import { IConfirmation } from 'code/platform/dialogs/dialogs';
-import { ITreeService, TreeService } from 'code/platform/tree/treeService';
-import { IEditableItem, BaseMe5Item } from 'code/platform/files/me5Data';
-import { Me5Group, Me5Item } from 'code/editor/workbench/parts/files/me5Data';
-import { Me5DataController } from 'code/editor/workbench/parts/me5ExplorerModel';
-import { IDialogService, DialogService } from 'code/editor/workbench/services/electron-browser/dialogService';
-import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
+import { BinaryFile } from '../../../../platform/files/file';
+import { decorator } from '../../../../platform/instantiation/instantiation';
+import { IConfirmation } from '../../../../platform/dialogs/dialogs';
+import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
+import { Me5Stat, ItemState } from '../../parts/files/me5Data';
+import { Me5DataController } from '../../parts/me5ExplorerViewer';
+import { IDialogService, DialogService } from '../electron-browser/dialogService';
+import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
 
 export const IMe5DataService = decorator<Me5DataService>('me5DataService');
 
@@ -21,18 +20,18 @@ export class Me5DataService {
 
     public doChangeItem() {
         const lastTree = this.treeService.LastFocusedTree;
-        const element = <Me5Item>lastTree.getSelection()[0];
+        const element = <Me5Stat>lastTree.getSelection()[0];
 
-        if (!element) {
+        if (!element || element.isGroup) {
             return;
         }
 
-        const parent = element.getParent() as Me5Group;
+        const parent = element.parent;
 
         this.dialogService.openFile({
             title: '파일을 선택해주세요.',
             extensions: [
-                {name: 'ME5 아이템', extensions: 'png;jpg;bmp;mp3;wav'},
+                { name: 'ME5 아이템', extensions: 'png;jpg;bmp;mp3;wav' },
                 { name: '이미지', extensions: 'png;jpg;bmp' },
                 { name: '음악', extensions: 'mp3;wav' },
             ],
@@ -53,7 +52,7 @@ export class Me5DataService {
             for (const value of values) {
                 if (value) {
                     const data = new Uint8Array(value.slice(0));
-                    element.setData(data);
+                    element.data = data;
                 }
             }
 
@@ -68,15 +67,15 @@ export class Me5DataService {
 
     public doInsertItem(isSelectionAfter?: boolean) {
         const lastTree = this.treeService.LastFocusedTree;
-        let element = <BaseMe5Item>lastTree.getSelection()[0];
-        let parent: IEditableItem;
+        let element = <Me5Stat>lastTree.getSelection()[0];
+        let parent: Me5Stat;
 
         if (!element) {
             return;
         }
 
         if (!element.isGroup) {
-            parent = element.getParent();
+            parent = element.parent;
         } else {
             parent = element;
         }
@@ -85,7 +84,7 @@ export class Me5DataService {
             title: '추가할 파일을 선택해주세요.',
             multi: true,
             extensions: [
-                {name: 'ME5 아이템', extensions: 'png;jpg;bmp;mp3;wav'},
+                { name: 'ME5 아이템', extensions: 'png;jpg;bmp;mp3;wav' },
                 { name: '이미지', extensions: 'png;jpg;bmp' },
                 { name: '음악', extensions: 'mp3;wav' },
             ],
@@ -106,14 +105,9 @@ export class Me5DataService {
             const selectItems = [];
             for (const value of values) {
                 if (value) {
-                    const item = new Me5Item();
                     const data = new Uint8Array(value.slice(0));
-                    if (isSelectionAfter) {
-                        item.build(<Me5Group>parent, element, 'NEW ITEM', data);
-                    } else {
-                        item.build(<Me5Group>parent, null, 'NEW ITEM', data);                        
-                    }
-
+                    const item = new Me5Stat(element.root.getId(), false, element.root, 'NEW ITEM', data);
+                    item.build(parent, isSelectionAfter ? element : null);
                     selectItems.push(item);
                 }
             }
@@ -131,33 +125,33 @@ export class Me5DataService {
 
     public doInsertGroup() {
         const lastTree = this.treeService.LastFocusedTree;
-        const element = lastTree.getSelection()[0];
+        const element = <Me5Stat>lastTree.getSelection()[0];
 
-        let parent;
+        let root;
         let itemAfter;
-        if (element instanceof Me5Group) {
-            parent = element.getParent();
-            itemAfter = element;
-        } else {
-            parent = element;
+        if (element.isRoot) {
+            root = element;
             itemAfter = null;
+        } else {
+            root = element.parent;
+            itemAfter = element;
         }
 
-        const newGroup = new Me5Group();
-        newGroup.build(parent, itemAfter);
+        const newGroup = new Me5Stat(root.getId(), true, root, 'NEW GROUP');
+        newGroup.build(root, itemAfter);
 
-        lastTree.refresh(parent);
+        lastTree.refresh(root);
     }
 
     public doRename() {
         const lastTree = this.treeService.LastFocusedTree;
-        const element = <IEditableItem>lastTree.getSelection()[0];
+        const element = <Me5Stat>lastTree.getSelection()[0];
 
-        if (!element) {
+        if (!element || element.isRoot) {
             return;
         }
 
-        element.setEditable(true);
+        element.state = ItemState.Edit;
         lastTree.refresh(element, true).then(() => {
             lastTree.setHighlight(element);
         });
@@ -165,7 +159,7 @@ export class Me5DataService {
 
     public doDelete() {
         const lastTree = this.treeService.LastFocusedTree;
-        const elements = <IEditableItem[]>lastTree.getSelection();
+        const elements = <Me5Stat[]>lastTree.getSelection();
 
         const confirmation: IConfirmation = {
             title: 'ME5 항목 삭제',
@@ -176,7 +170,7 @@ export class Me5DataService {
         this.dialogService.confirm(confirmation).then(result => {
             if (result.confirmed) {
                 elements.forEach(element => {
-                    const parent = element.getParent();
+                    const parent = element.parent;
                     element.dispose();
                     lastTree.refresh(parent).then(() => {
                     });

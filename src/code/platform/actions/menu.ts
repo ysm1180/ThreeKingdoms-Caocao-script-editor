@@ -1,6 +1,6 @@
-import { MenuId, MenuRegistry, IMenuItem } from 'code/platform/actions/registry';
-import { CommandsRegistry } from 'code/platform/commands/commands';
-import { ContextKeyExpr } from 'code/platform/contexts/contextKey';
+import { MenuId, MenuRegistry, IMenuItem } from './registry';
+import { CommandsRegistry } from '../commands/commands';
+import { ContextKeyExpr } from '../contexts/contextKey';
 
 type MenuItemGroup = [string, IMenuItem[]];
 

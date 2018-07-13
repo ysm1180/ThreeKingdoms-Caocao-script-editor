@@ -1,4 +1,4 @@
-import { IDisposable, toDisposable, once } from 'code/base/common/lifecycle';
+import { IDisposable, toDisposable, once } from './lifecycle';
 import { LinkedList } from './linkedList';
 
 type Listener<T> = (e: T) => any;

@@ -1,5 +1,5 @@
-import { decorator } from 'code/platform/instantiation/instantiation';
-import { isNullOrUndefined, isString } from 'code/base/common/types';
+import { decorator } from '../../../../platform/instantiation/instantiation';
+import { isNullOrUndefined, isString } from '../../../../base/common/types';
 
 export const IStorageService = decorator<StorageService>('storageService');
 

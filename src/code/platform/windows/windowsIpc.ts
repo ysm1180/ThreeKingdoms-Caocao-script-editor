@@ -1,6 +1,6 @@
 import { ipcRenderer, ipcMain, IpcMessageEvent  } from 'electron';
-import { MessageBoxOptions, IMessageBoxResult, OpenDialogOptions, IOpenFileRequest, ISaveFileRequest, SaveDialogOptions } from 'code/platform/windows/windows';
-import { WindowManager, IWindowService } from 'code/electron-main/windows';
+import { MessageBoxOptions, IMessageBoxResult, OpenDialogOptions, IOpenFileRequest, ISaveFileRequest, SaveDialogOptions } from './windows';
+import { WindowManager, IWindowService } from '../../electron-main/windows';
 
 
 export class WindowChannel {

@@ -1,14 +1,14 @@
-import { BaseEditor } from 'code/editor/workbench/browser/parts/editor/baseEditor';
-import { IEditorInput } from 'code/platform/editor/editor';
-import { DomBuilder, $ } from 'code/base/browser/domBuilder';
+import { BaseEditor } from './baseEditor';
+import { IEditorInput } from '../../../../../platform/editor/editor';
+import { DomBuilder, $ } from '../../../../../base/browser/domBuilder';
 
-export class TextEditor extends BaseEditor {
+export class TextFileEditor extends BaseEditor {
     static ID = 'editor.texteditor';
 
     private container: DomBuilder;
 
-    constructor(id: string) {
-        super(id);
+    constructor() {
+        super(TextFileEditor.ID);
 
         this.container = null;
     }

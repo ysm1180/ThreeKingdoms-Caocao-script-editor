@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import * as Convert from 'code/base/common/convert';
+import * as Convert from '../../base/common/convert';
 
 export const FILE_TYPE = {
     ME5: 'me5',

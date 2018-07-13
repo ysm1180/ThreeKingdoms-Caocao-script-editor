@@ -1,4 +1,4 @@
-import { StandardMouseEvent } from 'code/base/browser/mouseEvent';
+import { StandardMouseEvent } from '../../base/browser/mouseEvent';
 
 export class ContextMenuEvent {
     public readonly posx: number;

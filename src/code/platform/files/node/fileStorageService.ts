@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import { isUndefined } from 'code/base/common/types';
-import { decorator } from 'code/platform/instantiation/instantiation';
+import { isUndefined } from '../../../base/common/types';
+import { decorator } from '../../instantiation/instantiation';
 
 export const IFileStorageService = decorator<FileStorageService>('fileStorageService');
 

@@ -1,10 +1,10 @@
-import { CodeWindow, getDefaultState } from 'code/electron-main/window';
-import { AppMenu } from 'code/electron-main/menus';
-import { WindowManager, IWindowService } from 'code/electron-main/windows';
-import { InstantiationService } from 'code/platform/instantiation/instantiationService';
-import { ServiceStorage } from 'code/platform/instantiation/serviceStorage';
-import { WindowChannel } from 'code/platform/windows/windowsIpc';
-import { IFileStorageService, FileStorageService } from 'code/platform/files/node/fileStorageService';
+import { CodeWindow, getDefaultState } from './window';
+import { AppMenu } from './menus';
+import { WindowManager, IWindowService } from './windows';
+import { InstantiationService } from '../platform/instantiation/instantiationService';
+import { ServiceStorage } from '../platform/instantiation/serviceStorage';
+import { WindowChannel } from '../platform/windows/windowsIpc';
+import { IFileStorageService, FileStorageService } from '../platform/files/node/fileStorageService';
 
 export class EditorApplication {
     private mainWindow: CodeWindow;

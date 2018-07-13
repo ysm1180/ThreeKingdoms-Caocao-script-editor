@@ -1,6 +1,6 @@
-import { IDisposable, dispose } from 'code/base/common/lifecycle';
-import { isString, isObject, isNullOrUndefined, isArray } from 'code/base/common/types';
-import { isHtmlElement, createStyleSheetTag, addDisposableEventListener } from 'code/base/browser/dom';
+import { IDisposable, dispose } from '../common/lifecycle';
+import { isString, isObject, isNullOrUndefined, isArray } from '../common/types';
+import { isHtmlElement, createStyleSheetTag, addDisposableEventListener, addClass, removeClass, hasClass } from './dom';
 
 export interface QuickDomBuilder {
     (): DomBuilder;
@@ -221,10 +221,10 @@ export class DomBuilder {
         this.currentElement.style[this.cssKeyToJavascriptProperty(key)] = value;
     }
 
-    public attr(name: string);
-    public attr(name: string, value: string);
-    public attr(name: string, value: number);
-    public attr(name: string, value: boolean);
+    public attr(name: string): string;
+    public attr(name: string, value: string): DomBuilder;
+    public attr(name: string, value: number) : DomBuilder;
+    public attr(name: string, value: boolean) : DomBuilder;
     public attr(firstArg: any, secondArg?: any): any {
         if (isObject(firstArg)) {
             for (const prop in firstArg) {
@@ -263,12 +263,16 @@ export class DomBuilder {
         this.currentElement.removeAttribute(prop);
     }
 
+    public hasClass(className: string): boolean {
+        return hasClass(this.currentElement, className);
+    }
+    
     public addClass(...classes: string[]): DomBuilder {
         classes.forEach((className: string) => {
             const names = className.split(' ');
             names.forEach((name: string) => {
                 if (name) {
-                    this.currentElement.classList.add(name);
+                    addClass(this.currentElement, name);
                 }
             });
         });
@@ -281,7 +285,7 @@ export class DomBuilder {
             const names = className.split(' ');
             names.forEach((name: string) => {
                 if (name) {
-                    this.currentElement.classList.remove(name);
+                    removeClass(this.currentElement, name);
                 }
             });
         });
@@ -380,13 +384,49 @@ export class DomBuilder {
         this.toUnbind = null;
     }
 
-    public offDOM() {
+    public offDOM(): DomBuilder {
         if (this.currentElement) {
             if (this.currentElement.parentNode) {
                 this.currentElement.parentNode.removeChild(this.currentElement);
             }
         }
         
+        return this;
+    }
+
+    public show(): DomBuilder {
+        if (this.hasClass('monaco-builder-hidden')) {
+			this.removeClass('monaco-builder-hidden');
+		}
+        this.attr('aria-hidden', 'false');
+        
+        return this;
+    }
+
+    public hide(): DomBuilder {
+        if (!this.hasClass('monaco-builder-hidden')) {
+			this.addClass('monaco-builder-hidden');
+		}
+        this.attr('aria-hidden', 'true');
+        
+        return this;
+    }
+
+    public empty(): DomBuilder {
+		this.clearChildren();
+
+		if (!this.container) {
+			this.createdElements = [];
+		}
+
+		return this;
+    }
+    
+    public clearChildren(): DomBuilder {
+        while (this.currentElement.firstChild) {
+            this.currentElement.removeChild(this.currentElement.firstChild);
+        }
+
         return this;
     }
 }

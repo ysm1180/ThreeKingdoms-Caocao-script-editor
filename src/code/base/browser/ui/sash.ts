@@ -1,6 +1,6 @@
-import { DomBuilder, $ } from 'code/base/browser/domBuilder';
-import { Event } from 'code/base/common/event';
-import { StandardMouseEvent } from 'code/base/browser/mouseEvent';
+import { DomBuilder, $ } from '../domBuilder';
+import { Event } from '../../common/event';
+import { StandardMouseEvent } from '../mouseEvent';
 
 export enum Orientation {
     HORIZONTAL,

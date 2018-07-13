@@ -1,9 +1,8 @@
-import { IStatusbarItem, IStatusbarEntry, StatusbarItemAlignment } from 'code/platform/statusbar/statusbar';
-import { ContextKeyExpr } from 'code/platform/contexts/contextKey';
-import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
-import { IEditorEvent } from 'code/platform/editor/editor';
-import { Me5Item } from 'code/editor/workbench/parts/files/me5Data';
-import { combinedDisposable, IDisposable } from 'code/base/common/lifecycle';
+import { IStatusbarItem, IStatusbarEntry, StatusbarItemAlignment } from '../../../../../platform/statusbar/statusbar';
+import { EditorPart, IEditorService } from '../editor/editorPart';
+import { ContextKeyExpr } from '../../../../../platform/contexts/contextKey';
+import { IDisposable, combinedDisposable } from '../../../../../base/common/lifecycle';
+import { IEditorEvent } from '../../../../../platform/editor/editor';
 
 export class ImageViewStatus implements IStatusbarItem {
     private imageSize: HTMLElement;
@@ -36,12 +35,12 @@ export class ImageViewStatus implements IStatusbarItem {
     }
 
     public onEditorInputChanged(e: IEditorEvent) {
-        const input = e.editor as Me5Item;
+        // const input = e.editor as Me5Item;
 
-        input.resolve().then(({ image }) => {
-            if (image) {
-                this.imageSize.textContent = `이미지 사이즈 : ${image.width} X ${image.height}`;
-            }
-        });
+        // input.resolve().then(({ image }) => {
+        //     if (image) {
+        //         this.imageSize.textContent = `이미지 사이즈 : ${image.width} X ${image.height}`;
+        //     }
+        // });
     }
 }

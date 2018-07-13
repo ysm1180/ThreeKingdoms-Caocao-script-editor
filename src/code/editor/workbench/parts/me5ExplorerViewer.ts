@@ -1,44 +1,31 @@
-import { Label } from 'code/base/browser/ui/labels';
-import { Input } from 'code/base/browser/ui/input';
-import { addDisposableEventListener } from 'code/base/browser/dom';
-import { dispose } from 'code/base/common/lifecycle';
-import { KeyCode } from 'code/base/common/keyCodes';
-import { Tree } from 'code/base/parts/tree/browser/tree';
-import { Menu } from 'code/platform/actions/menu';
-import { MenuId } from 'code/platform/actions/registry';
-import { Me5Group, Me5Item } from 'code/editor/workbench/parts/files/me5Data';
-import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
-import { IContextMenuService, ContextMenuService } from 'code/editor/workbench/services/contextmenuService';
-import { IEditableItem } from 'code/platform/files/me5Data';
-import { ContextMenuEvent } from 'code/platform/events/contextMenuEvent';
-import { RawContextKey } from 'code/platform/contexts/contextKey';
-import { ContextKey, IContextKeyService, ContextKeyService } from 'code/platform/contexts/contextKeyService';
+import { Label } from '../../../base/browser/ui/labels';
+import { Input } from '../../../base/browser/ui/input';
+import { addDisposableEventListener } from '../../../base/browser/dom';
+import { dispose } from '../../../base/common/lifecycle';
+import { KeyCode } from '../../../base/common/keyCodes';
+import { Tree, IDataSource, IDataRenderer, IDataController } from '../../../base/parts/tree/browser/tree';
+import { Menu } from '../../../platform/actions/menu';
+import { MenuId } from '../../../platform/actions/registry';
+import { IEditorService, EditorPart } from '../browser/parts/editor/editorPart';
+import { IContextMenuService, ContextMenuService } from '../services/contextmenuService';
+import { ContextMenuEvent } from '../../../platform/events/contextMenuEvent';
+import { RawContextKey } from '../../../platform/contexts/contextKey';
+import { ContextKey, IContextKeyService, ContextKeyService } from '../../../platform/contexts/contextKeyService';
+import { Me5Stat, ItemState } from './files/me5Data';
+import { IInstantiationService, InstantiationService } from '../../../platform/instantiation/instantiationService';
+import { FileEditorInput } from './files/fileEditorInput';
+import { encodeToBase64 } from '../../../base/common/encode';
 
-export interface IDataSource {
-    getId(element: any): string;
-    getChildren(element: any): any[];
-    hasChildren(element: any): boolean;
-}
-
-export interface IDataRenderer {
-    renderTemplate(container: HTMLElement): any;
-    render(tree: Tree, element: any, templateData: IMe5TemplateData): void;
-}
-
-export interface IDataController {
-    onClick(tree: Tree, element: any);
-    onContextMenu(tree: Tree, element: any, event: ContextMenuEvent);
-}
 
 export const explorerEditableItemId = 'explorerRename';
 export const explorerEditContext = new RawContextKey<boolean>(explorerEditableItemId, false);
 
 export class Me5DataSource implements IDataSource {
-    public getId(element: IEditableItem): string {
+    public getId(element: Me5Stat): string {
         return element.getId();
     }
 
-    public getChildren(element: IEditableItem): IEditableItem[] {
+    public getChildren(element: Me5Stat): Me5Stat[] {
         if (!element || !element.getChildren) {
             return [];
         }
@@ -46,12 +33,12 @@ export class Me5DataSource implements IDataSource {
         return element.getChildren();
     }
 
-    public hasChildren(element: IEditableItem): boolean {
-        if (!element || !element.hasChildren) {
+    public hasChildren(element: Me5Stat): boolean {
+        if (!element) {
             return false;
         }
 
-        return element.hasChildren();
+        return element.isGroup;
     }
 }
 
@@ -74,30 +61,30 @@ export class Me5DataRenderer implements IDataRenderer {
         return { label, container };
     }
 
-    public render(tree: Tree, element: IEditableItem, templateData: IMe5TemplateData) {
-        if (element.isEditable()) {
+    public render(tree: Tree, element: Me5Stat, templateData: IMe5TemplateData) {
+        if (element.state === ItemState.Edit) {
             templateData.label.element.style.display = 'none';
             this.renderInput(tree, templateData.container, element);
             this.editContext.set(true);            
         } else {
             templateData.label.element.style.display = 'flex';
-            templateData.label.setValue(element.getName());
+            templateData.label.setValue(element.name);
         }
     }
 
-    private renderInput(tree: Tree, container: HTMLElement, element: IEditableItem) {
+    private renderInput(tree: Tree, container: HTMLElement, element: Me5Stat) {
         const label = new Label(container);
         const input = new Input(label.element);
         
-        input.value = element.getName();
+        input.value = element.name;
         input.focus();
 
         const done = (commit: boolean) => {
             tree.clearHighlight();
-            element.setEditable(false);
+            element.state = ItemState.Normal;
 
             if (commit) {
-                element.setName(input.value);
+                element.name = input.value;
             }
 
             dispose(toDispose);
@@ -132,21 +119,27 @@ export class Me5DataController implements IDataController {
 
     constructor(
         @IEditorService private editorService: EditorPart,
-        @IContextMenuService private contextMenuService: ContextMenuService
+        @IContextMenuService private contextMenuService: ContextMenuService,
+        @IInstantiationService private instantiationService: InstantiationService,
     ) {
 
     }
 
-    public onClick(tree: Tree, element: any) {
+    public onClick(tree: Tree, element: Me5Stat) {
         tree.focus();
         tree.setFocus(element);
 
-        if (element instanceof Me5Item) {
-            this.editorService.setInput(element);
+        if (element.data) {
+            const base64 = encodeToBase64(element.data);
+            const root = element.root;
+            const input: FileEditorInput = this.instantiationService.create(FileEditorInput, `${root.getId()}?${base64}`);
+            input.setUseExtraData(true);
+            
+            this.editorService.openEditor(input);
         }
     }
 
-    public onContextMenu(tree: Tree, element: Me5Group | Me5Item, event: ContextMenuEvent) {
+    public onContextMenu(tree: Tree, element: Me5Stat, event: ContextMenuEvent) {
         event.preventDefault();
         event.stopPropagation();
 

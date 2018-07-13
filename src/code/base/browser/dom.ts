@@ -1,4 +1,4 @@
-import { IDisposable } from 'code/base/common/lifecycle';
+import { IDisposable } from '../common/lifecycle';
 
 export class DomListener implements IDisposable {
     private _listener: (e: any) => void;
@@ -24,6 +24,9 @@ export class DomListener implements IDisposable {
     }
 }
 
+export function hasClass(node: HTMLElement, className: string): boolean {
+    return className && node.classList && node.classList.contains(className);
+}
 
 export function addClass(node: HTMLElement, className: string): void {
     if (className && node.classList) {

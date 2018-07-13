@@ -1,5 +1,5 @@
-import { ContextKeyExpr } from 'code/platform/contexts/contextKey';
-import { ClassDescriptor } from 'code/platform/instantiation/descriptor';
+import { ContextKeyExpr } from '../contexts/contextKey';
+import { ClassDescriptor } from '../instantiation/descriptor';
 
 export class StatusbarItemDescriptor {
     public readonly ctor: ClassDescriptor<IStatusbarItem>;

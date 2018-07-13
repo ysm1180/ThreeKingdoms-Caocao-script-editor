@@ -1,7 +1,7 @@
-import { TreeContext } from 'code/base/parts/tree/browser/tree';
-import { Event, ChainEventStorage } from 'code/base/common/event';
-import { IIterator } from 'code/base/common/iterator';
-import { IDisposable, dispose } from 'code/base/common/lifecycle';
+import { TreeContext } from './tree';
+import { Event, ChainEventStorage } from '../../../common/event';
+import { IIterator } from '../../../common/iterator';
+import { IDisposable, dispose } from '../../../common/lifecycle';
 
 interface IMap<T> { [id: string]: T; }
 interface IItemMap extends IMap<Item> { }

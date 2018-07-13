@@ -1,6 +1,6 @@
-import { Disposable } from 'code/base/common/lifecycle';
-import { Tree } from 'code/base/parts/tree/browser/tree';
-import { decorator } from 'code/platform/instantiation/instantiation';
+import { Disposable } from '../../base/common/lifecycle';
+import { Tree } from '../../base/parts/tree/browser/tree';
+import { decorator } from '../instantiation/instantiation';
 
 export const ITreeService = decorator<TreeService>('treeService');
 

@@ -1,6 +1,6 @@
-import { DomBuilder } from 'code/base/browser/domBuilder';
-import { Disposable } from 'code/base/common/lifecycle';
-import { ClassDescriptor } from 'code/platform/instantiation/descriptor';
+import { DomBuilder } from '../../../base/browser/domBuilder';
+import { Disposable } from '../../../base/common/lifecycle';
+import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
 
 export abstract class CompositeView extends Disposable {
     private id: string;

@@ -1,7 +1,7 @@
-import { IConfirmation, IConfirmationResult, IOpenningFile, getFileFilters, ISavingFile } from 'code/platform/dialogs/dialogs';
-import { decorator } from 'code/platform/instantiation/instantiation';
-import { IOpenFileRequest } from 'code/platform/windows/windows';
-import { IWindowService } from 'code/electron-main/windows';
+import { IConfirmation, IConfirmationResult, IOpenningFile, getFileFilters, ISavingFile } from '../../../../platform/dialogs/dialogs';
+import { decorator } from '../../../../platform/instantiation/instantiation';
+import { IOpenFileRequest } from '../../../../platform/windows/windows';
+import { IWindowService } from '../../../../electron-main/windows';
 
 export const IDialogService = decorator<DialogService>('dialogService');
 

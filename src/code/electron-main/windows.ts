@@ -1,11 +1,11 @@
 import * as path from 'path';
 import { BrowserWindow, dialog, app } from 'electron';
-import { CodeWindow, IWindowCreationOption } from 'code/electron-main/window';
-import { getFileFilters, IFileExtension } from 'code/platform/dialogs/dialogs';
-import { decorator } from 'code/platform/instantiation/instantiation';
-import { IOpenFileRequest, IMessageBoxResult, ISaveFileRequest } from 'code/platform/windows/windows';
-import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
-import { IFileStorageService, FileStorageService } from 'code/platform/files/node/fileStorageService';
+import { CodeWindow, IWindowCreationOption } from './window';
+import { getFileFilters, IFileExtension } from '../platform/dialogs/dialogs';
+import { decorator } from '../platform/instantiation/instantiation';
+import { IOpenFileRequest, IMessageBoxResult, ISaveFileRequest } from '../platform/windows/windows';
+import { IInstantiationService, InstantiationService } from '../platform/instantiation/instantiationService';
+import { IFileStorageService, FileStorageService } from '../platform/files/node/fileStorageService';
 
 export const IWindowService = decorator<IWindowService>('windowService');
 
@@ -22,8 +22,6 @@ export class WindowManager implements IWindowService {
 
     private dialog: Dialog;
     public static win: CodeWindow;
-
-    public static NEW_INDEX = 1;
 
     constructor(
         @IFileStorageService private fileStorageService: FileStorageService,
@@ -53,8 +51,7 @@ export class WindowManager implements IWindowService {
 
     public openNewFile() {
         const request: IOpenFileRequest = {
-            files: [`New File ${WindowManager.NEW_INDEX++}.me5`],
-            new: true,
+            files: [null],
         };
 
         WindowManager.win.send('editor:openFiles', request);

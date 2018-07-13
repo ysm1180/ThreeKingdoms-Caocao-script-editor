@@ -1,7 +1,7 @@
 'use strict';
 
-import { app, BrowserWindow } from 'electron';
-import { EditorApplication } from 'code/electron-main/app';
+import { app } from 'electron';
+import { EditorApplication } from './app';
 
 function main() {
     const app = new EditorApplication();

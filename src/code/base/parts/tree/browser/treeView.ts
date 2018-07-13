@@ -1,9 +1,9 @@
-import * as Model from 'code/base/parts/tree/browser/treeModel';
-import { TreeContext } from 'code/base/parts/tree/browser/tree';
-import { ArrayIterator, IIterator } from 'code/base/common/iterator';
-import { StandardMouseEvent } from 'code/base/browser/mouseEvent';
-import { addClass, removeClass } from 'code/base/browser/dom';
-import { MouseContextMenuEvent } from 'code/platform/events/contextMenuEvent';
+import * as Model from './treeModel';
+import { TreeContext } from './tree';
+import { ArrayIterator, IIterator } from '../../../common/iterator';
+import { StandardMouseEvent } from '../../../browser/mouseEvent';
+import { addClass, removeClass } from '../../../browser/dom';
+import { MouseContextMenuEvent } from '../../../../platform/events/contextMenuEvent';
 
 export interface IRow {
     element: HTMLElement;

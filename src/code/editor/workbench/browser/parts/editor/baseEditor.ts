@@ -1,6 +1,6 @@
-import { DomBuilder } from 'code/base/browser/domBuilder';
-import { IEditorInput } from 'code/platform/editor/editor';
-import { Disposable } from 'code/base/common/lifecycle';
+import { DomBuilder } from '../../../../../base/browser/domBuilder';
+import { IEditorInput } from '../../../../../platform/editor/editor';
+import { Disposable } from '../../../../../base/common/lifecycle';
 
 export abstract class BaseEditor extends Disposable {
     private parent: DomBuilder;
@@ -26,7 +26,7 @@ export abstract class BaseEditor extends Disposable {
         return this.parent;
     }
 
-    public abstract setInput(input: IEditorInput): Promise<void>;
+    public abstract setInput(input: IEditorInput): Promise<any>;
 
     public dispose() {
         this.parent = null;

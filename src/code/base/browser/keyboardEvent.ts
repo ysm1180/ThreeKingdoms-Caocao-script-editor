@@ -1,4 +1,4 @@
-import { KeyCode } from 'code/base/common/keyCodes';
+import { KeyCode } from '../common/keyCodes';
 
 export class StandardKeyboardEvent {
     public readonly event: KeyboardEvent;

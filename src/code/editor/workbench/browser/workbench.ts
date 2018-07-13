@@ -1,20 +1,20 @@
-import { DomBuilder, $ } from 'code/base/browser/domBuilder';
-import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
-import { ServiceStorage } from 'code/platform/instantiation/serviceStorage';
-import { ITreeService, TreeService } from 'code/platform/tree/treeService';
-import { ICommandService, CommandService } from 'code/platform/commands/commandService';
-import { IKeybindingService, KeybindingService } from 'code/platform/keybindings/keybindingService';
-import { SidebarPart } from 'code/editor/workbench/browser/parts/sidebarPart';
-import { WorkbenchLayout } from 'code/editor/workbench/browser/layout';
-import { EditorPart, IEditorService } from 'code/editor/workbench/browser/parts/editor/editorPart';
-import { TitlePart, ITitlePartService } from 'code/editor/workbench/browser/parts/titlePart';
-import { IContextMenuService, ContextMenuService } from 'code/editor/workbench/services/contextmenuService';
-import { IMe5DataService, Me5DataService } from 'code/editor/workbench/services/me5DataService';
-import { WindowClientService } from 'code/platform/windows/windowsIpc';
+import { DomBuilder, $ } from '../../../base/browser/domBuilder';
+import { IInstantiationService, InstantiationService } from '../../../platform/instantiation/instantiationService';
+import { ServiceStorage } from '../../../platform/instantiation/serviceStorage';
+import { ITreeService, TreeService } from '../../../platform/tree/treeService';
+import { ICommandService, CommandService } from '../../../platform/commands/commandService';
+import { IKeybindingService, KeybindingService } from '../../../platform/keybindings/keybindingService';
+import { SidebarPart } from './parts/sidebarPart';
+import { WorkbenchLayout } from './layout';
+import { EditorPart, IEditorService } from './parts/editor/editorPart';
+import { TitlePart, ITitlePartService } from './parts/titlePart';
+import { IContextMenuService, ContextMenuService } from '../services/contextmenuService';
+import { IMe5DataService, Me5DataService } from '../services/me5/me5DataService';
+import { WindowClientService } from '../../../platform/windows/windowsIpc';
 import { IDialogService, DialogService } from '../services/electron-browser/dialogService';
-import { IWindowService } from 'code/electron-main/windows';
-import { StatusbarPart, IStatusbarService } from 'code/editor/workbench/browser/parts/statusbarPart';
-import { IContextKeyService, ContextKeyService } from 'code/platform/contexts/contextKeyService';
+import { IWindowService } from '../../../electron-main/windows';
+import { StatusbarPart, IStatusbarService } from './parts/statusbarPart';
+import { IContextKeyService, ContextKeyService } from '../../../platform/contexts/contextKeyService';
 import { ICompositeViewService, CompositeViewService } from '../services/view/compositeViewService';
 
 export class Workbench {

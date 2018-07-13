@@ -1,9 +1,9 @@
-import { SidebarPart } from 'code/editor/workbench/browser/parts/sidebarPart';
-import { DomBuilder, Size } from 'code/base/browser/domBuilder';
-import { Sash, ISashLayoutProvider } from 'code/base/browser/ui/sash';
-import { EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
-import { TitlePart } from 'code/editor/workbench/browser/parts/titlePart';
-import { StatusbarPart } from 'code/editor/workbench/browser/parts/statusbarPart';
+import { SidebarPart } from './parts/sidebarPart';
+import { DomBuilder, Size } from '../../../base/browser/domBuilder';
+import { Sash, ISashLayoutProvider } from '../../../base/browser/ui/sash';
+import { EditorPart } from './parts/editor/editorPart';
+import { TitlePart } from './parts/titlePart';
+import { StatusbarPart } from './parts/statusbarPart';
 
 const TITLE_HEIGHT = 35;
 const SIDEBAR_HEIGHT = 22;

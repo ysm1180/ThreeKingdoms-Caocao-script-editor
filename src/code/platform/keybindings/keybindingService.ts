@@ -1,10 +1,10 @@
-import { addDisposableEventListener } from 'code/base/browser/dom';
-import { StandardKeyboardEvent } from 'code/base/browser/keyboardEvent';
-import { KeyCode, Keybinding, KeyMode } from 'code/base/common/keyCodes';
-import { decorator } from 'code/platform/instantiation/instantiation';
-import { KeybindingsRegistry } from 'code/platform/keybindings/keybindingsRegistry';
-import { ICommandService, CommandService } from 'code/platform/commands/commandService';
-import { IContextKeyService, ContextKeyService } from 'code/platform/contexts/contextKeyService';
+import { addDisposableEventListener } from '../../base/browser/dom';
+import { StandardKeyboardEvent } from '../../base/browser/keyboardEvent';
+import { KeyCode, Keybinding, KeyMode } from '../../base/common/keyCodes';
+import { decorator } from '../instantiation/instantiation';
+import { KeybindingsRegistry } from './keybindingsRegistry';
+import { ICommandService, CommandService } from '../commands/commandService';
+import { IContextKeyService, ContextKeyService } from '../contexts/contextKeyService';
 
 export const IKeybindingService = decorator<KeybindingService>('keybindingService');
 

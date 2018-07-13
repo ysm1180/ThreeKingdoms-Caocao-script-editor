@@ -1,4 +1,4 @@
-import { Context, ContextKeyService } from 'code/platform/contexts/contextKeyService';
+import { Context, ContextKeyService } from './contextKeyService';
 
 export abstract class ContextKeyExpr {
     public static has(key: string) {

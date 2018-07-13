@@ -3,7 +3,7 @@ export const enum AudioType {
     Wav = 'wav',
 }
 
-export class AudioData {
+export class AudioResource {
     private _data: Uint8Array;
     private _type: AudioType;
 
@@ -12,20 +12,7 @@ export class AudioData {
 
     public build(data: Uint8Array) {
         this._data = data;
-        this._type = AudioData.getMusicType(this._data);
-    }
-
-    public encodeToBase64() {
-        if (this._type !== null) {
-            let index = this._data.length;
-            const base64 = [];
-            while (index--) {
-                base64[index] = String.fromCharCode(this._data[index]);
-            }
-            return btoa(base64.join(''));
-        }
-
-        return null;
+        this._type = AudioResource.getTypeFromBinary(this._data);
     }
 
     public get type(): AudioType {
@@ -36,7 +23,7 @@ export class AudioData {
         return this._data;
     }
 
-    static getMusicType(data: Uint8Array): AudioType {
+    public static getTypeFromBinary(data: Uint8Array): AudioType {
         let type: AudioType;
         if (data[0] === 0x49 && data[1] === 0x44 && data[2] === 0x33) {
             type = AudioType.Mp3;

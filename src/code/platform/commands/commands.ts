@@ -1,4 +1,4 @@
-import { ServicesAccessor } from 'code/platform/instantiation/instantiation';
+import { ServicesAccessor } from '../instantiation/instantiation';
 import { IDisposable } from '../../base/common/lifecycle';
 
 export interface ICommandHandler {

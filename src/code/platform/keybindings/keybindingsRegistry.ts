@@ -1,6 +1,6 @@
-import { KeyCode } from 'code/base/common/keyCodes';
-import { ContextKeyExpr } from 'code/platform/contexts/contextKey';
-import { ICommandHandler, CommandsRegistry } from 'code/platform/commands/commands';
+import { KeyCode } from '../../base/common/keyCodes';
+import { ContextKeyExpr } from '../contexts/contextKey';
+import { ICommandHandler, CommandsRegistry } from '../commands/commands';
 
 export interface IKeybindingRule {
     id: string;

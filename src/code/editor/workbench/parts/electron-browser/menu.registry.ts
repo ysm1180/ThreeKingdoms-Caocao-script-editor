@@ -1,18 +1,17 @@
-import { MenuRegistry, MenuId } from 'code/platform/actions/registry';
-import { ServicesAccessor } from 'code/platform/instantiation/instantiation';
-import { IMe5DataService } from 'code/editor/workbench/services/me5DataService';
-import { KeybindingsRegistry } from 'code/platform/keybindings/keybindingsRegistry';
-import { KeyCode, KeyMode } from 'code/base/common/keyCodes';
-import { explorerRootContext, explorerGroupContext, explorerItemContext } from 'code/editor/workbench/browser/parts/me5Explorer';
-import { ContextKeyExpr } from 'code/platform/contexts/contextKey';
-import { explorerEditContext } from 'code/editor/workbench/parts/me5ExplorerModel';
+import { MenuRegistry, MenuId } from '../../../../platform/actions/registry';
+import { ServicesAccessor } from '../../../../platform/instantiation/instantiation';
+import { IMe5DataService } from '../../services/me5/me5DataService';
+import { KeybindingsRegistry } from '../../../../platform/keybindings/keybindingsRegistry';
+import { KeyCode, KeyMode } from '../../../../base/common/keyCodes';
+import { explorerRootContext, explorerGroupContext, explorerItemContext } from '../../browser/parts/me5Explorer';
+import { ContextKeyExpr } from '../../../../platform/contexts/contextKey';
+import { explorerEditContext } from '../me5ExplorerViewer';
 
 const INSERT_GROUP_ID = 'INSERT_GROUP';
 const MODIFICATION_ID = 'MODIFICATION';
 const INSERT_ITEM_ID = 'INSERT_ITEM';
 const RENAME_ID = 'RENAME_COMMAND';
 const DELETE_ID = 'DELETE_COMMAND';
-const COPY_TEXT_ID = 'COPY_TEXT';
 
 KeybindingsRegistry.registerKeybindingRule({
     id: RENAME_ID,

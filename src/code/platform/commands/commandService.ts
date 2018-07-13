@@ -1,6 +1,6 @@
-import { decorator } from 'code/platform/instantiation/instantiation';
+import { decorator } from '../instantiation/instantiation';
 import { IInstantiationService, InstantiationService } from '../instantiation/instantiationService';
-import { ICommandHandler, CommandsRegistry } from 'code/platform/commands/commands';
+import { CommandsRegistry } from './commands';
 
 export const ICommandService = decorator<CommandService>('commandService');
 

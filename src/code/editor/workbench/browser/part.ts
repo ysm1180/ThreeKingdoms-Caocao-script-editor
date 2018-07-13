@@ -1,5 +1,5 @@
-import { DomBuilder, $ } from 'code/base/browser/domBuilder';
-import { Disposable } from 'code/base/common/lifecycle';
+import { DomBuilder, $ } from '../../../base/browser/domBuilder';
+import { Disposable } from '../../../base/common/lifecycle';
 
 export class Part extends Disposable {
     private parent: DomBuilder;

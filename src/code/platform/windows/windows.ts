@@ -1,6 +1,5 @@
 export interface IOpenFileRequest {
     files: string[];
-    new?: boolean;
 }
 
 export interface ISaveFileRequest {

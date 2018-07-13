@@ -1,8 +1,8 @@
 'use strict';
 
 import { Menu, MenuItem } from 'electron';
-import { WindowManager, IWindowService } from 'code/electron-main/windows';
-import * as arrays from 'code/base/common/array';
+import { WindowManager, IWindowService } from './windows';
+import * as arrays from '../base/common/array';
 
 export const __separator__ = function (): MenuItem {
     return new MenuItem({ type: 'separator' });

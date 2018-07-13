@@ -34,6 +34,39 @@
     "url": "^0.11.0"
   },
   "dependencies": {
-    "requirejs": "^2.3.5"
+    "requirejs": "^2.3.5",
+    "ts-node": "^7.0.0"
+  },
+  "quokka": {
+    "pro": false,
+    "env": {
+      "params": {
+        "env": "NODE_PATH=src"
+      }
+    },
+    "ts": {
+      "compilerOptions": {
+        "experimentalDecorators": true,
+        "module": "amd",
+        "moduleResolution": "classic",
+        "noImplicitAny": false,
+        "removeComments": false,
+        "preserveConstEnums": true,
+        "target": "es6",
+        "sourceMap": true,
+        "declaration": false,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noImplicitThis": true,
+            "alwaysStrict": true,
+            "allowJs": true,
+        "checkJs": true,
+        "baseUrl": ".",
+        "outDir": "../dist",
+        "typeRoots": [
+          "typings"
+        ]
+      }
+    }
   }
 }

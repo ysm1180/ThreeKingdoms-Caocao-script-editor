@@ -1,6 +1,6 @@
-import { ServiceStorage } from 'code/platform/instantiation/serviceStorage';
-import { ClassDescriptor } from 'code/platform/instantiation/descriptor';
-import { decorator, init, ServicesAccessor, ServiceIdentifier } from 'code/platform/instantiation/instantiation';
+import { ServiceStorage } from './serviceStorage';
+import { ClassDescriptor } from './descriptor';
+import { decorator, init, ServicesAccessor, ServiceIdentifier } from './instantiation';
 
 export const IInstantiationService = decorator<InstantiationService>('instantiationService');
 

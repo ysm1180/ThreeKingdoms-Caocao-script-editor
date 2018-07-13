@@ -1,5 +1,5 @@
-import { BaseEditor } from 'code/editor/workbench/browser/parts/editor/baseEditor';
-import { IEditorInput } from 'code/platform/editor/editor';
+import { BaseEditor } from './baseEditor';
+import { IEditorInput } from '../../../../../platform/editor/editor';
 
 export class ControlEditor extends BaseEditor{
     static ID = 'editor.controleditor';

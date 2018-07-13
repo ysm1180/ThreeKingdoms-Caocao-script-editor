@@ -1,4 +1,4 @@
-import { IEditorInput } from 'code/platform/editor/editor';
+import { IEditorInput } from '../../../../../platform/editor/editor';
 
 export class Editors {
     private editors: IEditorInput[];

@@ -1,10 +1,10 @@
 import { remote } from 'electron';
-import { IContextMenuDelegate } from 'code/base/browser/contextmenu';
-import { decorator } from 'code/platform/instantiation/instantiation';
-import { MenuItemInfo, Separator } from 'code/platform/actions/menu';
-import { ICommandService, CommandService } from 'code/platform/commands/commandService';
-import { IKeybindingService, KeybindingService } from 'code/platform/keybindings/keybindingService';
-import { IContextKeyService, ContextKeyService } from 'code/platform/contexts/contextKeyService';
+import { IContextMenuDelegate } from '../../../base/browser/contextmenu';
+import { decorator } from '../../../platform/instantiation/instantiation';
+import { MenuItemInfo, Separator } from '../../../platform/actions/menu';
+import { ICommandService, CommandService } from '../../../platform/commands/commandService';
+import { IKeybindingService, KeybindingService } from '../../../platform/keybindings/keybindingService';
+import { IContextKeyService, ContextKeyService } from '../../../platform/contexts/contextKeyService';
 
 export const IContextMenuService = decorator<ContextMenuService>('contextmenuService');
 

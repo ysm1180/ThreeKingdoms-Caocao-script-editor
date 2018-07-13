@@ -1,5 +1,15 @@
+import { BaseEditor } from '../../editor/workbench/browser/parts/editor/baseEditor';
+
 export interface IEditorEvent {
     editor: IEditorInput;
+}
+
+export interface IEditorDescriptor {
+    getCompositeId(): string;
+
+    getEditorId(): string;
+
+    create(): BaseEditor;
 }
 
 export interface IEditorInput {
@@ -7,9 +17,9 @@ export interface IEditorInput {
 
     getName(): string;
 
-    getType(): any;
+    matches(other: any): boolean;
 
-    matches?(other: any): boolean;
+    resolve(): Promise<any>;
 
-    resolve?(): Promise<any>;
+    getPreferredEditorId(): string;
 }

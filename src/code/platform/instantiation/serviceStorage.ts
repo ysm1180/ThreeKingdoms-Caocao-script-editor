@@ -1,4 +1,4 @@
-import { ServiceIdentifier } from 'code/platform/instantiation/instantiation';
+import { ServiceIdentifier } from './instantiation';
 
 export class ServiceStorage {
     private entries = new Map<ServiceIdentifier<any>, any>();

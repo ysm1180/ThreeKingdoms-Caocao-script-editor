@@ -1,15 +1,10 @@
-import { Event } from 'code/base/common/event';
-import { DomBuilder, $ } from 'code/base/browser/domBuilder';
-import { FILE_TYPE } from 'code/platform/files/file';
-import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
-import { Part } from 'code/editor/workbench/browser/part';
-import { CompositeView, CompositViewRegistry } from 'code/editor/workbench/browser/compositeView';
-import { EXPLORER_VIEW_ID } from 'code/editor/workbench/browser/parts/me5Explorer';
-import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
-
-const mapFileTypeToCompositeId = {
-    [FILE_TYPE.ME5]: EXPLORER_VIEW_ID,
-};
+import { Event } from '../../../../base/common/event';
+import { DomBuilder, $ } from '../../../../base/browser/domBuilder';
+import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { Part } from '../part';
+import { CompositeView, CompositViewRegistry } from '../compositeView';
+import { IEditorService, EditorPart } from './editor/editorPart';
+import { EXPLORER_VIEW_ID } from './me5Explorer';
 
 export class SidebarPart extends Part {
     private instantiatedComposites: CompositeView[];
@@ -39,21 +34,21 @@ export class SidebarPart extends Part {
             return;
         }
 
-        const id = mapFileTypeToCompositeId[activeInput.getType()];
+        const id = EXPLORER_VIEW_ID;
         this.openCompositeView(id);
     }
 
     public openCompositeView(id: string) {
-        if (this.activeComposite && this.activeComposite.getId() === id) {
-            return;
-        }
-
         const composite = this.doOpenCompositeView(id);
 
         this.onDidCompositeOpen.fire(composite);
     }
 
     private doOpenCompositeView(id: string): CompositeView {
+        if (this.activeComposite && this.activeComposite.getId() === id) {
+            return this.activeComposite;
+        }
+
         if (this.activeComposite) {
             this.hideActiveComposite();
         }

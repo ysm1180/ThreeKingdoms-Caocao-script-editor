@@ -1,10 +1,10 @@
-import { DomBuilder } from 'code/base/browser/domBuilder';
-import { Part } from 'code/editor/workbench/browser/part';
-import { TabControl } from 'code/editor/workbench/browser/parts/tabControl';
-import { Editors } from 'code/editor/workbench/browser/parts/editor/editors';
-import { IEditorService, EditorPart } from 'code/editor/workbench/browser/parts/editor/editorPart';
-import { IInstantiationService, InstantiationService } from 'code/platform/instantiation/instantiationService';
-import { decorator } from 'code/platform/instantiation/instantiation';
+import { DomBuilder } from '../../../../base/browser/domBuilder';
+import { Part } from '../part';
+import { TabControl } from './tabControl';
+import { Editors } from './editor/editors';
+import { IEditorService, EditorPart } from './editor/editorPart';
+import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { decorator } from '../../../../platform/instantiation/instantiation';
 
 export const ITitlePartService = decorator<TitlePart>('titlePart');
 

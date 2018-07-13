@@ -1,6 +1,6 @@
 'use strict';
 
-import { IDoneIterator } from 'code/base/common/iterator';
+import { IDoneIterator } from './iterator';
 
 class Node<E> {
     element: E;
@@ -37,6 +37,7 @@ export class LinkedList<E> {
     insertBefore(element: E, elementAfter: E = this._last.element) {
         let iter, target;
         let targetNode;
+
         for (iter = this.iterator(), target = iter.next(); !target.done; target = iter.next()) {
             if (target.value === elementAfter) {
                 targetNode = target.node;

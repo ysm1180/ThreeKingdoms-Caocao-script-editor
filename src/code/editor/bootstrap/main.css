@@ -9,6 +9,11 @@ body {
     font-family: sans-serif;
 }
 
+.builder-hidden {
+    display: none !important;
+    visibility: hidden !important;
+}
+
 .theme-dark {
     background-color: #1e1e1e;
     font-family: -apple-system, BlinkMacSystemFont, Segoe WPC, Segoe UI, HelveticaNeue-Light, Noto Sans, Malgun Gothic, Nanum Gothic, Dotom, Apple SD Gothic Neo, AppleGothic, Source Han Sans K, Source Han Sans JR, Source Han Sans, UnDotum, FBaekmuk Gulim, sans-serif;

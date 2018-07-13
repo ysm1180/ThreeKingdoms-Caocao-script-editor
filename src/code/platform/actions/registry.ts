@@ -1,5 +1,5 @@
-import { ICommandHandler } from 'code/platform/commands/commands';
-import { ContextKeyExpr } from 'code/platform/contexts/contextKey';
+import { ICommandHandler } from '../commands/commands';
+import { ContextKeyExpr } from '../contexts/contextKey';
 
 export interface IMenuItem {
     command: {

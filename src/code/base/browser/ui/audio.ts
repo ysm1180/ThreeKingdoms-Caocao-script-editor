@@ -1,6 +1,6 @@
-import { $, DomBuilder } from 'code/base/browser/domBuilder';
-import { Disposable, IDisposable, dispose } from 'code/base/common/lifecycle';
-import { addDisposableEventListener, removeClass, addClass } from 'code/base/browser/dom';
+import { $, DomBuilder } from '../domBuilder';
+import { Disposable, IDisposable, dispose } from '../../common/lifecycle';
+import { addDisposableEventListener, removeClass, addClass } from '../dom';
 import { StandardMouseEvent } from '../mouseEvent';
 
 export class AudioPlayer extends Disposable {

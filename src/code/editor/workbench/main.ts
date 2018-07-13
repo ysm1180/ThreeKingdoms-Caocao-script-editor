@@ -1,8 +1,9 @@
-import 'code/editor/workbench/parts/electron-browser/menu.registry';
-import 'code/editor/workbench/parts/electron-browser/sidebar.registry';
-import 'code/editor/workbench/parts/electron-browser/statusbar.registry';
+import './parts/electron-browser/menu.registry';
+import './parts/electron-browser/sidebar.registry';
+import './parts/electron-browser/statusbar.registry';
+import './parts/electron-browser/file.registry';
 
-import { WorkbenchShell } from 'code/editor/workbench/browser/shell';
+import { WorkbenchShell } from './browser/shell';
 
 
 export function startup() {

@@ -1,4 +1,4 @@
-import { bytesToNumber } from 'code/base/common/convert';
+import { bytesToNumber } from '../../../base/common/convert';
 
 export const enum ImageType {
     Png = 'png',
@@ -6,7 +6,7 @@ export const enum ImageType {
     Jpg = 'jpg',
 }
 
-export class ImageData {
+export class ImageResource {
     private _data: Uint8Array;
     private _width: number;
     private _height: number;
@@ -17,25 +17,12 @@ export class ImageData {
 
     public build(data: Uint8Array) {
         this._data = data;
-        this._type = ImageData.getImageType(this._data);
+        this._type = ImageResource.getTypeFromBinary(this._data);
         
         if (this._type === ImageType.Png) {
             this._width = bytesToNumber(this.data.slice(16), true);
             this._height = bytesToNumber(this.data.slice(20), true);
         }
-    }
-
-    public encodeToBase64() {
-        if (this._type !== null) {
-            let index = this._data.length;
-            const base64 = [];
-            while (index--) {
-                base64[index] = String.fromCharCode(this._data[index]);
-            }
-            return btoa(base64.join(''));
-        }
-
-        return null;
     }
 
     public get type(): ImageType {
@@ -54,7 +41,7 @@ export class ImageData {
         return this._height;
     }
 
-    static getImageType(data: Uint8Array): ImageType {
+    public static getTypeFromBinary(data: Uint8Array): ImageType {
         let type: ImageType;
         if (data[0] === 'B'.charCodeAt(0) && data[1] === 'M'.charCodeAt(0)) {
             type = ImageType.Bmp;

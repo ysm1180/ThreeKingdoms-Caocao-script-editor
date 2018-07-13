@@ -1,10 +1,10 @@
-import { $, DomBuilder } from 'code/base/browser/domBuilder';
-import { Workbench } from 'code/editor/workbench/browser/workbench';
-import { ElectronWindow } from 'code/editor/workbench/window';
-import { InstantiationService } from 'code/platform/instantiation/instantiationService';
-import { ServiceStorage } from 'code/platform/instantiation/serviceStorage';
-import { IWindowService, WindowManager } from 'code/electron-main/windows';
-import { IStorageService, StorageService } from 'code/editor/workbench/services/electron-browser/storageService';
+import { $, DomBuilder } from '../../../base/browser/domBuilder';
+import { Workbench } from './workbench';
+import { ElectronWindow } from '../window';
+import { InstantiationService } from '../../../platform/instantiation/instantiationService';
+import { ServiceStorage } from '../../../platform/instantiation/serviceStorage';
+import { IWindowService, WindowManager } from '../../../electron-main/windows';
+import { IStorageService, StorageService } from '../services/electron-browser/storageService';
 
 export class WorkbenchShell {
     private container: HTMLElement;

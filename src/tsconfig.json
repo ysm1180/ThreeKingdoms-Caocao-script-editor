@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"experimentalDecorators": true,
 		"module": "amd",
 		"moduleResolution": "classic",
 		"noImplicitAny": false,
@@ -7,7 +8,6 @@
 		"preserveConstEnums": true,
 		"target": "es6",
 		"sourceMap": true,
-		"experimentalDecorators": true,
 		"declaration": false,
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,

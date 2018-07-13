@@ -1,5 +1,5 @@
-import { Event } from 'code/base/common/event';
-import { Disposable } from 'code/base/common/lifecycle';
+import { Event } from '../../common/event';
+import { Disposable } from '../../common/lifecycle';
 import { addDisposableEventListener } from '../dom';
 
 export interface InputBoxOption {
