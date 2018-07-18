@@ -39,6 +39,6 @@ export class ElectronWindow {
     }
 
     private onSaveFile(input: IEditorInput): void {
-        input.save();
+        
     }
 }

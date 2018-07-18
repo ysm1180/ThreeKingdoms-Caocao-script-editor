@@ -36,7 +36,7 @@ export interface IStatusbarEntry {
 }
 
 export const StatusbarRegistry = new class {
-    private _items: StatusbarItemDescriptor[];
+    _items: StatusbarItemDescriptor[];
 
     constructor() {
         this._items = [];

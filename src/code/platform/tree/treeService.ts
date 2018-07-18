@@ -1,8 +1,8 @@
 import { Disposable } from '../../base/common/lifecycle';
 import { Tree } from '../../base/parts/tree/browser/tree';
-import { decorator } from '../instantiation/instantiation';
+import { decorator, ServiceIdentifier } from '../instantiation/instantiation';
 
-export const ITreeService = decorator<TreeService>('treeService');
+export const ITreeService: ServiceIdentifier<TreeService> = decorator<TreeService>('treeService');
 
 export class TreeService extends Disposable {
     private _lastFocusedTree: Tree;

@@ -1,4 +1,4 @@
-import { Context, ContextKeyService } from './contextKeyService';
+import { Context, ContextKeyService, ContextKey } from './contextKeyService';
 
 export abstract class ContextKeyExpr {
     public static has(key: string) {
@@ -108,7 +108,7 @@ export class RawContextKey<T> extends ContextKeyHasExpr {
         this.defaultValue = defaultValue;
     }
 
-    public bindTo(service: ContextKeyService) {
+    public bindTo(service: ContextKeyService): ContextKey<T> {
         return service.createKey(this.key, this.defaultValue);
     }
 

@@ -22,7 +22,7 @@ export class MenuId {
 }
 
 export const MenuRegistry = new class {
-    private _menuItems: { [loc: string]: IMenuItem[] } = Object.create(null);
+    _menuItems: { [loc: string]: IMenuItem[] } = Object.create(null);
 
     public appendMenuItem({ id }: MenuId, item: IMenuItem) {
         let array = this._menuItems[id];

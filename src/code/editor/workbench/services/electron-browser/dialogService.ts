@@ -1,9 +1,9 @@
 import { IConfirmation, IConfirmationResult, IOpenningFile, getFileFilters, ISavingFile } from '../../../../platform/dialogs/dialogs';
-import { decorator } from '../../../../platform/instantiation/instantiation';
-import { IOpenFileRequest } from '../../../../platform/windows/windows';
+import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
+import { IOpenFileRequest, ISaveFileRequest } from '../../../../platform/windows/windows';
 import { IWindowService } from '../../../../electron-main/windows';
 
-export const IDialogService = decorator<DialogService>('dialogService');
+export const IDialogService: ServiceIdentifier<DialogService> = decorator<DialogService>('dialogService');
 
 
 export class DialogService {
@@ -90,7 +90,7 @@ export class DialogService {
         return options;
     }
 
-    public save(saving: ISavingFile) {
+    public save(saving: ISavingFile): Promise<ISaveFileRequest> {
         const options = this.getSavingFileOptions(saving);
 
         return this.windowService.showSaveDialog(options);

@@ -11,7 +11,7 @@ export interface ICommand {
 }
 
 export const CommandsRegistry = new class {
-    private _commands = new Map<string, ICommand>();
+    _commands = new Map<string, ICommand>();
 
     constructor() {
     }

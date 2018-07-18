@@ -1,7 +1,7 @@
-import { decorator } from '../../../../platform/instantiation/instantiation';
+import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 import { isNullOrUndefined, isString } from '../../../../base/common/types';
 
-export const IStorageService = decorator<StorageService>('storageService');
+export const IStorageService: ServiceIdentifier<StorageService> = decorator<StorageService>('storageService');
 
 export class StorageService {
     constructor(

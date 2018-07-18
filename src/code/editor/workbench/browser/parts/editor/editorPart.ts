@@ -1,14 +1,14 @@
 import { DomBuilder, $ } from '../../../../../base/browser/domBuilder';
 import { Event } from '../../../../../base/common/event';
-import { IEditorInput, IEditorEvent, IEditorDescriptor } from '../../../../../platform/editor/editor';
+import { IEditorInput, IEditorEvent } from '../../../../../platform/editor/editor';
 import { Part } from '../../part';
 import { Editors } from './editors';
 import { BaseEditor } from './baseEditor';
-import { decorator } from '../../../../../platform/instantiation/instantiation';
+import { decorator, ServiceIdentifier } from '../../../../../platform/instantiation/instantiation';
 import { IInstantiationService, InstantiationService } from '../../../../../platform/instantiation/instantiationService';
 import { EditorRegistry, EditorDescriptor } from '../../editor';
 
-export const IEditorService = decorator<EditorPart>('editorPart');
+export const IEditorService: ServiceIdentifier<EditorPart> = decorator<EditorPart>('editorPart');
 
 export class EditorPart extends Part {
     private editorContainer: DomBuilder;

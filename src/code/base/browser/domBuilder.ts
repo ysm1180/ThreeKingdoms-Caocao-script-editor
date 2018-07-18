@@ -490,4 +490,6 @@ export const $: QuickDomBuilder = function (arg?: any): DomBuilder {
     } else {
         throw new Error('Bad use of $');
     }
+
+    return null;
 };

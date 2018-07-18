@@ -4,9 +4,9 @@ import { TabControl } from './tabControl';
 import { Editors } from './editor/editors';
 import { IEditorService, EditorPart } from './editor/editorPart';
 import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
-import { decorator } from '../../../../platform/instantiation/instantiation';
+import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 
-export const ITitlePartService = decorator<TitlePart>('titlePart');
+export const ITitlePartService: ServiceIdentifier<TitlePart> = decorator<TitlePart>('titlePart');
 
 export class TitlePart extends Part {
     private tab: TabControl;

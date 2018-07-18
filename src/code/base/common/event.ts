@@ -1,7 +1,7 @@
 import { IDisposable, toDisposable, once } from './lifecycle';
 import { LinkedList } from './linkedList';
 
-type Listener<T> = (e: T) => any;
+export type Listener<T> = (e: T) => any;
 
 export class ChainEventStorage<T> {
     private _relayEvent: Event<T>;
@@ -30,6 +30,13 @@ export class ChainEventStorage<T> {
     public add(event: Event<T>): IDisposable {
         if (!this._relayEvent) {
             this._pendingEvents.push(event);
+
+            return toDisposable(() => {
+                const index = this._pendingEvents.indexOf(event);
+                if (index !== -1) {
+                    this._pendingEvents.splice(index, 1);
+                }
+            });
         } else {
             const remove = event.add(this._relayEvent.listener);
             this._disposable.push(remove);
@@ -98,8 +105,8 @@ export class RelayEvent<T> {
         event.add(this._event.listener);
     }
 
-    public add(listener: Listener<T>, thisArg?: any): IDisposable {
-        const remove = this._event.add(listener, thisArg);
+    public add(fn: Listener<T>, thisArg?: any): IDisposable {
+        const remove = this._event.add(fn, thisArg);
 
         return remove; 
     }

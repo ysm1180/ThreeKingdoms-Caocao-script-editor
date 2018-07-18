@@ -79,7 +79,7 @@ export class Menu {
         const result: MenuItemInfo[] = [];
 
         for (let group of this.menuGroups) {
-            let [id, items] = group;
+            let [, items] = group;
 
             const oldLength = result.length;
             for (const item of items) {

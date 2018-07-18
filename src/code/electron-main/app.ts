@@ -1,4 +1,4 @@
-import { CodeWindow, getDefaultState } from './window';
+import { getDefaultState } from './window';
 import { AppMenu } from './menus';
 import { WindowManager, IWindowService } from './windows';
 import { InstantiationService } from '../platform/instantiation/instantiationService';
@@ -7,7 +7,6 @@ import { WindowChannel } from '../platform/windows/windowsIpc';
 import { IFileStorageService, FileStorageService } from '../platform/files/node/fileStorageService';
 
 export class EditorApplication {
-    private mainWindow: CodeWindow;
     private menu: AppMenu;
     private windowManager: WindowManager;
 

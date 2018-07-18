@@ -9,7 +9,6 @@ export interface InputBoxOption {
 export class Input extends Disposable {
     private input: HTMLInputElement;
     private options: InputBoxOption;
-    private _disposable: any[] = [];
 
     public onDidChange = new Event<string>();
 

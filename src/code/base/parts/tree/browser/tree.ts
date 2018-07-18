@@ -63,7 +63,7 @@ export class Tree {
 
         this.context = new TreeContext(this, configuration, options);
         this.model = new TreeModel(this.context);
-        this.view = new TreeView(this.context, container);
+        this.view = new TreeView(this.context, this.container);
 
         this.view.setModel(this.model);
 

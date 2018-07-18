@@ -2,7 +2,7 @@ import { DomBuilder } from '../../../../base/browser/domBuilder';
 import { Tree, ITreeOptions, ITreeConfiguration } from '../../../../base/parts/tree/browser/tree';
 import { IEditorEvent, IEditorInput } from '../../../../platform/editor/editor';
 import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
-import { RawContextKey, ContextKeyExpr } from '../../../../platform/contexts/contextKey';
+import { RawContextKey, ContextKeyExpr, ContextKeyNotExpr } from '../../../../platform/contexts/contextKey';
 import { ContextKey, IContextKeyService, ContextKeyService } from '../../../../platform/contexts/contextKeyService';
 import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { Me5File } from '../../../common/file';
@@ -18,7 +18,7 @@ export const explorerItemIsMe5StatId = 'explorerItemIsMe5Stat';
 export const explorerGroupContext = new RawContextKey<boolean>(explorerItemIsMe5GroupId, false);
 export const explorerRootContext = new RawContextKey<boolean>(explorerItemIsMe5StatId, false);
 
-export const explorerItemContext = ContextKeyExpr.not(ContextKeyExpr.or(explorerGroupContext, explorerRootContext));
+export const explorerItemContext: ContextKeyNotExpr = ContextKeyExpr.not(ContextKeyExpr.or(explorerGroupContext, explorerRootContext));
 
 export class Me5Tree extends Tree {
     private _cache = new Map<IEditorInput, Me5Stat>();

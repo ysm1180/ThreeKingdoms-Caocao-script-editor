@@ -45,7 +45,7 @@ export const Extensions = {
 };
 
 export const EditorInputRegistry = new class {
-	private inputs: { [extension: string]: EditorInputDescriptor };
+	inputs: { [extension: string]: EditorInputDescriptor };
 
 	constructor() {
 		this.inputs = {};
@@ -65,7 +65,7 @@ export const EditorInputRegistry = new class {
 const INPUT_DESCRIPTORS_PROPERTY = '__$inputDescriptors';
 
 export const EditorRegistry = new class {
-	private editors: EditorDescriptor[];
+	editors: EditorDescriptor[];
 
 	constructor() {
 		this.editors = [];

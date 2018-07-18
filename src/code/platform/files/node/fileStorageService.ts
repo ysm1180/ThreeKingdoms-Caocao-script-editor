@@ -1,9 +1,9 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { isUndefined } from '../../../base/common/types';
-import { decorator } from '../../instantiation/instantiation';
+import { decorator, ServiceIdentifier } from '../../instantiation/instantiation';
 
-export const IFileStorageService = decorator<FileStorageService>('fileStorageService');
+export const IFileStorageService: ServiceIdentifier<FileStorageService> = decorator<FileStorageService>('fileStorageService');
 
 export class FileStorage {
     private database: Object;

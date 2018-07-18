@@ -2,12 +2,12 @@ import * as path from 'path';
 import { BrowserWindow, dialog, app } from 'electron';
 import { CodeWindow, IWindowCreationOption } from './window';
 import { getFileFilters, IFileExtension } from '../platform/dialogs/dialogs';
-import { decorator } from '../platform/instantiation/instantiation';
+import { decorator, ServiceIdentifier } from '../platform/instantiation/instantiation';
 import { IOpenFileRequest, IMessageBoxResult, ISaveFileRequest } from '../platform/windows/windows';
 import { IInstantiationService, InstantiationService } from '../platform/instantiation/instantiationService';
 import { IFileStorageService, FileStorageService } from '../platform/files/node/fileStorageService';
 
-export const IWindowService = decorator<IWindowService>('windowService');
+export const IWindowService: ServiceIdentifier<IWindowService> = decorator<IWindowService>('windowService');
 
 export interface IWindowService {
     showOpenDialog(options: Electron.OpenDialogOptions): Promise<IOpenFileRequest>;

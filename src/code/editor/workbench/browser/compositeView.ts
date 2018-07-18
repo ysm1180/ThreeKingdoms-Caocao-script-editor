@@ -38,8 +38,7 @@ export class CompositeViewDescriptor {
 }
 
 export const CompositViewRegistry = new class {
-
-    private composites: CompositeViewDescriptor[];
+    composites: CompositeViewDescriptor[];
 
     constructor() {
         this.composites = [];

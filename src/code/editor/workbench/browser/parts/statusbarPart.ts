@@ -1,12 +1,12 @@
 import { addClass } from '../../../../base/browser/dom';
 import { DomBuilder, $ } from '../../../../base/browser/domBuilder';
-import { decorator } from '../../../../platform/instantiation/instantiation';
+import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 import { IContextKeyService, ContextKeyService } from '../../../../platform/contexts/contextKeyService';
 import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { StatusbarRegistry, StatusbarItemAlignment } from '../../../../platform/statusbar/statusbar';
 import { Part } from '../part';
 
-export const IStatusbarService = decorator<StatusbarPart>('statusbarPart');
+export const IStatusbarService: ServiceIdentifier<StatusbarPart> = decorator<StatusbarPart>('statusbarPart');
 
 export class StatusbarPart extends Part {
     private statusItemContainer: DomBuilder;

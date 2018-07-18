@@ -2,10 +2,10 @@ import { ISavingFile } from '../../../../platform/dialogs/dialogs';
 import { ISaveMe5Data, Me5File } from '../../../common/file';
 import { Me5Stat } from '../../parts/files/me5Data';
 import { IDialogService, DialogService } from '../electron-browser/dialogService';
-import { decorator } from '../../../../platform/instantiation/instantiation';
+import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
 
-export const IMe5FileService = decorator<Me5FileService>('me5FileService');
+export const IMe5FileService: ServiceIdentifier<Me5FileService> = decorator<Me5FileService>('me5FileService');
 
 export class Me5FileService {
     constructor(

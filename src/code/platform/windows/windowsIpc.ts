@@ -34,7 +34,7 @@ export class WindowChannel {
 
 
 export class WindowClientService implements IWindowService {
-    constructor(private channel: WindowChannel) {
+    constructor() {
         
     }
 

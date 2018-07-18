@@ -1,5 +1,5 @@
 import { BinaryFile } from '../../../../platform/files/file';
-import { decorator } from '../../../../platform/instantiation/instantiation';
+import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 import { IConfirmation } from '../../../../platform/dialogs/dialogs';
 import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
 import { Me5Stat, ItemState } from '../../parts/files/me5Data';
@@ -7,7 +7,7 @@ import { Me5DataController } from '../../parts/me5ExplorerViewer';
 import { IDialogService, DialogService } from '../electron-browser/dialogService';
 import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
 
-export const IMe5DataService = decorator<Me5DataService>('me5DataService');
+export const IMe5DataService: ServiceIdentifier<Me5DataService> = decorator<Me5DataService>('me5DataService');
 
 export class Me5DataService {
     constructor(

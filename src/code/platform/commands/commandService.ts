@@ -1,8 +1,8 @@
-import { decorator } from '../instantiation/instantiation';
+import { decorator, ServiceIdentifier } from '../instantiation/instantiation';
 import { IInstantiationService, InstantiationService } from '../instantiation/instantiationService';
 import { CommandsRegistry } from './commands';
 
-export const ICommandService = decorator<CommandService>('commandService');
+export const ICommandService: ServiceIdentifier<CommandService> = decorator<CommandService>('commandService');
 
 
 

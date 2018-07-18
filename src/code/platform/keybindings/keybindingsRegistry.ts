@@ -17,7 +17,7 @@ export interface IKeybindingItem {
 }
 
 export const KeybindingsRegistry = new class {
-    private _keybindings: IKeybindingItem[];
+    _keybindings: IKeybindingItem[];
 
     constructor() {
         this._keybindings = [];
