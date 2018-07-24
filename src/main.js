@@ -1,10 +1,12 @@
 let app = require('electron').app;
-let fs = require('fs');
 let path = require('path');
 let requirejs = require('requirejs');
 
-
-process.chdir(path.join(path.resolve(), 'dist'));
+if (process.env['NODE_ENV'] === 'development') {
+  process.chdir(path.join(path.resolve(), 'dist'));
+} else {
+  process.chdir(path.join(path.resolve(), 'resources/app/dist'));
+}
 
 app.on('ready', () => {
   requirejs(['code/electron-main/main'], function() {});

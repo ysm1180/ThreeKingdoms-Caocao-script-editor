@@ -24,7 +24,7 @@ export class AudioResource {
     }
 
     public static getTypeFromBinary(data: Uint8Array): AudioType {
-        let type: AudioType;
+        let type: AudioType = null;
         if (data[0] === 0x49 && data[1] === 0x44 && data[2] === 0x33) {
             type = AudioType.Mp3;
         } else if (data[0] === 0x52 && data[1] === 0x49 && data[2] === 0x46) {

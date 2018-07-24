@@ -5,8 +5,8 @@
     "tasks": [
         {
             "type": "npm",
-            "label": "Build",
-            "script": "start",
+            "label": "Development",
+            "script": "dev",
             "group": "build",
             "presentation": {
                 "reveal": "always"

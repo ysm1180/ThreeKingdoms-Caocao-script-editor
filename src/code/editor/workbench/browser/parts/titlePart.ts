@@ -1,7 +1,6 @@
 import { DomBuilder } from '../../../../base/browser/domBuilder';
 import { Part } from '../part';
 import { TabControl } from './tabControl';
-import { Editors } from './editor/editors';
 import { IEditorService, EditorPart } from './editor/editorPart';
 import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
@@ -25,13 +24,14 @@ export class TitlePart extends Part {
         this.tab = this.instantiationService.create(TabControl);
         this.tab.create(this.getContentArea().getHTMLElement());
 
-        this.editorService.onEditorChanged.add(() => {
-            this.update(this.editorService.getEditors());
+        const editors = this.editorService.getEditorGroup();
+        this.tab.setContext(editors);
+        editors.onEditorStateChanged.add(() => {
+            this.update();
         });
     }
 
-    public update(context: Editors): void {
-        this.tab.setContext(context);
+    public update(): void {
         this.tab.refresh();
     }
 }

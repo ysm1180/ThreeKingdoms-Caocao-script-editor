@@ -11,12 +11,12 @@ export type FilterFuntion<T> = (e: T) => boolean;
 export class Me5Stat extends Disposable {
     private static INDEX = 1;
 
-    private resource: string;
+    private _path: string;
     private _state: ItemState;
     private _parent: Me5Stat;
     private _isGroup: boolean;
     private _name: string;
-    private children = new LinkedList<Me5Stat>();
+    private _children = new LinkedList<Me5Stat>();
     private _data: Uint8Array;
     private readonly id = String(Me5Stat.INDEX++);
 
@@ -29,7 +29,7 @@ export class Me5Stat extends Disposable {
             this.root = this;
         } 
 
-        this.resource = path;
+        this._path = path;
         this.isGroup = isGroup;
         this._name = name;
         this._data = data;
@@ -37,9 +37,9 @@ export class Me5Stat extends Disposable {
 
     public getId(): string {
         if (this.isRoot) {
-            return this.resource;
+            return this._path;
         } else {
-            return `${this.resource}:${this.id}`;
+            return `${this._path}:${this.id}`;
         }
     }
 
@@ -71,9 +71,9 @@ export class Me5Stat extends Disposable {
         if (value !== this._isGroup) {
             this._isGroup = value;
             if (this._isGroup) {
-                this.children = new LinkedList<Me5Stat>();
+                this._children = new LinkedList<Me5Stat>();
             } else {
-                this.children = undefined;
+                this._children = undefined;
             }
         }
     }
@@ -91,7 +91,7 @@ export class Me5Stat extends Disposable {
     }
 
     public getChildren(filter?: FilterFuntion<Me5Stat>): Me5Stat[] {
-        const result = this.children.toArray();
+        const result = this._children.toArray();
 
         if (!filter) {
             filter = () => true;
@@ -103,9 +103,9 @@ export class Me5Stat extends Disposable {
     public insertChild(child: Me5Stat, itemAfter?: Me5Stat): IDisposable {
         let remove;
         if (itemAfter) {
-            remove = this.children.insertBefore(child, itemAfter);
+            remove = this._children.insertBefore(child, itemAfter);
         } else {
-            remove = this.children.push(child);
+            remove = this._children.push(child);
         }
         return toDisposable(once(remove));
     }

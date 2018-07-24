@@ -16,6 +16,8 @@ import { IWindowService } from '../../../electron-main/windows';
 import { StatusbarPart, IStatusbarService } from './parts/statusbarPart';
 import { IContextKeyService, ContextKeyService } from '../../../platform/contexts/contextKeyService';
 import { ICompositeViewService, CompositeViewService } from '../services/view/compositeViewService';
+import { IFileService, FileService } from '../services/files/node/fileService';
+import { IMe5FileService, Me5FileService } from '../services/me5/me5FileService';
 
 export class Workbench {
     private container: HTMLElement;
@@ -65,6 +67,9 @@ export class Workbench {
         this.serviceStorage.set(IContextMenuService, this.instantiationService.create(ContextMenuService));
 
         this.serviceStorage.set(IMe5DataService, this.instantiationService.create(Me5DataService));
+        this.serviceStorage.set(IMe5FileService, this.instantiationService.create(Me5FileService));
+
+        this.serviceStorage.set(IFileService, this.instantiationService.create(FileService));
 
         this.editor = this.instantiationService.create(EditorPart);
         this.serviceStorage.set(IEditorService, this.editor);

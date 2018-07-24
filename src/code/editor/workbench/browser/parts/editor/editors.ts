@@ -1,9 +1,15 @@
 import { IEditorInput } from '../../../../../platform/editor/editor';
+import { Event } from '../../../../../base/common/event';
 
-export class Editors {
+export class EditorGroup {
     private editors: IEditorInput[];
 
     private active: IEditorInput;
+
+    public onEditorStateChanged = new Event<IEditorInput>();
+    public onEditorOpened = new Event<IEditorInput>();
+    public onEditorClosed = new Event<IEditorInput>();
+    public onEditorActivated = new Event<IEditorInput>();
 
     constructor() {
         this.editors = [];
@@ -47,8 +53,9 @@ export class Editors {
         const index = this.indexOf(editor);
         if (index === -1) {
             this.editors.push(editor);
-        } else {
-        }
+            
+            this.fireEvent(this.onEditorOpened, editor);
+        } 
 
         this.setActive(editor);
     }
@@ -72,6 +79,8 @@ export class Editors {
         }
 
         this.editors.splice(index, 1);
+
+        this.fireEvent(this.onEditorClosed, editor);
     }
 
     private setActive(editor: IEditorInput) {
@@ -80,7 +89,18 @@ export class Editors {
             return;
         }
 
+        if (this.matches(this.active, editor)) {
+            return;
+        }
+
         this.active = editor;
+
+        this.fireEvent(this.onEditorActivated, editor);
+    }
+
+    private fireEvent(event: Event<IEditorInput>, editor: IEditorInput) {
+        event.fire(editor);
+        this.onEditorStateChanged.fire(editor);
     }
 
     public isActive(editor: IEditorInput): boolean {

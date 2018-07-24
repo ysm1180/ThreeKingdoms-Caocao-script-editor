@@ -1,5 +1,5 @@
 export function encodeToBase64(data: Uint8Array) {
-    if (data.length > 0) {
+    if (data && data.length > 0) {
         let index = data.length;
         const base64 = [];
         while (index--) {

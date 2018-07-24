@@ -1,26 +1,24 @@
-import { $, DomBuilder } from '../../../../../../base/browser/domBuilder';
-import { IEditorInput } from '../../../../../../platform/editor/editor';
-import { BaseEditor } from '../baseEditor';
-import { BinaryDataEditorModel } from '../binaryDataEditorModel';
-import { BinaryResourceViewer } from '../resourceViewer';
+import { $, DomBuilder } from '../../../../../base/browser/domBuilder';
+import { IEditorInput } from '../../../../../platform/editor/editor';
+import { BaseEditor } from './baseEditor';
+import { BinaryFileEditorDataModel } from './editorDataModel';
+import { BinaryResourceViewer } from './resourceViewer';
 
-export const Me5ActiveItemKey = 'me5ActiveItem';
-
-export class Me5ItemViewEditor extends BaseEditor {
-    static ID = 'editor.me5ItemViewer';
+export class ResourceViewEditor extends BaseEditor {
+    static ID = 'editor.resourceViewerEditor';
 
     private viewer: DomBuilder;
 
     constructor(
     ) {
-        super(Me5ItemViewEditor.ID);
+        super(ResourceViewEditor.ID);
     }
 
     public create(parent: DomBuilder) {
         super.create(parent);
 
         this.viewer = $().div({
-            class: 'item-viewer-editor'
+            class: 'resource-viewer-editor'
         });
 
         this.viewer.build(parent);
@@ -32,8 +30,8 @@ export class Me5ItemViewEditor extends BaseEditor {
             return Promise.resolve();
         }
 
-        return input.resolve().then((data: BinaryDataEditorModel) => {
-            if (!data || !(data instanceof BinaryDataEditorModel)) {
+        return input.resolve().then((data: BinaryFileEditorDataModel) => {
+            if (!data || !(data instanceof BinaryFileEditorDataModel)) {
                 return;
             }
 

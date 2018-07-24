@@ -98,4 +98,6 @@ gulp.task('watch', function (done) {
 	done();
 });
 
-gulp.task('build', gulp.series('tslint', 'clean', 'source', 'compile', 'watch'));
+gulp.task('development', gulp.series('tslint', 'clean', 'source', 'compile', 'watch'));
+
+gulp.task('build', gulp.series('tslint', 'clean', 'source', 'compile'));

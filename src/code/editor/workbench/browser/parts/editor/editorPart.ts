@@ -2,7 +2,7 @@ import { DomBuilder, $ } from '../../../../../base/browser/domBuilder';
 import { Event } from '../../../../../base/common/event';
 import { IEditorInput, IEditorEvent } from '../../../../../platform/editor/editor';
 import { Part } from '../../part';
-import { Editors } from './editors';
+import { EditorGroup } from './editors';
 import { BaseEditor } from './baseEditor';
 import { decorator, ServiceIdentifier } from '../../../../../platform/instantiation/instantiation';
 import { IInstantiationService, InstantiationService } from '../../../../../platform/instantiation/instantiationService';
@@ -13,23 +13,21 @@ export const IEditorService: ServiceIdentifier<EditorPart> = decorator<EditorPar
 export class EditorPart extends Part {
     private editorContainer: DomBuilder;
 
-    private editors: Editors;
+    private editors: EditorGroup;
     private currentEditor: BaseEditor;
-
-    public onEditorChanged = new Event<void>();
+    
     public onEditorInputChanged = new Event<IEditorEvent>();
-    public onEditorClosed = new Event<IEditorEvent>();
 
     constructor(
         @IInstantiationService private instantiationService: InstantiationService,
     ) {
         super();
 
-        this.editors = new Editors();
+        this.editors = this.instantiationService.create(EditorGroup);
         this.currentEditor = null;
     }
 
-    public getEditors() {
+    public getEditorGroup() {
         return this.editors;
     }
 
@@ -52,20 +50,14 @@ export class EditorPart extends Part {
             return;
         }
 
-        const isChanged = !this.editors.isActive(input);
-
         this.editors.openEditor(input);
 
         const editor = this.doShowEditor(input);
         if (!editor) {
             return;
         }
-        this.doSetInput(input, editor);
-        this.currentEditor = editor;
 
-        if (isChanged) {
-            this.onEditorChanged.fire();
-        }
+        this.doSetInput(input, editor);
     }
 
     private doSetInput(input: IEditorInput, editor: BaseEditor) {
@@ -88,6 +80,7 @@ export class EditorPart extends Part {
         }
 
         const editor = this.doCreateViewEditor(desc);
+        this.currentEditor = editor;
 
         return editor;
     }
@@ -118,11 +111,6 @@ export class EditorPart extends Part {
         } else {
             this.doCloseInactiveEditor(input);
         }
-
-        const closeEventData: IEditorEvent = {
-            editor: input
-        };
-        this.onEditorClosed.fire(closeEventData);
     }
 
     private doCloseActiveEditor() {
@@ -130,14 +118,12 @@ export class EditorPart extends Part {
 
         if (this.editors.count > 0) {
             this.openEditor(this.editors.activeEditor);
+        } else {
+            this.doHideEditor(this.currentEditor);
         }
     }
 
     private doCloseInactiveEditor(input: IEditorInput) {
         this.editors.closeEditor(input, false);
-    }
-
-    public getActiveEditorInput(): IEditorInput {
-        return this.editors.activeEditor;
     }
 }

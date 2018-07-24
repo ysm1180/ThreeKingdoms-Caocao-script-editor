@@ -5,10 +5,13 @@ import { Part } from '../part';
 import { CompositeView, CompositViewRegistry } from '../compositeView';
 import { IEditorService, EditorPart } from './editor/editorPart';
 import { EXPLORER_VIEW_ID } from './me5Explorer';
+import { EditorGroup } from './editor/editors';
 
 export class SidebarPart extends Part {
     private instantiatedComposites: CompositeView[];
     private activeComposite: CompositeView;
+
+    private group: EditorGroup;
 
     private mapCompositeToCompositeContainer: { [id: string]: DomBuilder };
 
@@ -25,12 +28,16 @@ export class SidebarPart extends Part {
         this.instantiatedComposites = [];
         this.mapCompositeToCompositeContainer = {};
 
-        this.editorService.onEditorChanged.add(() => this.onEditorChanged());
+        this.group = this.editorService.getEditorGroup();
+        this.group.onEditorStateChanged.add(() => {
+            this.onEditorChanged();
+        });
     }
 
     private onEditorChanged() {
-        const activeInput = this.editorService.getActiveEditorInput();
+        const activeInput = this.group.activeEditor;
         if (!activeInput) {
+            this.hideActiveComposite();
             return;
         }
 

@@ -34,16 +34,18 @@ export class CodeWindow {
             height: option.state.height,
         };
 
-        const client = require('electron-connect').client;
         this.window = new BrowserWindow(options);
 
         this.window.loadURL(url.format({
             pathname: path.join(path.resolve(), 'code/editor/bootstrap/index.html'),
             protocol: 'file:',
-            slashes: true
+            slashes: true,
         }));
 
-        client.create(this.window);
+        if (process.env['NODE_ENV'] === 'development') {
+            const client = require('electron-connect').client;
+            client.create(this.window);
+        }
 
         this.registerListener();
     }

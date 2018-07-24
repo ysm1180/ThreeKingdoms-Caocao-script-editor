@@ -13,8 +13,7 @@ import { RawContextKey } from '../../../platform/contexts/contextKey';
 import { ContextKey, IContextKeyService, ContextKeyService } from '../../../platform/contexts/contextKeyService';
 import { Me5Stat, ItemState } from './files/me5Data';
 import { IInstantiationService, InstantiationService } from '../../../platform/instantiation/instantiationService';
-import { FileEditorInput } from './files/fileEditorInput';
-import { encodeToBase64 } from '../../../base/common/encode';
+import { BinaryFileEditorInput } from '../common/editor/binaryEditorInput';
 
 
 export const explorerEditableItemId = 'explorerRename';
@@ -65,7 +64,7 @@ export class Me5DataRenderer implements IDataRenderer {
         if (element.state === ItemState.Edit) {
             templateData.label.element.style.display = 'none';
             this.renderInput(tree, templateData.container, element);
-            this.editContext.set(true);            
+            this.editContext.set(true);
         } else {
             templateData.label.element.style.display = 'flex';
             templateData.label.setValue(element.name);
@@ -75,7 +74,7 @@ export class Me5DataRenderer implements IDataRenderer {
     private renderInput(tree: Tree, container: HTMLElement, element: Me5Stat) {
         const label = new Label(container);
         const input = new Input(label.element);
-        
+
         input.value = element.name;
         input.focus();
 
@@ -89,9 +88,9 @@ export class Me5DataRenderer implements IDataRenderer {
 
             dispose(toDispose);
             container.removeChild(label.element);
-            
+
             this.editContext.set(false);
-            
+
             tree.refresh(element, true);
         };
 
@@ -129,14 +128,10 @@ export class Me5DataController implements IDataController {
         tree.focus();
         tree.setFocus(element);
 
-        if (element.data) {
-            const base64 = encodeToBase64(element.data);
-            const root = element.root;
-            const input: FileEditorInput = this.instantiationService.create(FileEditorInput, `${root.getId()}?${base64}`);
-            input.setUseExtraData(true);
-            
-            this.editorService.openEditor(input);
-        }
+        const root = element.root;
+        const input: BinaryFileEditorInput = this.instantiationService.create(BinaryFileEditorInput, root.getId(), element.name, element.data);
+
+        this.editorService.openEditor(input);
     }
 
     public onContextMenu(tree: Tree, element: Me5Stat, event: ContextMenuEvent) {

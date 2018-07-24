@@ -29,7 +29,7 @@ export class TextFileEditor extends BaseEditor {
         }
 
         return input.resolve().then(() => {
-
+            
         });
     }
 

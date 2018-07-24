@@ -18,7 +18,7 @@ export class ElectronWindow {
         ipcRenderer.on('editor:openFiles', (e, data: IOpenFileRequest) => this.onOpenFiles(data));
 
         ipcRenderer.on('editor:saveFile', () => {
-            const input = this.editorService.getEditors().activeEditor;
+            const input = this.editorService.getEditorGroup().activeEditor;
             if (!input) {
                 return;
             }

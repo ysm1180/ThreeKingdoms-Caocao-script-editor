@@ -1,16 +1,17 @@
 import { DomBuilder } from '../../../../base/browser/domBuilder';
 import { Tree, ITreeOptions, ITreeConfiguration } from '../../../../base/parts/tree/browser/tree';
-import { IEditorEvent, IEditorInput } from '../../../../platform/editor/editor';
+import {  IEditorInput } from '../../../../platform/editor/editor';
 import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
 import { RawContextKey, ContextKeyExpr, ContextKeyNotExpr } from '../../../../platform/contexts/contextKey';
 import { ContextKey, IContextKeyService, ContextKeyService } from '../../../../platform/contexts/contextKeyService';
 import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
-import { Me5File } from '../../../common/file';
 import { CompositeView } from '../compositeView';
 import { IEditorService, EditorPart } from './editor/editorPart';
 import { Me5Stat } from '../../parts/files/me5Data';
 import { ICompositeViewService, CompositeViewService } from '../../services/view/compositeViewService';
 import { Me5DataSource, Me5DataRenderer, Me5DataController } from '../../parts/me5ExplorerViewer';
+import { IMe5FileService, Me5FileService } from '../../services/me5/me5FileService';
+import { EditorGroup } from './editor/editors';
 
 export const explorerItemIsMe5GroupId = 'explorerItemIsMe5Group';
 export const explorerItemIsMe5StatId = 'explorerItemIsMe5Stat';
@@ -72,7 +73,10 @@ export class Me5ExplorerView extends CompositeView {
     private groupContext: ContextKey<boolean>;
     private rootContext: ContextKey<boolean>;
 
+    private group: EditorGroup;
+
     constructor(
+        @IMe5FileService private me5FileService: Me5FileService,
         @IContextKeyService private contextKeyService: ContextKeyService,
         @IEditorService private editorService: EditorPart,
         @ICompositeViewService private compositeViewService: CompositeViewService,
@@ -104,24 +108,33 @@ export class Me5ExplorerView extends CompositeView {
             this.groupContext.set(focused.isGroup && !focused.isRoot);
             this.rootContext.set(focused.isRoot);
         }));
+        
+        this.group = this.editorService.getEditorGroup();
 
-        this.registerDispose(this.compositeViewService.onDidCompositeOpen.add(() => this.onChangeFile()));
+        this.registerDispose(this.compositeViewService.onDidCompositeOpen.add((composit) => this.onChangeFile(composit)));
+        this.registerDispose(this.group.onEditorClosed.add((editor) => {
+            this.explorerViewer.setCache(editor, null);
 
-        this.registerDispose(this.editorService.onEditorClosed.add((e: IEditorEvent) => {
-            const closedEditor = e.editor;
-            this.explorerViewer.setCache(closedEditor, null);
+            const activeEditorInput = this.group.activeEditor;
+            if (!activeEditorInput) {
+                this.explorerViewer.setRoot(null);
+                
+            }
         }));
     }
 
-    public onChangeFile() {
+    private onChangeFile(composit) {
+        if (composit !== this) {
+            return;
+        }
+
         const previousRoot = this.explorerViewer.getRoot() as Me5Stat;
         if (previousRoot) {
             this.setExpandedElements(previousRoot.getId());
         }
 
-        const activeEditorInput = this.editorService.getActiveEditorInput();
-        if (activeEditorInput === null) {
-            this.explorerViewer.setRoot(null);
+        const activeEditorInput = this.group.activeEditor;
+        if (!activeEditorInput) {
             return;
         }
 
@@ -131,29 +144,7 @@ export class Me5ExplorerView extends CompositeView {
         if (cacheData) {
             done = Promise.resolve(cacheData);
         } else {
-            const me5File = new Me5File(filePath);
-            done = me5File.open().then((data) => {
-                if (!data) {
-                    throw new Error();
-                }
-
-                const stat = new Me5Stat(filePath, true, null);
-                for (let i = 0, groupCount = me5File.getGroupCount(); i < groupCount; i++) {
-                    const group = new Me5Stat(filePath, true, stat, me5File.getGroupName(i));
-                    group.build(stat);
-                    for (let j = 0, itemCount = me5File.getGroupItemCount(i); j < itemCount; ++j) {
-                        const item = new Me5Stat(filePath, false, stat, me5File.getItemName(i, j), me5File.getItemData(i, j));
-                        item.build(group);
-                    }
-                }
-                return stat;
-            }).catch(() => {
-                const stat = new Me5Stat(filePath, true, null);
-                const group = new Me5Stat(filePath, true, stat, 'NEW GROUP');
-                group.build(stat);
-
-                return stat;
-            });
+            done = this.me5FileService.resolve(filePath);
         }
 
         done.then((stat) => {

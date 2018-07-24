@@ -1,12 +1,12 @@
 import * as Dom from '../../../../base/browser/dom';
 import { IDisposable, combinedDisposable } from '../../../../base/common/lifecycle';
-import { Editors } from './editor/editors';
+import { EditorGroup } from './editor/editors';
 import { EditorPart, IEditorService } from './editor/editorPart';
 
 export class TabControl {
     private parent: HTMLElement;
     private container: HTMLElement;
-    private context: Editors;
+    private context: EditorGroup;
 
     private labels: HTMLElement[];
 
@@ -28,7 +28,7 @@ export class TabControl {
         this.parent.appendChild(this.container);
     }
 
-    public setContext(context: Editors) {
+    public setContext(context: EditorGroup) {
         this.context = context;
     }
 

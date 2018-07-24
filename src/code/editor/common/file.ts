@@ -57,7 +57,7 @@ export class Me5File extends BinaryFile {
         return this.readNumber(this.itemInfoStartOffset + itemIndex * Me5File.ITEM_HEADER_SIZE);
     }
 
-    private getItemOffset(groupIndex: number, subItemIndex: number): number {
+    public getItemOffset(groupIndex: number, subItemIndex: number): number {
         const firstItemIndex = this.getFirstItemIndexInGroup(groupIndex);
         return this.getOffsetByItemIndex(firstItemIndex + subItemIndex);
     }
