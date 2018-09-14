@@ -1,5 +1,5 @@
 import { BaseEditor } from './parts/editor/baseEditor';
-import { InstantiationService } from '../../../platform/instantiation/instantiationService';
+import { IInstantiationService } from '../../../platform/instantiation/instantiationService';
 import { IEditorInput } from '../../../platform/editor/editor';
 import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
 import { isArray } from '../../../base/common/types';
@@ -11,7 +11,7 @@ export class EditorInputDescriptor {
 		this.ctor = ctor;
 	}
 
-	public instantiation(instantiationService: InstantiationService, resource: string) {
+	public instantiation(instantiationService: IInstantiationService, resource: string) {
 		return instantiationService.create(this.ctor, resource);
 	}
 }
@@ -30,7 +30,7 @@ export class EditorDescriptor {
 		return this.id;
 	}
 
-	public instantiation(instantiationService: InstantiationService) {
+	public instantiation(instantiationService: IInstantiationService) {
 		return instantiationService.create(this.ctor);
 	}
 

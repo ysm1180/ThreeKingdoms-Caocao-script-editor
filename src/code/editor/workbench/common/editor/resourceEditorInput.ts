@@ -1,15 +1,15 @@
 import { IEditorInput } from '../../../../platform/editor/editor';
-import { ResourceViewEditor } from '../../browser/parts/editor/binaryViewEditor';
-import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
-import { BinaryFileEditorDataModel } from '../../browser/parts/editor/editorDataModel';
+import { ResourceViewEditor } from '../../browser/parts/editor/resourceViewEditor';
+import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { ResourceFileEditorDataModel } from '../../browser/parts/editor/editorDataModel';
 import { encodeToBase64 } from '../../../../base/common/encode';
 
-export class BinaryFileEditorInput implements IEditorInput {
+export class ResourceEditorInput implements IEditorInput {
     constructor(
         private resource: string,
         private name: string,
         private data: Uint8Array,
-        @IInstantiationService private instantiationService: InstantiationService,
+        @IInstantiationService private instantiationService: IInstantiationService,
     ) {
 
     }
@@ -34,10 +34,14 @@ export class BinaryFileEditorInput implements IEditorInput {
         return this.resource === other.getId();
     }
 
-    public resolve() {
+    public resolve(): Promise<ResourceFileEditorDataModel> {
         return Promise.resolve().then(() => {
-            const base64 = encodeToBase64(this.data);
-            return this.instantiationService.create(BinaryFileEditorDataModel, base64);
+            if (this.data) {
+                const base64 = encodeToBase64(this.data);
+                return this.instantiationService.create(ResourceFileEditorDataModel, base64);
+            }
+
+            return null;
         });
     }
 }

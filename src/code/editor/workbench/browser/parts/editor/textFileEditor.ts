@@ -1,13 +1,21 @@
 import { BaseEditor } from './baseEditor';
 import { IEditorInput } from '../../../../../platform/editor/editor';
 import { DomBuilder, $ } from '../../../../../base/browser/domBuilder';
+import { CodeEditor } from '../../../../browser/codeEditor';
+import { IInstantiationService } from '../../../../../platform/instantiation/instantiationService';
+import { TextModel } from '../../../../common/textModel';
+import { TextFileEditorModel } from '../../../services/textfile/textFileEditorModel';
+
 
 export class TextFileEditor extends BaseEditor {
     static ID = 'editor.texteditor';
 
     private container: DomBuilder;
+    private editorControl: CodeEditor;
 
-    constructor() {
+    constructor(
+        @IInstantiationService private instantiationService: IInstantiationService,
+    ) {
         super(TextFileEditor.ID);
 
         this.container = null;
@@ -16,11 +24,17 @@ export class TextFileEditor extends BaseEditor {
     public create(parent: DomBuilder) {
         super.create(parent);
 
+        this.createEditor(parent);
+        
+        this.container.build(parent);
+    }
+
+    private createEditor(parent: DomBuilder) {
         this.container = $().div({
             class: 'text-editor-container'
         });
-        
-        this.container.build(parent);
+
+        this.editorControl = this.instantiationService.create(CodeEditor, this.container.getHTMLElement());
     }
 
     public setInput(input: IEditorInput): Promise<void> {
@@ -28,8 +42,12 @@ export class TextFileEditor extends BaseEditor {
             return Promise.resolve();
         }
 
-        return input.resolve().then(() => {
-            
+        return input.resolve().then((model: TextFileEditorModel) => {
+            const modelPromise = model.load();
+
+            return modelPromise.then((model: TextFileEditorModel) => {
+                this.editorControl.setModel(model.textModel);
+            });
         });
     }
 

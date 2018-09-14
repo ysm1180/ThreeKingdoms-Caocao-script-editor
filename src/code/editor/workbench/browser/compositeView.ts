@@ -1,6 +1,7 @@
 import { DomBuilder } from '../../../base/browser/domBuilder';
 import { Disposable } from '../../../base/common/lifecycle';
 import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
+import { IEditorInput } from '../../../platform/editor/editor';
 
 export abstract class CompositeView extends Disposable {
     private id: string;
@@ -37,6 +38,8 @@ export class CompositeViewDescriptor {
     }
 }
 
+const INPUT_DESCRIPTORS_PROPERTY = '__$inputDescriptors';
+
 export const CompositViewRegistry = new class {
     composites: CompositeViewDescriptor[];
 
@@ -44,21 +47,53 @@ export const CompositViewRegistry = new class {
         this.composites = [];
     }
 
-    public registerCompositeView(descriptor: CompositeViewDescriptor) {
+    public registerCompositeView(descriptor: CompositeViewDescriptor, editorInputDescriptor: ClassDescriptor<IEditorInput>) {
+        descriptor[INPUT_DESCRIPTORS_PROPERTY] = editorInputDescriptor;
         this.composites.push(descriptor);
     }
 
-    public getCompositeViews() : CompositeViewDescriptor[] {
-        return this.composites.slice(0);
+    public getCompositeViewDescriptors(input: IEditorInput): CompositeViewDescriptor[] {
+        const findCompositViewDescriptors = (input: IEditorInput, byInstanceOf?: boolean): CompositeViewDescriptor[] => {
+            const matchingDescriptors: CompositeViewDescriptor[] = [];
+
+            for (let i = 0; i < this.composites.length; i++) {
+                const composit = this.composites[i];
+                const inputDescriptor = <ClassDescriptor<IEditorInput>>composit[INPUT_DESCRIPTORS_PROPERTY];
+                const inputClass = inputDescriptor.ctor;
+
+                // Direct check on constructor type (ignores prototype chain)
+                if (!byInstanceOf && input.constructor === inputClass) {
+                    matchingDescriptors.push(composit);
+                }
+
+                // Normal instanceof check
+                else if (byInstanceOf && input instanceof inputClass) {
+                    matchingDescriptors.push(composit);
+                }
+            }
+
+            // If no descriptors found, continue search using instanceof and prototype chain
+            if (!byInstanceOf && matchingDescriptors.length === 0) {
+                return findCompositViewDescriptors(input, true);
+            }
+
+            if (byInstanceOf) {
+                return matchingDescriptors;
+            }
+
+            return matchingDescriptors;
+        };
+
+        return findCompositViewDescriptors(input);
     }
 
-    public getCompositeView(id: string): CompositeViewDescriptor {
+    public getCompositeViewDescriptor(id: string): CompositeViewDescriptor {
         for (let i = 0; i < this.composites.length; i++) {
-			if (this.composites[i].id === id) {
-				return this.composites[i];
-			}
-		}
+            if (this.composites[i].id === id) {
+                return this.composites[i];
+            }
+        }
 
-		return null;
+        return null;
     }
 };

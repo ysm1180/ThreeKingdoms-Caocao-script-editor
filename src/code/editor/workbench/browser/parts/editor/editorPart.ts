@@ -5,7 +5,7 @@ import { Part } from '../../part';
 import { EditorGroup } from './editors';
 import { BaseEditor } from './baseEditor';
 import { decorator, ServiceIdentifier } from '../../../../../platform/instantiation/instantiation';
-import { IInstantiationService, InstantiationService } from '../../../../../platform/instantiation/instantiationService';
+import { IInstantiationService } from '../../../../../platform/instantiation/instantiationService';
 import { EditorRegistry, EditorDescriptor } from '../../editor';
 
 export const IEditorService: ServiceIdentifier<EditorPart> = decorator<EditorPart>('editorPart');
@@ -13,22 +13,22 @@ export const IEditorService: ServiceIdentifier<EditorPart> = decorator<EditorPar
 export class EditorPart extends Part {
     private editorContainer: DomBuilder;
 
-    private editors: EditorGroup;
+    private editorGroup: EditorGroup;
     private currentEditor: BaseEditor;
     
     public onEditorInputChanged = new Event<IEditorEvent>();
 
     constructor(
-        @IInstantiationService private instantiationService: InstantiationService,
+        @IInstantiationService private instantiationService: IInstantiationService,
     ) {
         super();
 
-        this.editors = this.instantiationService.create(EditorGroup);
+        this.editorGroup = this.instantiationService.create(EditorGroup);
         this.currentEditor = null;
     }
 
     public getEditorGroup() {
-        return this.editors;
+        return this.editorGroup;
     }
 
     public create(parent: DomBuilder) {
@@ -45,23 +45,32 @@ export class EditorPart extends Part {
         this.editorContainer.size(width, height);
     }
 
-    public openEditor(input: IEditorInput) {
-        if (!input) {
-            return;
+    public openEditors(inputs: IEditorInput[]) {
+        const promises = [];
+        for (let i = 0; i < inputs.length; i++) {
+            promises.push(this.openEditor(inputs[i]));
         }
 
-        this.editors.openEditor(input);
+        return Promise.all(promises);
+    }
+
+    public openEditor(input: IEditorInput): Promise<void> {
+        if (!input) {
+            return Promise.resolve(null);
+        }
+
+        this.editorGroup.openEditor(input);
 
         const editor = this.doShowEditor(input);
         if (!editor) {
-            return;
+            return Promise.resolve(null);
         }
 
-        this.doSetInput(input, editor);
+        return this.doSetInput(input, editor);
     }
 
     private doSetInput(input: IEditorInput, editor: BaseEditor) {
-        editor.setInput(input).then(() => {
+        return editor.setInput(input).then(() => {
             const eventData : IEditorEvent = {
                 editor: input,
             };
@@ -76,7 +85,7 @@ export class EditorPart extends Part {
         }
 
         if (this.currentEditor) {
-            this.doHideEditor(this.currentEditor);
+            this.doCloseEditor(this.currentEditor);
         }
 
         const editor = this.doCreateViewEditor(desc);
@@ -99,14 +108,14 @@ export class EditorPart extends Part {
         return editor;
     }
 
-    private doHideEditor(editor: BaseEditor) {
+    private doCloseEditor(editor: BaseEditor) {
         editor.dispose();
 
         this.currentEditor = null;
     }
 
     public closeEditor(input: IEditorInput) {
-        if (this.editors.isActive(input)) {
+        if (this.editorGroup.isActive(input)) {
             this.doCloseActiveEditor();
         } else {
             this.doCloseInactiveEditor(input);
@@ -114,16 +123,16 @@ export class EditorPart extends Part {
     }
 
     private doCloseActiveEditor() {
-        this.editors.closeEditor(this.editors.activeEditor);
+        this.editorGroup.closeEditor(this.editorGroup.activeEditor);
 
-        if (this.editors.count > 0) {
-            this.openEditor(this.editors.activeEditor);
+        if (this.editorGroup.count > 0) {
+            this.openEditor(this.editorGroup.activeEditor);
         } else {
-            this.doHideEditor(this.currentEditor);
+            this.doCloseEditor(this.currentEditor);
         }
     }
 
     private doCloseInactiveEditor(input: IEditorInput) {
-        this.editors.closeEditor(input, false);
+        this.editorGroup.closeEditor(input, false);
     }
 }

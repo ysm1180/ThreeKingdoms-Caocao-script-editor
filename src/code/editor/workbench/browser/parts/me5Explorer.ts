@@ -4,7 +4,7 @@ import {  IEditorInput } from '../../../../platform/editor/editor';
 import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
 import { RawContextKey, ContextKeyExpr, ContextKeyNotExpr } from '../../../../platform/contexts/contextKey';
 import { ContextKey, IContextKeyService, ContextKeyService } from '../../../../platform/contexts/contextKeyService';
-import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { CompositeView } from '../compositeView';
 import { IEditorService, EditorPart } from './editor/editorPart';
 import { Me5Stat } from '../../parts/files/me5Data';
@@ -80,7 +80,7 @@ export class Me5ExplorerView extends CompositeView {
         @IContextKeyService private contextKeyService: ContextKeyService,
         @IEditorService private editorService: EditorPart,
         @ICompositeViewService private compositeViewService: CompositeViewService,
-        @IInstantiationService private instantiationService: InstantiationService,
+        @IInstantiationService private instantiationService: IInstantiationService,
     ) {
         super(EXPLORER_VIEW_ID);
 

@@ -4,7 +4,7 @@ import { CodeWindow, IWindowCreationOption } from './window';
 import { getFileFilters, IFileExtension } from '../platform/dialogs/dialogs';
 import { decorator, ServiceIdentifier } from '../platform/instantiation/instantiation';
 import { IOpenFileRequest, IMessageBoxResult, ISaveFileRequest } from '../platform/windows/windows';
-import { IInstantiationService, InstantiationService } from '../platform/instantiation/instantiationService';
+import { IInstantiationService } from '../platform/instantiation/instantiationService';
 import { IFileStorageService, FileStorageService } from '../platform/files/node/fileStorageService';
 
 export const IWindowService: ServiceIdentifier<IWindowService> = decorator<IWindowService>('windowService');
@@ -25,7 +25,7 @@ export class WindowManager implements IWindowService {
 
     constructor(
         @IFileStorageService private fileStorageService: FileStorageService,
-        @IInstantiationService private instantiationService: InstantiationService,
+        @IInstantiationService private instantiationService: IInstantiationService,
     ) {
         this.dialog = new Dialog();
     }
@@ -61,6 +61,10 @@ export class WindowManager implements IWindowService {
         const recentWorkingPath: string = this.fileStorageService.get(WindowManager.workingPathKey);
     
         const filters: IFileExtension[] = [
+            {
+                name: '작업 파일',
+                extensions: 'me5;lua',
+            },
             {
                 extensions: 'me5',
             },

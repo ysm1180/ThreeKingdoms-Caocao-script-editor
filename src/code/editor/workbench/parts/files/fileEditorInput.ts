@@ -1,24 +1,32 @@
 import * as path from 'path';
 import { IEditorInput } from '../../../../platform/editor/editor';
 import { TextFileEditor } from '../../browser/parts/editor/textFileEditor';
-import { ResourceViewEditor } from '../../browser/parts/editor/binaryViewEditor';
+import { Files } from '../../../../platform/files/file';
+import { ControlEditor } from '../../browser/parts/editor/controlEditor';
+import { EditorInput } from '../../common/editor';
+import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { TextFileEditorModel } from '../../services/textfile/textFileEditorModel';
+import { TextModel } from '../../../common/textModel';
 
 const _regExp = /^([a-zA-z]:[\/\\].*)\?(.*)$/;
 
-export class FileEditorInput implements IEditorInput {
+export class FileEditorInput extends EditorInput {
     protected resource: string;
-    protected forceOpenBinary: boolean;
+    protected name: string;
 
     constructor(
         resource: string,
+        name: string,
+        @IInstantiationService private instantiationService: IInstantiationService,
     ) {
-        this.resource = resource;
+        super();
 
-        this.forceOpenBinary = false;
+        this.resource = resource;
+        this.name = name;
     }
 
     public getName(): string {
-        return this.resource ? path.basename(this.resource) : 'untitled';
+        return this.name;
     }
 
     public getId(): string {
@@ -38,17 +46,23 @@ export class FileEditorInput implements IEditorInput {
         return this.getId() === other.getId();
     }
 
-    public resolve(): Promise<any> {
+    public resolve(): Promise<TextFileEditorModel> {
         return Promise.resolve().then(() => {
-            return null;
+            let model: TextFileEditorModel = this.instantiationService.create(TextFileEditorModel, this.resource);
+            let modelPromise = model.load();
+
+            return modelPromise;
         });
     }
 
     public getPreferredEditorId(): string {
-        return this.forceOpenBinary ? ResourceViewEditor.ID : TextFileEditor.ID;
-    }
+        if (this.resource) {
+            const ext = path.extname(this.resource).slice(1);
+            if (ext === Files.dlg) {
+                return ControlEditor.ID;
+            }
+        }
 
-    public setForceOpenAsBinary() {
-        this.forceOpenBinary = true;
+        return TextFileEditor.ID;
     }
 }

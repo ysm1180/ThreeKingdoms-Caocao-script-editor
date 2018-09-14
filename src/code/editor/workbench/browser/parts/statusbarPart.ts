@@ -2,7 +2,7 @@ import { addClass } from '../../../../base/browser/dom';
 import { DomBuilder, $ } from '../../../../base/browser/domBuilder';
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 import { IContextKeyService, ContextKeyService } from '../../../../platform/contexts/contextKeyService';
-import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { StatusbarRegistry, StatusbarItemAlignment } from '../../../../platform/statusbar/statusbar';
 import { Part } from '../part';
 
@@ -13,7 +13,7 @@ export class StatusbarPart extends Part {
 
     constructor(
         @IContextKeyService private contextKeyService: ContextKeyService,
-        @IInstantiationService private instantiationService: InstantiationService
+        @IInstantiationService private instantiationService: IInstantiationService
     ) {
         super();
     }

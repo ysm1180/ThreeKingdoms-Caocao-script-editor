@@ -1,5 +1,5 @@
 import { DomBuilder, $ } from '../../../base/browser/domBuilder';
-import { IInstantiationService, InstantiationService } from '../../../platform/instantiation/instantiationService';
+import { IInstantiationService } from '../../../platform/instantiation/instantiationService';
 import { ServiceStorage } from '../../../platform/instantiation/serviceStorage';
 import { ITreeService, TreeService } from '../../../platform/tree/treeService';
 import { ICommandService, CommandService } from '../../../platform/commands/commandService';
@@ -16,10 +16,15 @@ import { IWindowService } from '../../../electron-main/windows';
 import { StatusbarPart, IStatusbarService } from './parts/statusbarPart';
 import { IContextKeyService, ContextKeyService } from '../../../platform/contexts/contextKeyService';
 import { ICompositeViewService, CompositeViewService } from '../services/view/compositeViewService';
-import { IFileService, FileService } from '../services/files/node/fileService';
+import { FileService } from '../services/files/node/fileService';
 import { IMe5FileService, Me5FileService } from '../services/me5/me5FileService';
+import { IWorkbenchEditorService, WorkbenchEditorService } from '../services/editor/editorService';
+import { IPartService } from '../services/part/partService';
+import { ITextFileService } from '../services/textfile/textfiles';
+import { TextFileService } from '../services/textfile/textFileService';
+import { IFileService } from '../services/files/files';
 
-export class Workbench {
+export class Workbench implements IPartService {
     private container: HTMLElement;
 
     private workbenchContainer: DomBuilder;
@@ -36,7 +41,7 @@ export class Workbench {
     constructor(
         container: HTMLElement,
         serviceStorage: ServiceStorage,
-        @IInstantiationService private instantiationService: InstantiationService
+        @IInstantiationService private instantiationService: IInstantiationService
     ) {
         this.container = container;
         this.serviceStorage = serviceStorage;
@@ -55,6 +60,8 @@ export class Workbench {
     }
 
     private initService() {
+        this.serviceStorage.set(IPartService, this);
+
         this.serviceStorage.set(IContextKeyService, this.instantiationService.create(ContextKeyService));
 
         this.serviceStorage.set(ITreeService, this.instantiationService.create(TreeService));
@@ -70,9 +77,11 @@ export class Workbench {
         this.serviceStorage.set(IMe5FileService, this.instantiationService.create(Me5FileService));
 
         this.serviceStorage.set(IFileService, this.instantiationService.create(FileService));
+        this.serviceStorage.set(ITextFileService, this.instantiationService.create(TextFileService));
 
         this.editor = this.instantiationService.create(EditorPart);
         this.serviceStorage.set(IEditorService, this.editor);
+        this.serviceStorage.set(IWorkbenchEditorService, this.instantiationService.create(WorkbenchEditorService, this.editor));
         
         this.sidebar = this.instantiationService.create(SidebarPart);
 
@@ -142,6 +151,10 @@ export class Workbench {
                 editor: this.editor,
                 statusbar: this.statusbar,
             });
+    }
+
+    public setSideBarHidden(hidden: boolean): void {
+
     }
 
     public layout() {

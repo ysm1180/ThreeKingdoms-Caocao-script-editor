@@ -5,7 +5,7 @@ import { ITreeService, TreeService } from '../../../../platform/tree/treeService
 import { Me5Stat, ItemState } from '../../parts/files/me5Data';
 import { Me5DataController } from '../../parts/me5ExplorerViewer';
 import { IDialogService, DialogService } from '../electron-browser/dialogService';
-import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 
 export const IMe5DataService: ServiceIdentifier<Me5DataService> = decorator<Me5DataService>('me5DataService');
 
@@ -13,7 +13,7 @@ export class Me5DataService {
     constructor(
         @ITreeService private treeService: TreeService,
         @IDialogService private dialogService: DialogService,
-        @IInstantiationService private instantiationService: InstantiationService,
+        @IInstantiationService private instantiationService: IInstantiationService,
     ) {
 
     }

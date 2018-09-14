@@ -12,7 +12,7 @@ export class TitlePart extends Part {
 
     constructor(
         @IEditorService private editorService: EditorPart,
-        @IInstantiationService private instantiationService: InstantiationService
+        @IInstantiationService private instantiationService: IInstantiationService
     ) {
         super();
 

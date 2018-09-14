@@ -1,11 +1,11 @@
 import { Event } from '../../../../base/common/event';
 import { DomBuilder, $ } from '../../../../base/browser/domBuilder';
-import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { Part } from '../part';
 import { CompositeView, CompositViewRegistry } from '../compositeView';
 import { IEditorService, EditorPart } from './editor/editorPart';
-import { EXPLORER_VIEW_ID } from './me5Explorer';
 import { EditorGroup } from './editor/editors';
+import { IPartService } from '../../services/part/partService';
 
 export class SidebarPart extends Part {
     private instantiatedComposites: CompositeView[];
@@ -19,8 +19,9 @@ export class SidebarPart extends Part {
     public onDidCompositeClose = new Event<CompositeView>();
 
     constructor(
+        @IPartService private partService: IPartService,
         @IEditorService private editorService: EditorPart,
-        @IInstantiationService private instantiationService: InstantiationService,
+        @IInstantiationService private instantiationService: IInstantiationService,
     ) {
         super();
 
@@ -41,8 +42,16 @@ export class SidebarPart extends Part {
             return;
         }
 
-        const id = EXPLORER_VIEW_ID;
-        this.openCompositeView(id);
+        const descriptors = CompositViewRegistry.getCompositeViewDescriptors(activeInput);
+        if (descriptors.length === 0) {
+            this.hideActiveComposite();
+            return;
+        }
+
+        for (let i = 0; i < descriptors.length; i++) {
+            const id = descriptors[i].id;
+            this.openCompositeView(id);
+        }
     }
 
     public openCompositeView(id: string) {
@@ -91,7 +100,7 @@ export class SidebarPart extends Part {
             }
         }
 
-        const compositeDescriptor = CompositViewRegistry.getCompositeView(id);
+        const compositeDescriptor = CompositViewRegistry.getCompositeViewDescriptor(id);
         if (compositeDescriptor) {
             const composite = this.instantiationService.create(compositeDescriptor.ctor);
             this.instantiatedComposites.push(composite);

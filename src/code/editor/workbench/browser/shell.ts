@@ -1,7 +1,7 @@
 import { $, DomBuilder } from '../../../base/browser/domBuilder';
 import { Workbench } from './workbench';
 import { ElectronWindow } from '../window';
-import { InstantiationService } from '../../../platform/instantiation/instantiationService';
+import { InstantiationService, IInstantiationService } from '../../../platform/instantiation/instantiationService';
 import { ServiceStorage } from '../../../platform/instantiation/serviceStorage';
 import { IWindowService, WindowManager } from '../../../electron-main/windows';
 import { IStorageService, StorageService } from '../services/electron-browser/storageService';
@@ -58,7 +58,7 @@ export class WorkbenchShell {
         return workbenchContainer;
     }
 
-    public createWorkbench(instantiationService: InstantiationService, serviceStorage: ServiceStorage, parent: HTMLElement, container: HTMLElement) {
+    public createWorkbench(instantiationService: IInstantiationService, serviceStorage: ServiceStorage, parent: HTMLElement, container: HTMLElement) {
         const workbench = instantiationService.create(Workbench, container, serviceStorage);
 
         return workbench;

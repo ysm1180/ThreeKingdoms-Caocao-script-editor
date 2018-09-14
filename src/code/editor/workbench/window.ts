@@ -1,14 +1,13 @@
 import { ipcRenderer } from 'electron';
-import { IEditorInput } from '../../platform/editor/editor';
+import { IEditorInput, IResourceInput } from '../../platform/editor/editor';
 import { IOpenFileRequest } from '../../platform/windows/windows';
-import { FileEditorInput } from './parts/files/fileEditorInput';
-import { IInstantiationService, InstantiationService } from '../../platform/instantiation/instantiationService';
-import { IEditorService, EditorPart } from './browser/parts/editor/editorPart';
+import { IInstantiationService } from '../../platform/instantiation/instantiationService';
+import { IWorkbenchEditorService, WorkbenchEditorService } from './services/editor/editorService';
 
 export class ElectronWindow {
     constructor(
-        @IEditorService private editorService: EditorPart,
-        @IInstantiationService private instantiationService: InstantiationService,
+        @IWorkbenchEditorService private editorService: WorkbenchEditorService,
+        @IInstantiationService private instantiationService: IInstantiationService,
 
     ) {
         this.registerListeners();
@@ -18,12 +17,6 @@ export class ElectronWindow {
         ipcRenderer.on('editor:openFiles', (e, data: IOpenFileRequest) => this.onOpenFiles(data));
 
         ipcRenderer.on('editor:saveFile', () => {
-            const input = this.editorService.getEditorGroup().activeEditor;
-            if (!input) {
-                return;
-            }
-
-            this.onSaveFile(input);
         });
     }
 
@@ -32,10 +25,29 @@ export class ElectronWindow {
             return;
         }
 
-        for (let i = 0; i < data.files.length; i++) {
-            const input = this.instantiationService.create(FileEditorInput, data.files[i]);
-            this.editorService.openEditor(input);
+        const inputs: IResourceInput[] = [];
+        inputs.push(...this.toInputs(data.files));
+        if (inputs.length) {
+            this.openResources(inputs);
         }
+    }
+
+    private toInputs(paths: string[]) {
+        return paths.map((path) => {
+            let input: IResourceInput = {
+               resource: path, 
+            };
+
+            return input;
+        });
+    }
+
+    private openResources(resources: IResourceInput[]) {
+        if (resources.length === 1) {
+            return this.editorService.openEditor(resources[0]);
+        }
+
+        return this.editorService.openEditors(resources);
     }
 
     private onSaveFile(input: IEditorInput): void {

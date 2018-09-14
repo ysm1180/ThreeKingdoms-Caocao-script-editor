@@ -12,8 +12,8 @@ import { ContextMenuEvent } from '../../../platform/events/contextMenuEvent';
 import { RawContextKey } from '../../../platform/contexts/contextKey';
 import { ContextKey, IContextKeyService, ContextKeyService } from '../../../platform/contexts/contextKeyService';
 import { Me5Stat, ItemState } from './files/me5Data';
-import { IInstantiationService, InstantiationService } from '../../../platform/instantiation/instantiationService';
-import { BinaryFileEditorInput } from '../common/editor/binaryEditorInput';
+import { IInstantiationService } from '../../../platform/instantiation/instantiationService';
+import { ResourceEditorInput } from '../common/editor/resourceEditorInput';
 
 
 export const explorerEditableItemId = 'explorerRename';
@@ -119,7 +119,7 @@ export class Me5DataController implements IDataController {
     constructor(
         @IEditorService private editorService: EditorPart,
         @IContextMenuService private contextMenuService: ContextMenuService,
-        @IInstantiationService private instantiationService: InstantiationService,
+        @IInstantiationService private instantiationService: IInstantiationService,
     ) {
 
     }
@@ -129,7 +129,7 @@ export class Me5DataController implements IDataController {
         tree.setFocus(element);
 
         const root = element.root;
-        const input: BinaryFileEditorInput = this.instantiationService.create(BinaryFileEditorInput, root.getId(), element.name, element.data);
+        const input: ResourceEditorInput = this.instantiationService.create(ResourceEditorInput, root.getId(), element.name, element.data);
 
         this.editorService.openEditor(input);
     }

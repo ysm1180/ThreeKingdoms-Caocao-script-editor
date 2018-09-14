@@ -4,11 +4,17 @@ import { decorator, init, ServicesAccessor, ServiceIdentifier } from './instanti
 
 export const IInstantiationService = decorator<InstantiationService>('instantiationService');
 
+export interface IInstantiationService {
+    create(param: any, ...rest: any[]): any;
+
+    invokeFunction<R>(fn: (accessor: ServicesAccessor) => R, ...args: any[]);
+}
+
 function create(ctor: any, ...args: any[]): any {
     return new ctor(...args);
 }
 
-export class InstantiationService  {
+export class InstantiationService implements IInstantiationService {
     _serviceBrand: any;
     private services: ServiceStorage;
 
@@ -47,7 +53,7 @@ export class InstantiationService  {
         accessor = {
             get: <T>(id: ServiceIdentifier<T>) => {
                 return this.services.get(id);
-            } 
+            }
         };
         return fn.apply(fn, [accessor].concat(args));
     }

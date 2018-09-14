@@ -1,3 +1,7 @@
+export interface IContentData {
+    stream: IStringStream;
+}
+
 export interface IContent {
     value: string;
 }

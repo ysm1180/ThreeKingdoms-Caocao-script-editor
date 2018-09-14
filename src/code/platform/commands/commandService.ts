@@ -1,5 +1,5 @@
 import { decorator, ServiceIdentifier } from '../instantiation/instantiation';
-import { IInstantiationService, InstantiationService } from '../instantiation/instantiationService';
+import { IInstantiationService } from '../instantiation/instantiationService';
 import { CommandsRegistry } from './commands';
 
 export const ICommandService: ServiceIdentifier<CommandService> = decorator<CommandService>('commandService');
@@ -8,7 +8,7 @@ export const ICommandService: ServiceIdentifier<CommandService> = decorator<Comm
 
 export class CommandService {
     constructor(
-        @IInstantiationService private instantiationService: InstantiationService
+        @IInstantiationService private instantiationService: IInstantiationService
     ) {
     }  
 

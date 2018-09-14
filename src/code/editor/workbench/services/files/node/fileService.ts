@@ -1,11 +1,9 @@
 import * as iconv from 'iconv-lite';
 import * as fs from 'fs';
-import { decorator, ServiceIdentifier } from '../../../../../platform/instantiation/instantiation';
-import { IStreamContent, IStringStream, IContent } from '../../../../../platform/files/files';
+import { IStreamContent, IContent, IContentData } from '../../../../../platform/files/files';
+import { IFileService } from '../files';
 
-export const IFileService: ServiceIdentifier<FileService> = decorator<FileService>('FileService');
-
-export class FileService {
+export class FileService implements IFileService {
     constructor(
     ) {
 
@@ -17,17 +15,17 @@ export class FileService {
                 const result: IContent = {
                     value: '',
                 };
-    
+
                 stream.value.on('data', (chunk) => result.value += chunk);
                 stream.value.on('end', () => resolve(result));
                 stream.value.on('error', (err) => reject(err));
-    
+
                 return result;
             });
         });
     }
 
-    private resolveStream(resource: string) {
+    public resolveStream(resource: string): Promise<IStreamContent> {
         const result: IStreamContent = {
             value: void 0,
         };
@@ -36,18 +34,22 @@ export class FileService {
     }
 
     private fillContents(content: IStreamContent, resource: string) {
-        return this.resolveFileData(resource).then((data) => {
-            content.value = data;
+        return this.resolveFileData(resource).then((data: IContentData) => {
+            content.value = data.stream;
         });
     }
 
     private resolveFileData(resource: string) {
-        return new Promise<IStringStream>((resolve, reject) => {
+        const result: IContentData = {
+            stream: void 0,
+        };
+
+        return new Promise<IContentData>((resolve, reject) => {
             fs.open(resource, 'r', (err, fd) => {
                 if (err) {
-					return reject(err);
+                    return reject(err);
                 }
-                
+
                 let decoder: NodeJS.ReadWriteStream;
                 const chunkBuffer = new Buffer(1024 * 64);
 
@@ -72,11 +74,13 @@ export class FileService {
                         if (decoder) {
                             handleChunk(bytesRead);
                         } else {
-                            decoder = iconv.decodeStream('utf8');
+                            result.stream = decoder = iconv.decodeStream('utf8');
+                            resolve(result);
+                            handleChunk(bytesRead);
                         }
                     });
                 };
-              
+
                 readChunk();
             });
         });

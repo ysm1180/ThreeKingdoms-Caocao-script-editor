@@ -23,3 +23,23 @@ export interface IEditorInput {
 
     getPreferredEditorId(): string;
 }
+
+export interface IResource {
+    path: string;
+
+    type: string;
+}
+
+export interface IResourceInput {
+    resource: string;
+
+    label?: string;
+}
+
+export interface IUntitleResourceInput {
+    resource?: string;
+
+    label?: string;
+
+
+}
