@@ -42,7 +42,12 @@ export class EditorPart extends Part {
     public layout(width: number, height: number) {
         super.layout(width, height);
 
-        this.editorContainer.size(width, height);
+        if (this.currentEditor) {
+            this.currentEditor.layout({
+                width: width,
+                height: height,
+            });
+        }
     }
 
     public openEditors(inputs: IEditorInput[]) {

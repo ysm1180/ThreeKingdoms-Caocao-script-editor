@@ -26,14 +26,14 @@ export interface IFocusEvent {
 export class ItemRegistry {
     private items: IMap<{ item: Item, toDispose: IDisposable[] }>;
 
-    public onDidRefreshItem = new ChainEventStorage<IItemRefreshEvent>();
-    public onRefreshItemChildren = new ChainEventStorage<IItemChildrenRefreshEvent>();
-    public onDidRefreshItemChildren = new ChainEventStorage<IItemChildrenRefreshEvent>();
-    public onDidExpandItem = new ChainEventStorage<IItemExpandEvent>();
-    public onDidCollapseItem = new ChainEventStorage<IItemCollapseEvent>();
-    public onDidAddTraitItem = new ChainEventStorage<IItemTraitEvent>();
-    public onDidRemoveTraitItem = new ChainEventStorage<IItemTraitEvent>();
-    public onDidDisposeItem = new ChainEventStorage<Item>();
+    public readonly onDidRefreshItem = new ChainEventStorage<IItemRefreshEvent>();
+    public readonly onRefreshItemChildren = new ChainEventStorage<IItemChildrenRefreshEvent>();
+    public readonly onDidRefreshItemChildren = new ChainEventStorage<IItemChildrenRefreshEvent>();
+    public readonly onDidExpandItem = new ChainEventStorage<IItemExpandEvent>();
+    public readonly onDidCollapseItem = new ChainEventStorage<IItemCollapseEvent>();
+    public readonly onDidAddTraitItem = new ChainEventStorage<IItemTraitEvent>();
+    public readonly onDidRemoveTraitItem = new ChainEventStorage<IItemTraitEvent>();
+    public readonly onDidDisposeItem = new ChainEventStorage<Item>();
 
     constructor() {
         this.items = {};
@@ -101,14 +101,14 @@ export class Item {
 
     private isDisposed: boolean;
 
-    public onDidRefresh = new Event<IItemRefreshEvent>();
-    public onRefreshChildren = new Event<IItemChildrenRefreshEvent>();
-    public onDidRefreshChildren = new Event<IItemChildrenRefreshEvent>();
-    public onDidExpand = new Event<IItemExpandEvent>();
-    public onDidCollapse = new Event<IItemCollapseEvent>();
-    public onDidAddTrait = new Event<IItemTraitEvent>();
-    public onDidRemoveTrait = new Event<IItemTraitEvent>();
-    public onDidDispose = new Event<Item>();
+    public readonly onDidRefresh = new Event<IItemRefreshEvent>();
+    public readonly onRefreshChildren = new Event<IItemChildrenRefreshEvent>();
+    public readonly onDidRefreshChildren = new Event<IItemChildrenRefreshEvent>();
+    public readonly onDidExpand = new Event<IItemExpandEvent>();
+    public readonly onDidCollapse = new Event<IItemCollapseEvent>();
+    public readonly onDidAddTrait = new Event<IItemTraitEvent>();
+    public readonly onDidRemoveTrait = new Event<IItemTraitEvent>();
+    public readonly onDidDispose = new Event<Item>();
 
     constructor(id: string, registry: ItemRegistry, context: TreeContext, element: any) {
         this.id = id;
@@ -488,18 +488,18 @@ export class TreeModel {
     private registry: ItemRegistry;
     private traitsToItems: IMap<IItemMap>;
 
-    public onSetRoot = new Event<Item>();
-    public onDidSetRoot = new Event<Item>();
-    public onDidFocus = new Event<IFocusEvent>();
+    public readonly onSetRoot = new Event<Item>();
+    public readonly onDidSetRoot = new Event<Item>();
+    public readonly onDidFocus = new Event<IFocusEvent>();
 
-    public onDidRefreshItem = new Event<IItemRefreshEvent>();
-    public onRefreshItemChildren = new Event<IItemChildrenRefreshEvent>();
-    public onDidRefreshItemChildren = new Event<IItemChildrenRefreshEvent>();
-    public onDidExpandItem = new Event<IItemExpandEvent>();
-    public onDidCollapseItem = new Event<IItemCollapseEvent>();
-    public onDidAddTraitItem = new Event<IItemTraitEvent>();
-    public onDidRemoveTraitItem = new Event<IItemTraitEvent>();
-    public onDidChangeHighlight = new Event<void>();
+    public readonly onDidRefreshItem = new Event<IItemRefreshEvent>();
+    public readonly onRefreshItemChildren = new Event<IItemChildrenRefreshEvent>();
+    public readonly onDidRefreshItemChildren = new Event<IItemChildrenRefreshEvent>();
+    public readonly onDidExpandItem = new Event<IItemExpandEvent>();
+    public readonly onDidCollapseItem = new Event<IItemCollapseEvent>();
+    public readonly onDidAddTraitItem = new Event<IItemTraitEvent>();
+    public readonly onDidRemoveTraitItem = new Event<IItemTraitEvent>();
+    public readonly onDidChangeHighlight = new Event<void>();
 
     constructor(context: TreeContext) {
         this.root = null;

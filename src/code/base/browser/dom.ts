@@ -65,3 +65,46 @@ export function createStyleSheetTag(media: string): HTMLStyleElement {
 export function addDisposableEventListener(node: Element | Window | Document, type: string, fn: (e: any) => void): IDisposable {
     return new DomListener(node, type, fn);
 }
+
+export const EventType = {
+	// Mouse
+	CLICK: 'click',
+	AUXCLICK: 'auxclick', // >= Chrome 56
+	DBLCLICK: 'dblclick',
+	MOUSE_UP: 'mouseup',
+	MOUSE_DOWN: 'mousedown',
+	MOUSE_OVER: 'mouseover',
+	MOUSE_MOVE: 'mousemove',
+	MOUSE_OUT: 'mouseout',
+	CONTEXT_MENU: 'contextmenu',
+	WHEEL: 'wheel',
+	// Keyboard
+	KEY_DOWN: 'keydown',
+	KEY_PRESS: 'keypress',
+	KEY_UP: 'keyup',
+	// HTML Document
+	LOAD: 'load',
+	UNLOAD: 'unload',
+	ABORT: 'abort',
+	ERROR: 'error',
+	RESIZE: 'resize',
+	SCROLL: 'scroll',
+	// Form
+	SELECT: 'select',
+	CHANGE: 'change',
+	SUBMIT: 'submit',
+	RESET: 'reset',
+	FOCUS: 'focus',
+	BLUR: 'blur',
+	INPUT: 'input',
+	// Local Storage
+	STORAGE: 'storage',
+	// Drag
+	DRAG_START: 'dragstart',
+	DRAG: 'drag',
+	DRAG_ENTER: 'dragenter',
+	DRAG_LEAVE: 'dragleave',
+	DRAG_OVER: 'dragover',
+	DROP: 'drop',
+	DRAG_END: 'dragend',
+};

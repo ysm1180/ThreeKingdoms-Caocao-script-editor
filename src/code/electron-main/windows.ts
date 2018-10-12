@@ -49,9 +49,9 @@ export class WindowManager implements IWindowService {
         return this.dialog.showSaveDialog(options, WindowManager.win.window);
     }
 
-    public openNewFile() {
+    public openMe5NewFile() {
         const request: IOpenFileRequest = {
-            files: [null],
+            files: ['untitled.me5'],
         };
 
         WindowManager.win.send('editor:openFiles', request);

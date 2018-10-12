@@ -8,7 +8,6 @@ export class ViewLine {
 
     public renderLine(lineNumber: number, viewportData: ViewportData): string {
         const lineData = viewportData.getViewLineRenderingData(lineNumber);
-        console.log(lineData);
 
         let html = '';
         const renderLineInput = new RenderLineInput(

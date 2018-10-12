@@ -1,12 +1,14 @@
 import { ipcRenderer } from 'electron';
 import { IEditorInput, IResourceInput } from '../../platform/editor/editor';
-import { IOpenFileRequest } from '../../platform/windows/windows';
+import { IOpenFileRequest, ISaveFileRequest } from '../../platform/windows/windows';
 import { IInstantiationService } from '../../platform/instantiation/instantiationService';
 import { IWorkbenchEditorService, WorkbenchEditorService } from './services/editor/editorService';
+import { ICommandService, CommandService } from '../../platform/commands/commandService';
 
 export class ElectronWindow {
     constructor(
         @IWorkbenchEditorService private editorService: WorkbenchEditorService,
+        @ICommandService private commandService: CommandService,
         @IInstantiationService private instantiationService: IInstantiationService,
 
     ) {
@@ -14,10 +16,13 @@ export class ElectronWindow {
     }
 
     public registerListeners() {
+        ipcRenderer.on('app:runCommand', (id: string) => {
+            this.commandService.run(id);
+        });
+
         ipcRenderer.on('editor:openFiles', (e, data: IOpenFileRequest) => this.onOpenFiles(data));
 
-        ipcRenderer.on('editor:saveFile', () => {
-        });
+        ipcRenderer.on('editor:saveFile', (e, data: ISaveFileRequest) => this.onSaveFile(data));
     }
 
     private onOpenFiles(data: IOpenFileRequest): void {
@@ -50,7 +55,7 @@ export class ElectronWindow {
         return this.editorService.openEditors(resources);
     }
 
-    private onSaveFile(input: IEditorInput): void {
+    private onSaveFile(data: ISaveFileRequest): void {
         
     }
 }

@@ -6,9 +6,6 @@ import { ControlEditor } from '../../browser/parts/editor/controlEditor';
 import { EditorInput } from '../../common/editor';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { TextFileEditorModel } from '../../services/textfile/textFileEditorModel';
-import { TextModel } from '../../../common/textModel';
-
-const _regExp = /^([a-zA-z]:[\/\\].*)\?(.*)$/;
 
 export class FileEditorInput extends EditorInput {
     protected resource: string;
@@ -30,12 +27,7 @@ export class FileEditorInput extends EditorInput {
     }
 
     public getId(): string {
-        const matches = _regExp.exec(this.resource);
-        if (!matches) {
-            return this.resource;
-        } else {
-            return matches[1];
-        }
+        return this.resource;
     }
 
     public matches(other: IEditorInput) {

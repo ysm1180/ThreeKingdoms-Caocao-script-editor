@@ -241,6 +241,14 @@ body {
     background: url('../workbench/browser/parts/editor/images/close.svg') center center no-repeat;
 }
 
+.editor-container {
+    height: 100%;
+}
+
+.editor-container > .text-editor-container {
+    height: 100%;
+}
+
 .editor-container>.resource-viewer-editor {
     display: flex;
     height: 100%;
@@ -396,4 +404,8 @@ body {
     left: 2px;
     font-weight: bold;
     color: #ffffff;
+}
+
+.slider {
+    background-color: rgba(127, 127, 127, 0.7);
 }

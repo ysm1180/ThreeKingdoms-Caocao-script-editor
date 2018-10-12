@@ -3,6 +3,7 @@ import { IEditorInput } from '../../../../../platform/editor/editor';
 import { BaseEditor } from './baseEditor';
 import { ResourceFileEditorDataModel } from './editorDataModel';
 import { BinaryResourceViewer } from './resourceViewer';
+import { IDimension } from 'code/editor/common/editorCommon';
 
 export class ResourceViewEditor extends BaseEditor {
     static ID = 'editor.resourceViewerEditor';
@@ -42,6 +43,10 @@ export class ResourceViewEditor extends BaseEditor {
                 this.viewer
             );
         });
+    }
+
+    public layout(dimension: IDimension): void {
+        
     }
 
     public dispose() {

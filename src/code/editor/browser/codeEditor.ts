@@ -1,27 +1,32 @@
 import { View } from './view/view';
 import { TextModel } from '../common/textModel';
 import { ViewModel } from '../common/viewModel/viewModel';
+import { EditorConfiguration } from './config/configuration';
+import { IDimension } from '../common/editorCommon';
 
 export class CodeEditor {
     private domElement: HTMLElement;
     private view: View;
 
-    private viewModel: ViewModel;
-    private model: TextModel;
+    protected viewModel: ViewModel;
+    protected model: TextModel;
+
+    protected readonly configuration: EditorConfiguration;
 
     constructor(
         parent: HTMLElement,
     ) {
         this.domElement = parent;    
+        this.configuration = new EditorConfiguration(this.domElement);
     }
 
     public setModel(model: TextModel) {
         this.model = model;
 
         if (this.model) {
-            this.viewModel = new ViewModel(this.model);
+            this.viewModel = new ViewModel(this.configuration, this.model);
 
-            this.createView();
+            this._createView();
 
             this.render();
 
@@ -29,13 +34,19 @@ export class CodeEditor {
         }
     }
 
-    private createView(): void {
+    private _createView(): void {
         this.view = new View(
+            this.configuration,
             this.viewModel
         );
     }
 
     public render() {
         this.view.render();
+    }
+
+    public layout(dimension?: IDimension): void {
+        this.configuration.observeReferenceDomElement(dimension);
+        this.render();
     }
 }

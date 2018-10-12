@@ -39,9 +39,9 @@ export class Sash {
     private size: number;
     private layoutProvider: ISashLayoutProvider;
 
-    public onDidStart = new Event<ISashEvent>();
-    public onDidChange = new Event<ISashEvent>();
-    public onDidEnd = new Event<void>();
+    public readonly onDidStart = new Event<ISashEvent>();
+    public readonly onDidChange = new Event<ISashEvent>();
+    public readonly onDidEnd = new Event<void>();
 
     constructor(container: HTMLElement, layoutProvider: ISashLayoutProvider, options: ISashOptions = {}) {
         this.element = $('.sash').appendTo(container);

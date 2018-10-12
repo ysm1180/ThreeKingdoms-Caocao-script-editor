@@ -92,6 +92,12 @@ export class Event<T> {
             }
         }
     }
+
+    public dispose() {
+        if (this._listeners) {
+            this._listeners = undefined;
+        }
+    }
 }
 
 export class RelayEvent<T> {

@@ -10,7 +10,7 @@ export class Input extends Disposable {
     private input: HTMLInputElement;
     private options: InputBoxOption;
 
-    public onDidChange = new Event<string>();
+    public readonly onDidChange = new Event<string>();
 
     constructor(container: HTMLElement, options: InputBoxOption = {}) {
         super();

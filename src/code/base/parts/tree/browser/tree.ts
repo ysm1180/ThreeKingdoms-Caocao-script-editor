@@ -30,11 +30,11 @@ export interface ITreeOptions {
 }
 
 export class TreeContext {
-    public tree: Tree;
-    public dataSource: IDataSource;
-    public renderer: IDataRenderer;
-    public controller: IDataController;
-    public options: ITreeOptions;
+    public readonly tree: Tree;
+    public readonly dataSource: IDataSource;
+    public readonly renderer: IDataRenderer;
+    public readonly controller: IDataController;
+    public readonly options: ITreeOptions;
 
     constructor(tree: Tree, configuration: ITreeConfiguration, options: ITreeOptions) {
         this.tree = tree;
@@ -52,7 +52,7 @@ export class Tree {
     private model: TreeModel;
     private view: TreeView;
 
-    public onDidChangeFocus = new RelayEvent<IFocusEvent>();
+    public readonly onDidChangeFocus = new RelayEvent<IFocusEvent>();
 
     constructor(
         container: HTMLElement,

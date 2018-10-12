@@ -1,4 +1,20 @@
-export class StandardMouseEvent {
+export interface IMouseEvent {
+	readonly event: MouseEvent;
+	readonly leftButton: boolean;
+	readonly middleButton: boolean;
+	readonly rightButton: boolean;
+	readonly target: HTMLElement;
+	readonly posx: number;
+	readonly posy: number;
+	readonly ctrlKey: boolean;
+	readonly shiftKey: boolean;
+	readonly altKey: boolean;
+
+	preventDefault(): void;
+	stopPropagation(): void;
+}
+
+export class StandardMouseEvent implements IMouseEvent {
     public readonly event: MouseEvent;
 
     public readonly leftButton: boolean;

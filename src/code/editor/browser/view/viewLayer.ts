@@ -122,7 +122,6 @@ export class ViewLayerRenderer {
     }
 
     private _finishRenderingLines(ctx: IRendererContext, innerHTML: string) {
-        console.log('innerHTML : ' + innerHTML);
         this.domNode.innerHTML = innerHTML;
     }
 }

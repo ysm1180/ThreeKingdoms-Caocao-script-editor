@@ -6,7 +6,6 @@ import { KeyCode } from '../../../base/common/keyCodes';
 import { Tree, IDataSource, IDataRenderer, IDataController } from '../../../base/parts/tree/browser/tree';
 import { Menu } from '../../../platform/actions/menu';
 import { MenuId } from '../../../platform/actions/registry';
-import { IEditorService, EditorPart } from '../browser/parts/editor/editorPart';
 import { IContextMenuService, ContextMenuService } from '../services/contextmenuService';
 import { ContextMenuEvent } from '../../../platform/events/contextMenuEvent';
 import { RawContextKey } from '../../../platform/contexts/contextKey';
@@ -14,6 +13,7 @@ import { ContextKey, IContextKeyService, ContextKeyService } from '../../../plat
 import { Me5Stat, ItemState } from './files/me5Data';
 import { IInstantiationService } from '../../../platform/instantiation/instantiationService';
 import { ResourceEditorInput } from '../common/editor/resourceEditorInput';
+import { IWorkbenchEditorService, WorkbenchEditorService } from '../services/editor/editorService';
 
 
 export const explorerEditableItemId = 'explorerRename';
@@ -117,7 +117,7 @@ export class Me5DataController implements IDataController {
     private contextMenu: Menu;
 
     constructor(
-        @IEditorService private editorService: EditorPart,
+        @IWorkbenchEditorService private editorService: WorkbenchEditorService,
         @IContextMenuService private contextMenuService: ContextMenuService,
         @IInstantiationService private instantiationService: IInstantiationService,
     ) {
