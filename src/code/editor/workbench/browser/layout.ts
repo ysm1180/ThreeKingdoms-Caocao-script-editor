@@ -1,14 +1,16 @@
 import { SidebarPart } from './parts/sidebarPart';
 import { DomBuilder, Size } from '../../../base/browser/domBuilder';
 import { Sash, ISashLayoutProvider } from '../../../base/browser/ui/sash';
-import { EditorPart } from './parts/editor/editorPart';
+import { EditorPart, IEditorService } from './parts/editor/editorPart';
 import { TitlePart } from './parts/titlePart';
 import { StatusbarPart } from './parts/statusbarPart';
+import { Disposable } from 'code/base/common/lifecycle';
+import { IPartService } from '../services/part/partService';
 
 const TITLE_HEIGHT = 35;
 const SIDEBAR_HEIGHT = 22;
 
-export class WorkbenchLayout implements ISashLayoutProvider {
+export class WorkbenchLayout extends Disposable implements ISashLayoutProvider {
     private parent: DomBuilder;
     private workbench: DomBuilder;
 
@@ -20,7 +22,7 @@ export class WorkbenchLayout implements ISashLayoutProvider {
     private sidebar: SidebarPart;
     private sidebarWidth: number;
     private sidebarHeight: number;
-    
+
     private editor: EditorPart;
 
     private statusbar: StatusbarPart;
@@ -36,8 +38,12 @@ export class WorkbenchLayout implements ISashLayoutProvider {
             sidebar: SidebarPart,
             editor: EditorPart,
             statusbar: StatusbarPart,
-        }
+        },
+        @IPartService private partService: IPartService,
+        @IEditorService private editorService: EditorPart,
     ) {
+        super();
+
         this.parent = parent;
         this.workbench = workbench;
         this.title = parts.title;
@@ -52,10 +58,16 @@ export class WorkbenchLayout implements ISashLayoutProvider {
             this.sidebarWidth = e.mouseX;
             this.layout();
         }, this);
+
+        this.registerDispose(this.editorService.onEditorInputChanged.add((e) => {
+            this.onEditorInputChanged();
+        }));
     }
 
     public layout() {
         this.workbenchSize = this.parent.getClientArea();
+
+        const isSidebarVisible = this.partService.isSidebarVisible();
 
         this.workbench
             .position(0, 0, 0, 0, 'relative')
@@ -68,25 +80,34 @@ export class WorkbenchLayout implements ISashLayoutProvider {
             this.sidebarWidth = this.workbenchSize.width / 4;
         }
         this.sidebarHeight = this.workbenchSize.height - this.titleHeight - this.statusbarHeight;
+        const sidebarSize = new Size(this.sidebarWidth, this.sidebarHeight);
 
+        if (!isSidebarVisible) {
+            sidebarSize.width = 0;
+        }
         const titleWidth = this.workbenchSize.width;
         this.title.getContainer().position(0, 0)
             .size(titleWidth, this.titleHeight);
         this.title.layout(titleWidth, this.titleHeight);
-        
+
         this.sidebar.getContainer().position(this.titleHeight);
         this.sidebar.getContainer().size(this.sidebarWidth, this.sidebarHeight);
         this.sidebar.layout(this.sidebarWidth, this.sidebarHeight);
 
-        const editorSize = new Size(this.workbenchSize.width - this.sidebarWidth, this.sidebarHeight);
-        this.editor.getContainer().position(this.titleHeight, this.sidebarWidth);
+        const editorSize = new Size(this.workbenchSize.width - sidebarSize.width, this.sidebarHeight);
+        this.editor.getContainer().position(this.titleHeight, sidebarSize.width);
         this.editor.getContainer().size(editorSize.width, editorSize.height);
         this.editor.layout(editorSize.width, editorSize.height);
 
         this.statusbar.getContainer().position(this.titleHeight + this.sidebarHeight, 0);
         this.statusbar.layout(this.workbenchSize.width, this.statusbarHeight);
 
-        this.sashX.layout();
+        if (isSidebarVisible) {
+            this.sashX.show();
+            this.sashX.layout();
+        } else {
+            this.sashX.hide();
+        }
     }
 
     public getVerticalSashLeft(): number {
@@ -99,5 +120,9 @@ export class WorkbenchLayout implements ISashLayoutProvider {
 
     public getVerticalSashHeight(): number {
         return this.sidebarHeight;
+    }
+
+    private onEditorInputChanged(): void {
+        this.layout();
     }
 }

@@ -9,9 +9,9 @@ body {
     font-family: sans-serif;
 }
 
-.builder-hidden {
-    display: none !important;
-    visibility: hidden !important;
+.hidden {
+	display: none !important;
+	visibility: hidden !important;
 }
 
 .theme-dark {
@@ -37,6 +37,11 @@ body {
 
 .sidebar {
     background-color: #252526;
+}
+
+.nosidebar > .sidebar {
+    display: none !important;
+	visibility: hidden !important;
 }
 
 .tree {

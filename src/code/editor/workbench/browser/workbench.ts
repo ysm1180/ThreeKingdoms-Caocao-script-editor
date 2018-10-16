@@ -35,6 +35,7 @@ export class Workbench implements IPartService {
     private sidebar: SidebarPart;
     private editor: EditorPart;
     private statusbar: StatusbarPart;
+    private sideBarHidden: boolean;
 
     private serviceStorage: ServiceStorage;
 
@@ -142,7 +143,7 @@ export class Workbench implements IPartService {
     }
 
     private createLayout(): void {
-        this.workbenchLayout = new WorkbenchLayout(
+        this.workbenchLayout = this.instantiationService.create(WorkbenchLayout,
             $(this.container),
             this.workbench,
             {
@@ -153,8 +154,19 @@ export class Workbench implements IPartService {
             });
     }
 
-    public setSideBarHidden(hidden: boolean): void {
+    public isSidebarVisible(): boolean {
+        return !this.sideBarHidden;
+    }
 
+    public setSideBarHidden(hidden: boolean): void {
+        this.sideBarHidden = hidden;
+        if (hidden) {
+			this.workbench.addClass('nosidebar');
+		} else {
+			this.workbench.removeClass('nosidebar');
+        }
+        
+        this.layout();
     }
 
     public layout() {

@@ -39,6 +39,12 @@ export class ViewLayout extends Disposable {
         });
     }
 
+    public onMaxLineWidthChanged(maxLineWidth: number): void {
+		this.scroll.setScrollDimensions({
+			scrollWidth: maxLineWidth
+		});
+	}
+
     public onConfigurationChanged(e): void {
         this.scroll.setScrollDimensions({
             width: this.configuration.editorOptions.layoutInfo.contentWidth,

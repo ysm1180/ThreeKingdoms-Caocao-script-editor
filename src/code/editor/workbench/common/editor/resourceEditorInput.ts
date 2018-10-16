@@ -3,15 +3,16 @@ import { ResourceViewEditor } from '../../browser/parts/editor/resourceViewEdito
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { ResourceFileEditorDataModel } from '../../browser/parts/editor/editorDataModel';
 import { encodeToBase64 } from '../../../../base/common/encode';
+import { EditorInput } from '../editor';
 
-export class ResourceEditorInput implements IEditorInput {
+export class ResourceEditorInput extends EditorInput {
     constructor(
         private resource: string,
         private name: string,
         private data: Uint8Array,
         @IInstantiationService private instantiationService: IInstantiationService,
     ) {
-
+        super();
     }
 
     public getId(): string {

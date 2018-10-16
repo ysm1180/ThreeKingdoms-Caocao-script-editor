@@ -139,7 +139,7 @@ export class Scroll extends Disposable {
     }
 
     public setScrollDimensions(dimensions: INewScrollDimensions): void {
-		const newState = this.state.withScrollDimensions(dimensions);
+        const newState = this.state.withScrollDimensions(dimensions);
 		this._setState(newState);
     }
     

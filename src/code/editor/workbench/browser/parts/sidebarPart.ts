@@ -39,19 +39,23 @@ export class SidebarPart extends Part {
         const activeInput = this.group.activeEditor;
         if (!activeInput) {
             this.hideActiveComposite();
+            this.partService.setSideBarHidden(true);
             return;
         }
 
         const descriptors = CompositViewRegistry.getCompositeViewDescriptors(activeInput);
         if (descriptors.length === 0) {
             this.hideActiveComposite();
+            this.partService.setSideBarHidden(true);
             return;
         }
+
 
         for (let i = 0; i < descriptors.length; i++) {
             const id = descriptors[i].id;
             this.openCompositeView(id);
         }
+        this.partService.setSideBarHidden(false);
     }
 
     public openCompositeView(id: string) {

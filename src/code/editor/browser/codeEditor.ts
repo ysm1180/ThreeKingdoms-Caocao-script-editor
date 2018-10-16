@@ -28,9 +28,9 @@ export class CodeEditor {
 
             this._createView();
 
-            this.render();
-
             this.domElement.appendChild(this.view.domNode.domNode);
+
+            this.view.render();
         }
     }
 
@@ -42,6 +42,10 @@ export class CodeEditor {
     }
 
     public render() {
+        if (!this.view) {
+            return;
+        }
+
         this.view.render();
     }
 

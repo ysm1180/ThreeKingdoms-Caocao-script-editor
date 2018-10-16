@@ -10,31 +10,22 @@ import { IDimension } from 'code/editor/common/editorCommon';
 export class TextFileEditor extends BaseEditor {
     static ID = 'editor.texteditor';
 
-    private container: DomBuilder;
     private editorControl: CodeEditor;
 
     constructor(
         @IInstantiationService private instantiationService: IInstantiationService,
     ) {
         super(TextFileEditor.ID);
-
-        this.container = null;
     }
 
     public create(parent: DomBuilder) {
         super.create(parent);
 
         this.createEditor(parent);
-        
-        this.container.build(parent);
     }
 
     private createEditor(parent: DomBuilder) {
-        this.container = $().div({
-            class: 'text-editor-container'
-        });
-
-        this.editorControl = this.instantiationService.create(CodeEditor, this.container.getHTMLElement());
+        this.editorControl = this.instantiationService.create(CodeEditor, parent.getHTMLElement());
     }
 
     public setInput(input: IEditorInput): Promise<void> {
@@ -51,15 +42,11 @@ export class TextFileEditor extends BaseEditor {
         });
     }
 
-    public layout(dimension: IDimension): void {
+    public layout(dimension?: IDimension): void {
         this.editorControl.layout(dimension);
     }
 
     public dispose() {
-        if (this.container) {
-            this.container.destroy();
-        }
-
         super.dispose();
     }
 }

@@ -395,8 +395,8 @@ export class DomBuilder {
     }
 
     public show(): DomBuilder {
-        if (this.hasClass('monaco-builder-hidden')) {
-			this.removeClass('monaco-builder-hidden');
+        if (this.hasClass('hidden')) {
+			this.removeClass('hidden');
 		}
         this.attr('aria-hidden', 'false');
         
@@ -404,8 +404,8 @@ export class DomBuilder {
     }
 
     public hide(): DomBuilder {
-        if (!this.hasClass('monaco-builder-hidden')) {
-			this.addClass('monaco-builder-hidden');
+        if (!this.hasClass('hidden')) {
+			this.addClass('hidden');
 		}
         this.attr('aria-hidden', 'true');
         

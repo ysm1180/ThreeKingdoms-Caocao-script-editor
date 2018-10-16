@@ -147,4 +147,12 @@ export class Sash {
 
         this.element.style(style);
     }
+
+    public show(): void {
+        this.element.show();
+    }
+
+    public hide(): void {
+        this.element.hide();
+    }
 }

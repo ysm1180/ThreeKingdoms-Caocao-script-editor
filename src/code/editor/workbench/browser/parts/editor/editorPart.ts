@@ -11,11 +11,11 @@ import { EditorRegistry, EditorDescriptor } from '../../editor';
 export const IEditorService: ServiceIdentifier<EditorPart> = decorator<EditorPart>('editorPart');
 
 export class EditorPart extends Part {
-    private editorContainer: DomBuilder;
-
     private editorGroup: EditorGroup;
     private currentEditor: BaseEditor;
-    
+
+    private instantiatedEditors: BaseEditor[];
+
     public onEditorInputChanged = new Event<IEditorEvent>();
 
     constructor(
@@ -25,6 +25,7 @@ export class EditorPart extends Part {
 
         this.editorGroup = this.instantiationService.create(EditorGroup);
         this.currentEditor = null;
+        this.instantiatedEditors = [];
     }
 
     public getEditorGroup() {
@@ -33,10 +34,6 @@ export class EditorPart extends Part {
 
     public create(parent: DomBuilder) {
         super.create(parent);
-
-        this.editorContainer = $(this.getContentArea()).div({
-            class: 'editor-container'
-        });
     }
 
     public layout(width: number, height: number) {
@@ -76,10 +73,11 @@ export class EditorPart extends Part {
 
     private doSetInput(input: IEditorInput, editor: BaseEditor) {
         return editor.setInput(input).then(() => {
-            const eventData : IEditorEvent = {
+            const eventData: IEditorEvent = {
                 editor: input,
             };
-            this.onEditorInputChanged.fire(eventData);    
+
+            this.onEditorInputChanged.fire(eventData);
         });
     }
 
@@ -90,10 +88,14 @@ export class EditorPart extends Part {
         }
 
         if (this.currentEditor) {
-            this.doCloseEditor(this.currentEditor);
+            this.doHideEditor(this.currentEditor);
         }
 
         const editor = this.doCreateViewEditor(desc);
+        
+        editor.getContainer().build(this.getContentArea());
+        editor.getContainer().show();
+
         this.currentEditor = editor;
 
         return editor;
@@ -104,13 +106,35 @@ export class EditorPart extends Part {
             return this.currentEditor;
         }
 
-        let editor: BaseEditor = desc.instantiation(this.instantiationService);
+        const editor = this.doInstantiateEditor(desc);
 
         if (!editor.getContainer()) {
-            editor.create(this.editorContainer);
+            editor.create($().div({
+                class: 'editor-container',
+                id: desc.getId(),
+            }));
         }
 
         return editor;
+    }
+
+    private doInstantiateEditor(desc: EditorDescriptor): BaseEditor {
+        const instantiatedEditor = this.instantiatedEditors.filter(e => desc.describes(e))[0];
+        if (instantiatedEditor) {
+            return instantiatedEditor;
+        }
+
+        const editor = desc.instantiation(this.instantiationService);
+
+        this.instantiatedEditors.push(editor);
+
+        return editor;
+    }
+
+    private doHideEditor(editor: BaseEditor) {
+        editor.getContainer().offDOM().hide();
+
+        this.currentEditor = null;
     }
 
     private doCloseEditor(editor: BaseEditor) {

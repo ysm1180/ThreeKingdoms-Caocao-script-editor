@@ -43,6 +43,7 @@ export class ElementSizeObserver extends Disposable {
             width = this.referenceDomElement.clientWidth;
             height = this.referenceDomElement.clientHeight;
         }
+        
         width = Math.max(5, width);
         height = Math.max(5, height);
 

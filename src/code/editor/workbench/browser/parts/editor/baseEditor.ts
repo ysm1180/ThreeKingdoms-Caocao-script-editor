@@ -28,7 +28,7 @@ export abstract class BaseEditor extends Disposable {
     }
 
     public abstract setInput(input: IEditorInput): Promise<any>;
-    public abstract layout(dimension: IDimension): void;
+    public abstract layout(dimension?: IDimension): void;
 
     public dispose() {
         this.parent = null;

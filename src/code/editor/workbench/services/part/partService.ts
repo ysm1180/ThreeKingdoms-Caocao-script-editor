@@ -4,8 +4,7 @@ export const IPartService = decorator<IPartService>('partService');
 
 
 export interface IPartService {
-	/**
-	 * Set sidebar hidden or not
-	 */
+	isSidebarVisible(): boolean;
+
 	setSideBarHidden(hidden: boolean): void;
 }
