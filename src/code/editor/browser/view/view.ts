@@ -83,4 +83,15 @@ export class View extends Disposable{
             this._setLayout();
         }
     }
+
+    public dispose(): void {
+        this.viewLines.dispose();
+
+        for (let i = 0, len = this.viewParts.length; i < len; i++) {
+			this.viewParts[i].dispose();
+		}
+        this.viewParts = [];
+        
+        super.dispose();
+    }
 }

@@ -47,6 +47,8 @@ export class TextFileEditor extends BaseEditor {
     }
 
     public dispose() {
+        this.editorControl.dispose();
+        
         super.dispose();
     }
 }

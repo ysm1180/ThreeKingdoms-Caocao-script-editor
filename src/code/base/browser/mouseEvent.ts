@@ -54,3 +54,71 @@ export class StandardMouseEvent implements IMouseEvent {
         this.event.stopPropagation();
     }
 }
+
+interface IWebKitMouseWheelEvent {
+	wheelDeltaY: number;
+	wheelDeltaX: number;
+}
+
+interface IGeckoMouseWheelEvent {
+	HORIZONTAL_AXIS: number;
+	VERTICAL_AXIS: number;
+	axis: number;
+	detail: number;
+}
+
+export class StandardMouseWheelEvent {
+	public readonly event: MouseWheelEvent;
+	public readonly deltaY: number;
+	public readonly deltaX: number;
+	public readonly target: Node;
+
+	constructor(e: MouseWheelEvent, deltaX: number = 0, deltaY: number = 0) {
+
+		this.event = e || null;
+		this.target = e ? (e.target || (<any>e).targetNode || e.srcElement) : null;
+
+		this.deltaY = deltaY;
+		this.deltaX = deltaX;
+
+		if (e) {
+			let e1 = <IWebKitMouseWheelEvent><any>e;
+			let e2 = <IGeckoMouseWheelEvent><any>e;
+
+			// vertical delta scroll
+			if (typeof e1.wheelDeltaY !== 'undefined') {
+				this.deltaY = e1.wheelDeltaY / 120;
+			} else if (typeof e2.VERTICAL_AXIS !== 'undefined' && e2.axis === e2.VERTICAL_AXIS) {
+				this.deltaY = -e2.detail / 3;
+			}
+
+			// horizontal delta scroll
+			if (typeof e1.wheelDeltaX !== 'undefined') {
+				this.deltaX = e1.wheelDeltaX / 120;
+			} else if (typeof e2.HORIZONTAL_AXIS !== 'undefined' && e2.axis === e2.HORIZONTAL_AXIS) {
+				this.deltaX = -e.detail / 3;
+			}
+
+			// Assume a vertical scroll if nothing else worked
+			if (this.deltaY === 0 && this.deltaX === 0 && e.wheelDelta) {
+				this.deltaY = e.wheelDelta / 120;
+			}
+		}
+	}
+
+	public preventDefault(): void {
+		if (this.event) {
+			if (this.event.preventDefault) {
+				this.event.preventDefault();
+			}
+		}
+	}
+
+	public stopPropagation(): void {
+		if (this.event) {
+			if (this.event.stopPropagation) {
+				this.event.stopPropagation();
+			}
+		}
+	}
+}

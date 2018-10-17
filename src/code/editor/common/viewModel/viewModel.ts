@@ -101,4 +101,9 @@ export class ViewModel extends Disposable {
 			listeners[i](e);
 		}
     }
+
+    public dispose(): void {
+        super.dispose();
+        this.viewLayout.dispose();
+    }
 }

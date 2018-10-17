@@ -2,8 +2,9 @@ import { ViewContext } from '../../common/view/viewContext';
 import { FastDomNode } from '../../../base/browser/fastDomNode';
 import { ViewportData } from '../../common/view/viewportData';
 import { VisibleLines } from './viewLayer';
+import { Disposable } from 'code/base/common/lifecycle';
 
-export class ViewLines {
+export class ViewLines extends Disposable {
     private linesContent: FastDomNode<HTMLElement>;
     private context: ViewContext;
     private domNode: FastDomNode<HTMLElement>;
@@ -12,6 +13,8 @@ export class ViewLines {
     private maxLineWidth: number;
 
     constructor(context: ViewContext, linesContent: FastDomNode<HTMLElement>) {
+        super();
+
         this.context = context;
         this.linesContent = linesContent;  
 
@@ -36,5 +39,9 @@ export class ViewLines {
 			this.maxLineWidth = iLineWidth;
 			this.context.viewLayout.onMaxLineWidthChanged(this.maxLineWidth);
 		}
-	}
+    }
+    
+    public dispose(): void {
+        super.dispose();
+    }
 }

@@ -35,6 +35,33 @@ export class ScrollState {
         scrollHeight: number,
         scrollTop: number
     ) {
+		width = width | 0;
+		scrollWidth = scrollWidth | 0;
+		scrollLeft = scrollLeft | 0;
+		height = height | 0;
+		scrollHeight = scrollHeight | 0;
+		scrollTop = scrollTop | 0;
+
+		if (width < 0) {
+			width = 0;
+		}
+		if (scrollLeft + width > scrollWidth) {
+			scrollLeft = scrollWidth - width;
+		}
+		if (scrollLeft < 0) {
+			scrollLeft = 0;
+		}
+
+		if (height < 0) {
+			height = 0;
+		}
+		if (scrollTop + height > scrollHeight) {
+			scrollTop = scrollHeight - height;
+		}
+		if (scrollTop < 0) {
+			scrollTop = 0;
+		}
+
         this.width = width;
         this.scrollWidth = scrollWidth;
         this.scrollLeft = scrollLeft;
@@ -146,6 +173,10 @@ export class Scroll extends Disposable {
     public setScrollPositionNow(update: INewScrollPosition): void {
 		const newState = this.state.withScrollPosition(update);
 		this._setState(newState);
+	}
+
+	public validateScrollPosition(scrollPosition: INewScrollPosition): IScrollPosition {
+		return this.state.withScrollPosition(scrollPosition);
 	}
 
     public getCurrentScrollPosition(): IScrollPosition {

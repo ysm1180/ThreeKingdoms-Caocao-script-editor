@@ -1,7 +1,8 @@
 import { FastDomNode, createFastDomNode } from '../../fastDomNode';
 import { ScrollbarState } from './scrollbarState';
-import { Scroll } from 'code/base/common/scroll';
+import { Scroll, INewScrollPosition } from 'code/base/common/scroll';
 import { Widget } from '../widget';
+import { IMouseEvent } from '../../mouseEvent';
 
 export interface AbstractScrollbarOptions {
     extraClassName: string;
@@ -18,13 +19,15 @@ export abstract class AbstractScrollbar extends Widget {
 
     constructor(opts: AbstractScrollbarOptions) {
         super();
-        
+
         this.scrollbarState = opts.scrollbarState;
         this.scroll = opts.scroll;
 
         this.domNode = createFastDomNode(document.createElement('div'));
         this.domNode.setClassName('scrollbar ' + opts.extraClassName);
         this.domNode.setPosition('absolute');
+
+        this.onmousedown(this.domNode.domNode, (e) => this._domNodeMouseDown(e));
     }
 
     protected _createSlider(top: number, left: number, width: number, height: number): void {
@@ -49,7 +52,7 @@ export abstract class AbstractScrollbar extends Widget {
 
     private _render(): void {
         this._renderDomNode(this.scrollbarState.getLargeSize(), this.scrollbarState.getSmallSize());
-        this._updateSlider(this.scrollbarState.getSliderSize());
+        this._updateSlider(this.scrollbarState.getSliderSize(), this.scrollbarState.getSliderPosition());
     }
 
     protected _onElementVisibleSize(visibleSize: number) {
@@ -64,6 +67,30 @@ export abstract class AbstractScrollbar extends Widget {
         }
     }
 
-    protected abstract _updateSlider(sliderSize: number): void;
+    protected _onElementScrollPosition(elementScrollPosition: number) {
+        if (this.scrollbarState.setScrollPosition(elementScrollPosition)) {
+            this.render();
+        }
+    }
+
+    private _onMouseDown(e: IMouseEvent): void {
+        let offsetX: number;
+        let offsetY: number;
+
+        offsetX = e.event.offsetX;
+        offsetY = e.event.offsetY;
+
+    }
+
+    private _domNodeMouseDown(e: IMouseEvent): void {
+        if (e.target !== this.domNode.domNode) {
+            return;
+        }
+        this._onMouseDown(e);
+    }
+
+    protected abstract _updateSlider(sliderSize: number, sliderPosition: number): void;
     protected abstract _renderDomNode(largeSize: number, smallSize: number): void;
+
+    public abstract writeScrollPosition(target: INewScrollPosition, scrollPosition: number): void;
 }

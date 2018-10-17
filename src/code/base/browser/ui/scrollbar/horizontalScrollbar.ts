@@ -1,7 +1,7 @@
 import { AbstractScrollbar } from './scrollbar';
 import { ScrollbarState } from './scrollbarState';
 import { ScrollableElementOptions } from './scrollbarElement';
-import { Scroll, ScrollEvent } from 'code/base/common/scroll';
+import { Scroll, ScrollEvent, INewScrollPosition } from 'code/base/common/scroll';
 
 export class HorizontalScrollbar extends AbstractScrollbar {
 
@@ -25,12 +25,18 @@ export class HorizontalScrollbar extends AbstractScrollbar {
         this.domNode.setBottom(0);
     }
 
-    protected _updateSlider(sliderSize: number): void {
+    protected _updateSlider(sliderSize: number, sliderPosition: number): void {
         this.slider.setWidth(sliderSize);
+        this.slider.setLeft(sliderPosition);
     }
 
     public onDidScroll(e: ScrollEvent) {
         this._onElementScrollSize(e.scrollWidth);
+        this._onElementScrollPosition(e.scrollLeft);
         this._onElementVisibleSize(e.width);
+    }
+
+    public writeScrollPosition(target: INewScrollPosition, scrollPosition: number) {
+        target.scrollLeft = scrollPosition;
     }
 }

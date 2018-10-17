@@ -1,7 +1,7 @@
 import { AbstractScrollbar } from './scrollbar';
 import { ScrollableElementOptions } from './scrollbarElement';
 import { ScrollbarState } from './scrollbarState';
-import { Scroll, ScrollEvent } from 'code/base/common/scroll';
+import { Scroll, ScrollEvent, INewScrollPosition } from 'code/base/common/scroll';
 
 export class VerticalScrollbar extends AbstractScrollbar {
     constructor(scroll: Scroll, options: ScrollableElementOptions) {
@@ -24,12 +24,18 @@ export class VerticalScrollbar extends AbstractScrollbar {
         this.domNode.setTop(0);
     }
 
-    protected _updateSlider(sliderSize: number): void {
+    protected _updateSlider(sliderSize: number, sliderPosition: number): void {
         this.slider.setHeight(sliderSize);
+        this.slider.setTop(sliderPosition);
     }
 
     public onDidScroll(e: ScrollEvent) {
         this._onElementScrollSize(e.scrollHeight);
+        this._onElementScrollPosition(e.scrollTop);
         this._onElementVisibleSize(e.height);
+    }
+
+    public writeScrollPosition(target: INewScrollPosition, scrollPosition: number) {
+        target.scrollTop = scrollPosition;
     }
 }

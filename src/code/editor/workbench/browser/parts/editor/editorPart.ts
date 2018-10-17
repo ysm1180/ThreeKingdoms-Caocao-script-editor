@@ -137,8 +137,10 @@ export class EditorPart extends Part {
         this.currentEditor = null;
     }
 
-    private doCloseEditor(editor: BaseEditor) {
-        editor.dispose();
+    private doCloseEditor() {
+        if (this.currentEditor) {
+            this.doHideEditor(this.currentEditor);
+        }
 
         this.currentEditor = null;
     }
@@ -157,7 +159,7 @@ export class EditorPart extends Part {
         if (this.editorGroup.count > 0) {
             this.openEditor(this.editorGroup.activeEditor);
         } else {
-            this.doCloseEditor(this.currentEditor);
+            this.doCloseEditor();
         }
     }
 

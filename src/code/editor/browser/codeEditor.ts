@@ -3,8 +3,9 @@ import { TextModel } from '../common/textModel';
 import { ViewModel } from '../common/viewModel/viewModel';
 import { EditorConfiguration } from './config/configuration';
 import { IDimension } from '../common/editorCommon';
+import { Disposable } from 'code/base/common/lifecycle';
 
-export class CodeEditor {
+export class CodeEditor extends Disposable {
     private domElement: HTMLElement;
     private view: View;
 
@@ -16,6 +17,8 @@ export class CodeEditor {
     constructor(
         parent: HTMLElement,
     ) {
+        super();
+
         this.domElement = parent;    
         this.configuration = new EditorConfiguration(this.domElement);
     }
@@ -52,5 +55,32 @@ export class CodeEditor {
     public layout(dimension?: IDimension): void {
         this.configuration.observeReferenceDomElement(dimension);
         this.render();
+    }
+
+    protected _detachModel() {
+        let removeDomNode: HTMLElement = null;
+
+        if (this.view) {
+            this.view.dispose();
+            removeDomNode = this.view.domNode.domNode;
+            this.view = null;
+        }
+
+        if (removeDomNode) {
+			this.domElement.removeChild(removeDomNode);
+		}
+
+        if (this.viewModel) {
+            this.viewModel.dispose();
+            this.viewModel = null;
+        }
+        
+        this.model = null;
+    }
+
+    public dispose(): void {
+        this._detachModel();
+
+        super.dispose();
     }
 }
