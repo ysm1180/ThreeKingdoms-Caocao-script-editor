@@ -221,7 +221,7 @@ export class Keybinding {
         }
 
         if (this.shiftKey) {
-            result += 'Shift';
+            result += 'Shift+';
         }
 
         return result + KeyCodeUtils.toString(this.keyCode);

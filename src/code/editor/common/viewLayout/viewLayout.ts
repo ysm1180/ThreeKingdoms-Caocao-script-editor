@@ -1,7 +1,7 @@
-import { EditorConfiguration } from 'code/editor/browser/config/configuration';
-import { Scroll } from 'code/base/common/scroll';
 import { LinesLayout } from './linesLayout';
-import { Disposable } from 'code/base/common/lifecycle';
+import { Disposable } from '../../../base/common/lifecycle';
+import { EditorConfiguration } from '../../browser/config/configuration';
+import { Scroll } from '../../../base/common/scroll';
 
 export class ViewLayout extends Disposable {
     private configuration: EditorConfiguration;

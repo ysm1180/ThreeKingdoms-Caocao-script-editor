@@ -1,7 +1,7 @@
 import { DomBuilder } from '../../../../../base/browser/domBuilder';
 import { IEditorInput } from '../../../../../platform/editor/editor';
 import { Disposable } from '../../../../../base/common/lifecycle';
-import { IDimension } from 'code/editor/common/editorCommon';
+import { IDimension } from '../../../../common/editorCommon';
 
 export abstract class BaseEditor extends Disposable {
     private parent: DomBuilder;

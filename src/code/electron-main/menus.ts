@@ -1,22 +1,33 @@
 'use strict';
 
 import { Menu, MenuItem } from 'electron';
-import { WindowManager, IWindowService } from './windows';
+import { WindowManager } from './windows';
 import * as arrays from '../base/common/array';
+import { IWindowMainService } from '../platform/windows/electron-main/windows';
+import { IInstantiationService } from '../platform/instantiation/instantiationService';
+import { KeybindingsResolver } from './keybindings';
+import { SAVE_FILE_ID } from '../editor/workbench/parts/files/fileCommands';
 
 export const __separator__ = function (): MenuItem {
     return new MenuItem({ type: 'separator' });
 };
 
 export class AppMenu {
+    private keybindingsResolver: KeybindingsResolver;
+
     constructor(
-        @IWindowService private windowMainService: WindowManager
+        @IWindowMainService private windowMainService: IWindowMainService,
+        @IInstantiationService instantiationService: IInstantiationService,
     ) {
+        this.keybindingsResolver = instantiationService.create(KeybindingsResolver);
+
         this.install();
     }
 
     private registerListeners(): void {
-
+        this.keybindingsResolver.onKeybindingsChanged.add(() => {
+            this.install();
+        });
     }
 
     private install() {
@@ -44,9 +55,9 @@ export class AppMenu {
     }
 
     private setFileMenuItem(fileMenu: Menu) {
-        const newFile = new MenuItem({ label: '새 ME5 파일(&N)', click: () => { this.windowMainService.openMe5NewFile(); }, accelerator: 'Control+N' });
+        const newFile = this.createMenuItem('새 ME5 파일(&N)', () => { });
         const openFile = new MenuItem({ label: '파일 열기(&O)', click: () => { this.windowMainService.openWorkingFiles(); }, accelerator: 'Control+O' });
-        const saveFile = new MenuItem({ label: '저장 (&S)', click: () => { this.windowMainService.saveFile(); }, accelerator: 'Control+S' });
+        const saveFile = this.createMenuItem('저장 (&S)', SAVE_FILE_ID);
         const exit = new MenuItem({ label: '종료(&X)', click: () => { this.windowMainService.quit(); } });
 
         arrays.coalesce([
@@ -77,16 +88,21 @@ export class AppMenu {
     private createMenuItem(arg1: string, arg2: any) {
         const label = arg1;
         const click: () => void = (typeof arg2 === 'function') ? arg2 : (menuItem: Electron.MenuItem, win: Electron.BrowserWindow, event: Electron.Event) => {
-			let commandId = arg2;
-			this.runActionInRenderer(commandId);
+            let commandId = arg2;
+            this.runActionInRenderer(commandId);
         };
-        
+
         const options: Electron.MenuItemConstructorOptions = {
             label,
             click
         };
 
-        
+        let commandId: string;
+        if (typeof arg2 === 'string') {
+            commandId = arg2;
+        }
+
+        return new MenuItem(this.withKeybinding(commandId, options));
     }
 
     private runActionInRenderer(id: string): void {
@@ -94,5 +110,17 @@ export class AppMenu {
         if (activeWindow) {
             WindowManager.win.send('app:runCommand', { id: id });
         }
+    }
+
+    private withKeybinding(commandId: string, options: Electron.MenuItemConstructorOptions): Electron.MenuItemConstructorOptions {
+        const binding = this.keybindingsResolver.getKeybinding(commandId);
+
+        if (binding && binding.label) {
+            options.accelerator = binding.label;
+        } else {
+            options.accelerator = void 0;
+        }
+
+        return options;
     }
 }

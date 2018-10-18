@@ -11,7 +11,7 @@ export type FilterFuntion<T> = (e: T) => boolean;
 export class Me5Stat extends Disposable {
     private static INDEX = 1;
 
-    private _path: string;
+    private _resource: string;
     private _state: ItemState;
     private _parent: Me5Stat;
     private _isGroup: boolean;
@@ -20,7 +20,7 @@ export class Me5Stat extends Disposable {
     private _data: Uint8Array;
     private readonly id = String(Me5Stat.INDEX++);
 
-    constructor(path: string, isGroup: boolean, public root: Me5Stat, name?: string, data?: Uint8Array) {
+    constructor(resource: string, isGroup: boolean, public root: Me5Stat, name?: string, data?: Uint8Array) {
         super();
 
         this._parent = null;
@@ -29,7 +29,7 @@ export class Me5Stat extends Disposable {
             this.root = this;
         } 
 
-        this._path = path;
+        this._resource = resource;
         this.isGroup = isGroup;
         this._name = name;
         this._data = data;
@@ -37,10 +37,14 @@ export class Me5Stat extends Disposable {
 
     public getId(): string {
         if (this.isRoot) {
-            return this._path;
+            return this._resource;
         } else {
-            return `${this._path}:${this.id}`;
+            return `${this._resource}:${this.id}`;
         }
+    }
+
+    public set resource(value: string) {
+        this._resource = value;
     }
 
     public get name(): string {

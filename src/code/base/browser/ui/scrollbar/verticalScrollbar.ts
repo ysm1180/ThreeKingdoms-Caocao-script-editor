@@ -1,7 +1,7 @@
 import { AbstractScrollbar } from './scrollbar';
 import { ScrollableElementOptions } from './scrollbarElement';
 import { ScrollbarState } from './scrollbarState';
-import { Scroll, ScrollEvent, INewScrollPosition } from 'code/base/common/scroll';
+import { Scroll, ScrollEvent, INewScrollPosition } from '../../../../base/common/scroll';
 
 export class VerticalScrollbar extends AbstractScrollbar {
     constructor(scroll: Scroll, options: ScrollableElementOptions) {

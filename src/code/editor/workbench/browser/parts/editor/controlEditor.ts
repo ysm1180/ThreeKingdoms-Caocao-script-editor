@@ -1,7 +1,7 @@
 import { BaseEditor } from './baseEditor';
 import { IEditorInput } from '../../../../../platform/editor/editor';
 
-export class ControlEditor extends BaseEditor{
+export class ControlEditor extends BaseEditor {
     static ID = 'editor.controleditor';
 
     constructor(id: string) {
@@ -14,7 +14,11 @@ export class ControlEditor extends BaseEditor{
         }
 
         return input.resolve().then(() => {
-            
+
         });
+    }
+
+    public layout(): void {
+
     }
 }

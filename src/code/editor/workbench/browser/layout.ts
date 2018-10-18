@@ -4,8 +4,8 @@ import { Sash, ISashLayoutProvider } from '../../../base/browser/ui/sash';
 import { EditorPart, IEditorService } from './parts/editor/editorPart';
 import { TitlePart } from './parts/titlePart';
 import { StatusbarPart } from './parts/statusbarPart';
-import { Disposable } from 'code/base/common/lifecycle';
 import { IPartService } from '../services/part/partService';
+import { Disposable } from '../../../base/common/lifecycle';
 
 const TITLE_HEIGHT = 35;
 const SIDEBAR_HEIGHT = 22;

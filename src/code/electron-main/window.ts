@@ -24,8 +24,9 @@ export class CodeWindow {
     public window: BrowserWindow;
 
     constructor(
+        option: IWindowCreationOption,
     ) {
-
+        this.createBrowserWindow(option);
     }
 
     public createBrowserWindow(option: IWindowCreationOption): void {

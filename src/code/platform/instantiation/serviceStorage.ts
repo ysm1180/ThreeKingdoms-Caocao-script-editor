@@ -18,4 +18,8 @@ export class ServiceStorage {
     public get<T>(key: ServiceIdentifier<T>): T {
         return this.entries.get(key);
     }
+
+    public forEach(callback: (id: ServiceIdentifier<any>, instanceOrDescriptor: any) => any): void {
+		this.entries.forEach((value, key) => callback(key, value));
+	}
 }

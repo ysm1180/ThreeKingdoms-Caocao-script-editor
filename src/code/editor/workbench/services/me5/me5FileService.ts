@@ -4,10 +4,11 @@ import { Me5Stat } from '../../parts/files/me5Data';
 import { IDialogService, DialogService } from '../electron-browser/dialogService';
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
+import { IFileHandleService } from '../files/files';
 
 export const IMe5FileService: ServiceIdentifier<Me5FileService> = decorator<Me5FileService>('me5FileService');
 
-export class Me5FileService {
+export class Me5FileService implements IFileHandleService {
     constructor(
         @IDialogService private dialogService: DialogService,
         @ITreeService private treeService: TreeService,
@@ -50,34 +51,7 @@ export class Me5FileService {
 
         let done: Promise<Me5Stat>;
         if (!path) {
-            const saving: ISavingFile = {
-                title: '다른 이름으로 저장',
-                name: 'Untitled',
-                extensions: [{
-                    extensions: 'me5',
-                }]
-            };
-
-            done = this.dialogService.save(saving).then((data) => {
-                if (!data.file) {
-                    return null;
-                }
-
-                const newStat = new Me5Stat(data.file, true, null);
-                const groups = stat.getChildren((group) => group.getChildren().length !== 0);
-                for (const beforeGroup of groups) {
-                    const newGroup = new Me5Stat(data.file, true, newStat, beforeGroup.name);
-                    newGroup.build(newStat);
-
-                    const items = beforeGroup.getChildren();
-                    for (const beforeItem of items) {
-                        const newItem = new Me5Stat(data.file, false, newStat, beforeItem.name, beforeItem.data);
-                        newItem.build(newGroup);
-                    }
-                }
-
-                return newStat;
-            });
+            done = this.saveAs();
         } else {
             done = Promise.resolve(stat);
         }
@@ -93,6 +67,37 @@ export class Me5FileService {
 
             const file = new Me5File(rootStat.getId());
             file.save(options);
+        });
+    }
+
+    public saveAs() {
+        const saving: ISavingFile = {
+            title: '다른 이름으로 저장',
+            name: 'Untitled',
+            extensions: [{
+                extensions: 'me5',
+            }]
+        };
+
+        return this.dialogService.save(saving).then((data) => {
+            if (!data.file) {
+                return null;
+            }
+
+            const stat = this.treeService.LastFocusedTree.getRoot() as Me5Stat;
+            const groups = stat.getChildren((group) => group.getChildren().length !== 0);
+
+            stat.resource = data.file;
+            for (const group of groups) {
+                group.resource = data.file;
+
+                const items = group.getChildren();
+                for (const item of items) {
+                    item.resource = data.file;
+                }
+            }
+
+            return stat;
         });
     }
 }

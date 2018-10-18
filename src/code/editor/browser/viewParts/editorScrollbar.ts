@@ -1,8 +1,8 @@
 import { FastDomNode, createFastDomNode } from '../../../base/browser/fastDomNode';
 import { ScrollbarElement, ScrollableElementOptions } from '../../../base/browser/ui/scrollbar/scrollbarElement';
 import { ViewPart } from '../view/viewPart';
-import { ViewContext } from 'code/editor/common/view/viewContext';
-import { IConfigurationChangedEvent } from 'code/editor/common/config/editorOptions';
+import { ViewContext } from '../../common/view/viewContext';
+import { IConfigurationChangedEvent } from '../../common/config/editorOptions';
 
 export class EditorScrollbar extends ViewPart {
     private context: ViewContext;

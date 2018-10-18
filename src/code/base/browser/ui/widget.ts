@@ -1,7 +1,7 @@
-import { Disposable } from 'code/base/common/lifecycle';
 import * as dom from '../dom';
 import { StandardMouseEvent, IMouseEvent } from '../mouseEvent';
 import { StandardKeyboardEvent, IKeyboardEvent } from '../keyboardEvent';
+import { Disposable } from '../../common/lifecycle';
 
 export abstract class Widget extends Disposable {
 

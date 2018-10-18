@@ -32,6 +32,10 @@ export class EditorPart extends Part {
         return this.editorGroup;
     }
 
+    public getActiveEditorInput(): IEditorInput {
+		return this.editorGroup.activeEditor;
+    }
+
     public create(parent: DomBuilder) {
         super.create(parent);
     }

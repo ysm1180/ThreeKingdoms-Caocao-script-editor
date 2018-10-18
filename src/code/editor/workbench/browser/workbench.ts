@@ -12,7 +12,6 @@ import { IContextMenuService, ContextMenuService } from '../services/contextmenu
 import { IMe5DataService, Me5DataService } from '../services/me5/me5DataService';
 import { WindowClientService } from '../../../platform/windows/windowsIpc';
 import { IDialogService, DialogService } from '../services/electron-browser/dialogService';
-import { IWindowService } from '../../../electron-main/windows';
 import { StatusbarPart, IStatusbarService } from './parts/statusbarPart';
 import { IContextKeyService, ContextKeyService } from '../../../platform/contexts/contextKeyService';
 import { ICompositeViewService, CompositeViewService } from '../services/view/compositeViewService';
@@ -23,6 +22,8 @@ import { IPartService } from '../services/part/partService';
 import { ITextFileService } from '../services/textfile/textfiles';
 import { TextFileService } from '../services/textfile/textFileService';
 import { IFileService } from '../services/files/files';
+import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
+import { IWindowService } from '../../../platform/windows/windows';
 
 export class Workbench implements IPartService {
     private container: HTMLElement;
@@ -63,30 +64,30 @@ export class Workbench implements IPartService {
     private initService() {
         this.serviceStorage.set(IPartService, this);
 
-        this.serviceStorage.set(IContextKeyService, this.instantiationService.create(ContextKeyService));
+        this.serviceStorage.set(IContextKeyService, new ClassDescriptor(ContextKeyService));
 
-        this.serviceStorage.set(ITreeService, this.instantiationService.create(TreeService));
+        this.serviceStorage.set(ITreeService, new ClassDescriptor(TreeService));
 
-        this.serviceStorage.set(IWindowService, this.instantiationService.create(WindowClientService));
-        this.serviceStorage.set(IDialogService, this.instantiationService.create(DialogService));
+        this.serviceStorage.set(IWindowService, new ClassDescriptor(WindowClientService));
+        this.serviceStorage.set(IDialogService, new ClassDescriptor(DialogService));
 
-        this.serviceStorage.set(ICommandService, this.instantiationService.create(CommandService));
-        this.serviceStorage.set(IKeybindingService, this.instantiationService.create(KeybindingService, window));
-        this.serviceStorage.set(IContextMenuService, this.instantiationService.create(ContextMenuService));
+        this.serviceStorage.set(ICommandService, new ClassDescriptor(CommandService));
+        this.serviceStorage.set(IKeybindingService, new ClassDescriptor(KeybindingService, window));
+        this.serviceStorage.set(IContextMenuService, new ClassDescriptor(ContextMenuService));
 
-        this.serviceStorage.set(IMe5DataService, this.instantiationService.create(Me5DataService));
-        this.serviceStorage.set(IMe5FileService, this.instantiationService.create(Me5FileService));
+        this.serviceStorage.set(IMe5DataService, new ClassDescriptor(Me5DataService));
+        this.serviceStorage.set(IMe5FileService, new ClassDescriptor(Me5FileService));
 
-        this.serviceStorage.set(IFileService, this.instantiationService.create(FileService));
-        this.serviceStorage.set(ITextFileService, this.instantiationService.create(TextFileService));
+        this.serviceStorage.set(IFileService, new ClassDescriptor(FileService));
+        this.serviceStorage.set(ITextFileService, new ClassDescriptor(TextFileService));
 
         this.editor = this.instantiationService.create(EditorPart);
         this.serviceStorage.set(IEditorService, this.editor);
-        this.serviceStorage.set(IWorkbenchEditorService, this.instantiationService.create(WorkbenchEditorService, this.editor));
+        this.serviceStorage.set(IWorkbenchEditorService, new ClassDescriptor(WorkbenchEditorService, this.editor));
         
         this.sidebar = this.instantiationService.create(SidebarPart);
 
-        this.serviceStorage.set(ICompositeViewService, this.instantiationService.create(CompositeViewService, this.sidebar));
+        this.serviceStorage.set(ICompositeViewService, new ClassDescriptor(CompositeViewService, this.sidebar));
 
         this.title = this.instantiationService.create(TitlePart);
         this.serviceStorage.set(ITitlePartService, this.title);

@@ -1,4 +1,4 @@
-import { Disposable } from 'code/base/common/lifecycle';
+import { Disposable } from '../../../base/common/lifecycle';
 
 export abstract class ViewPart extends Disposable {
     constructor() {

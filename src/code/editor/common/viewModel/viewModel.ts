@@ -2,8 +2,8 @@ import { TextModel } from '../textModel';
 import { LinesCollection } from './linesCollection';
 import { ViewLayout } from '../viewLayout/viewLayout';
 import { EditorConfiguration } from '../../browser/config/configuration';
-import { Disposable, IDisposable } from 'code/base/common/lifecycle';
 import { IConfigurationChangedEvent } from '../config/editorOptions';
+import { Disposable, IDisposable } from '../../../base/common/lifecycle';
 
 export class ViewLineData {
     public readonly content: string;

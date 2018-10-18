@@ -36,3 +36,17 @@ export function isUndefined(o: any): boolean {
 export function isNullOrUndefined(o: any): boolean {
     return isNull(o) || isUndefined(o);
 }
+
+export function isEmptyObject(obj: any): obj is any {
+	if (!isObject(obj)) {
+		return false;
+	}
+
+	for (let key in obj) {
+		if (Object.prototype.hasOwnProperty.call(obj, key)) {
+			return false;
+		}
+	}
+
+	return true;
+}

@@ -1,8 +1,8 @@
 import { FastDomNode, createFastDomNode } from '../../fastDomNode';
 import { ScrollbarState } from './scrollbarState';
-import { Scroll, INewScrollPosition } from 'code/base/common/scroll';
 import { Widget } from '../widget';
 import { IMouseEvent } from '../../mouseEvent';
+import { Scroll, INewScrollPosition } from '../../../common/scroll';
 
 export interface AbstractScrollbarOptions {
     extraClassName: string;

@@ -1,8 +1,8 @@
 import { ElementSizeObserver } from './elementSizeObserver';
-import { InternalEditorOptions, IConfigurationChangedEvent } from 'code/editor/common/config/editorOptions';
-import { Event } from 'code/base/common/event';
-import { Disposable } from 'code/base/common/lifecycle';
-import { IDimension } from 'code/editor/common/editorCommon';
+import { Disposable } from '../../../base/common/lifecycle';
+import { InternalEditorOptions, IConfigurationChangedEvent } from '../../common/config/editorOptions';
+import { Event } from '../../../base/common/event';
+import { IDimension } from '../../common/editorCommon';
 
 export class EditorConfiguration extends Disposable {
     public editorOptions: InternalEditorOptions;

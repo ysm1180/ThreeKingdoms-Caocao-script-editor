@@ -1,5 +1,5 @@
 import { Disposable } from '../../../base/common/lifecycle';
-import { IDimension } from 'code/editor/common/editorCommon';
+import { IDimension } from '../../common/editorCommon';
 
 export class ElementSizeObserver extends Disposable {
     private referenceDomElement: HTMLElement;

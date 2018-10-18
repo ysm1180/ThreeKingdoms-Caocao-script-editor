@@ -35,6 +35,7 @@ export function decorator<T>(serviceId: string): ServiceIdentifier<T> {
     const id = <any>function (target: any, key: any, index: number) {
         init.storeService(id, target, index);
     };
+    id.toString = () => serviceId;
 
     init.services.set(serviceId, id);
 

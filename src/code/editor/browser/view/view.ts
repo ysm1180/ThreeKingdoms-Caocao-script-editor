@@ -6,10 +6,10 @@ import { ViewModel } from '../../common/viewModel/viewModel';
 import { ViewPart } from './viewPart';
 import { EditorScrollbar } from '../viewParts/editorScrollbar';
 import { EditorConfiguration } from '../config/configuration';
-import { IConfigurationChangedEvent } from 'code/editor/common/config/editorOptions';
-import { Disposable } from 'code/base/common/lifecycle';
+import { Disposable } from '../../../base/common/lifecycle';
+import { IConfigurationChangedEvent } from '../../common/config/editorOptions';
 
-export class View extends Disposable{
+export class View extends Disposable {
     public domNode: FastDomNode<HTMLElement>;
 
     private scrollbar: EditorScrollbar;
@@ -26,7 +26,7 @@ export class View extends Disposable{
         super();
 
         this.context = new ViewContext(configuration, model);
-        
+
         this.viewParts = [];
 
         this._createViewParts();
@@ -63,7 +63,7 @@ export class View extends Disposable{
             this.context.model.getLineCount(),
             this.context.model
         );
-        
+
         this.viewLines.renderText(viewportData);
 
         for (let i = 0, len = this.viewParts.length; i < len; i++) {
@@ -74,8 +74,8 @@ export class View extends Disposable{
 
     private _setLayout(): void {
         const layoutInfo = this.context.configuration.editorOptions.layoutInfo;
-		this.domNode.setWidth(layoutInfo.contentWidth);
-		this.domNode.setHeight(layoutInfo.contentHeight);
+        this.domNode.setWidth(layoutInfo.contentWidth);
+        this.domNode.setHeight(layoutInfo.contentHeight);
     }
 
     public onConfigurationChanged(e: IConfigurationChangedEvent): void {
@@ -88,10 +88,10 @@ export class View extends Disposable{
         this.viewLines.dispose();
 
         for (let i = 0, len = this.viewParts.length; i < len; i++) {
-			this.viewParts[i].dispose();
-		}
+            this.viewParts[i].dispose();
+        }
         this.viewParts = [];
-        
+
         super.dispose();
     }
 }

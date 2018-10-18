@@ -2,7 +2,7 @@ import { ViewContext } from '../../common/view/viewContext';
 import { FastDomNode } from '../../../base/browser/fastDomNode';
 import { ViewportData } from '../../common/view/viewportData';
 import { VisibleLines } from './viewLayer';
-import { Disposable } from 'code/base/common/lifecycle';
+import { Disposable } from '../../../base/common/lifecycle';
 
 export class ViewLines extends Disposable {
     private linesContent: FastDomNode<HTMLElement>;

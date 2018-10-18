@@ -5,6 +5,8 @@ import { InstantiationService, IInstantiationService } from '../../../platform/i
 import { ServiceStorage } from '../../../platform/instantiation/serviceStorage';
 import { IWindowService, WindowManager } from '../../../electron-main/windows';
 import { IStorageService, StorageService } from '../services/electron-browser/storageService';
+import { ipcRenderer } from 'electron';
+import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
 
 export class WorkbenchShell {
     private container: HTMLElement;
@@ -47,11 +49,11 @@ export class WorkbenchShell {
         const serviceStorage = new ServiceStorage();
         const instantiationService = new InstantiationService(serviceStorage);
 
-        serviceStorage.set(IStorageService, instantiationService.create(StorageService, window.localStorage));
-        serviceStorage.set(IWindowService, instantiationService.create(WindowManager));
+        serviceStorage.set(IStorageService, new ClassDescriptor(StorageService, window.localStorage));
 
         this.workbench = this.createWorkbench(instantiationService, serviceStorage, parent.getHTMLElement(), workbenchContainer.getHTMLElement());
         this.workbench.startup();
+        ipcRenderer.send('app:workbenchLoaded');
 
         instantiationService.create(ElectronWindow);
 

@@ -1,10 +1,8 @@
 import { IConfirmation, IConfirmationResult, IOpenningFile, getFileFilters, ISavingFile } from '../../../../platform/dialogs/dialogs';
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
-import { IOpenFileRequest, ISaveFileRequest } from '../../../../platform/windows/windows';
-import { IWindowService } from '../../../../electron-main/windows';
+import { IOpenFileRequest, ISaveFileRequest, IWindowService } from '../../../../platform/windows/windows';
 
 export const IDialogService: ServiceIdentifier<DialogService> = decorator<DialogService>('dialogService');
-
 
 export class DialogService {
     constructor(

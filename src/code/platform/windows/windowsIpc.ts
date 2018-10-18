@@ -1,11 +1,9 @@
 import { ipcRenderer, ipcMain, IpcMessageEvent  } from 'electron';
-import { MessageBoxOptions, IMessageBoxResult, OpenDialogOptions, IOpenFileRequest, ISaveFileRequest, SaveDialogOptions } from './windows';
-import { WindowManager, IWindowService } from '../../electron-main/windows';
-
+import { MessageBoxOptions, IMessageBoxResult, OpenDialogOptions, IOpenFileRequest, ISaveFileRequest, SaveDialogOptions, IWindowService } from './windows';
 
 export class WindowChannel {
     constructor(
-        @IWindowService private windowMainService: WindowManager,
+        private windowMainService: IWindowService,
     ) {
         this.registerListeners();
     }

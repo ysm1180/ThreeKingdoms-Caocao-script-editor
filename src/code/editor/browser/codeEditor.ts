@@ -3,7 +3,7 @@ import { TextModel } from '../common/textModel';
 import { ViewModel } from '../common/viewModel/viewModel';
 import { EditorConfiguration } from './config/configuration';
 import { IDimension } from '../common/editorCommon';
-import { Disposable } from 'code/base/common/lifecycle';
+import { Disposable } from '../../base/common/lifecycle';
 
 export class CodeEditor extends Disposable {
     private domElement: HTMLElement;
@@ -19,7 +19,7 @@ export class CodeEditor extends Disposable {
     ) {
         super();
 
-        this.domElement = parent;    
+        this.domElement = parent;
         this.configuration = new EditorConfiguration(this.domElement);
     }
 
@@ -67,14 +67,14 @@ export class CodeEditor extends Disposable {
         }
 
         if (removeDomNode) {
-			this.domElement.removeChild(removeDomNode);
-		}
+            this.domElement.removeChild(removeDomNode);
+        }
 
         if (this.viewModel) {
             this.viewModel.dispose();
             this.viewModel = null;
         }
-        
+
         this.model = null;
     }
 

@@ -1,26 +1,20 @@
 import * as path from 'path';
-import { BrowserWindow, dialog, app } from 'electron';
+import { BrowserWindow, dialog, app, ipcMain } from 'electron';
 import { CodeWindow, IWindowCreationOption } from './window';
 import { getFileFilters, IFileExtension } from '../platform/dialogs/dialogs';
-import { decorator, ServiceIdentifier } from '../platform/instantiation/instantiation';
 import { IOpenFileRequest, IMessageBoxResult, ISaveFileRequest } from '../platform/windows/windows';
 import { IInstantiationService } from '../platform/instantiation/instantiationService';
 import { IFileStorageService, FileStorageService } from '../platform/files/node/fileStorageService';
+import { IWindowMainService } from '../platform/windows/electron-main/windows';
+import { Event } from '../base/common/event';
 
-export const IWindowService: ServiceIdentifier<IWindowService> = decorator<IWindowService>('windowService');
-
-export interface IWindowService {
-    showOpenDialog(options: Electron.OpenDialogOptions): Promise<IOpenFileRequest>;
-
-    showMessageBox(options: Electron.MessageBoxOptions): Promise<IMessageBoxResult>;
-
-    showSaveDialog(options: Electron.SaveDialogOptions): Promise<ISaveFileRequest>;
-}
-
-export class WindowManager implements IWindowService {
-    public static workingPathKey = 'workingPath';
-
+export class WindowManager implements IWindowMainService {
+    
     private dialog: Dialog;
+    
+    public onWindowReady = new Event<CodeWindow>();
+
+    public static workingPathKey = 'workingPath';
     public static win: CodeWindow;
 
     constructor(
@@ -28,13 +22,18 @@ export class WindowManager implements IWindowService {
         @IInstantiationService private instantiationService: IInstantiationService,
     ) {
         this.dialog = new Dialog();
+
+        this._registerListeners();
     }
 
-    public openNewWindow(state: IWindowCreationOption) {
-        const window = this.instantiationService.create(CodeWindow);
-        window.createBrowserWindow(state);
+    private _registerListeners(): void {
+        ipcMain.on('app:workbenchLoaded', (_event: any) => {
+			this.onWindowReady.fire(WindowManager.win);
+		});
+    }
 
-        WindowManager.win = window;
+    public openNewWindow(option: IWindowCreationOption) {
+        WindowManager.win = this.instantiationService.create(CodeWindow, option);
     }
 
     public showOpenDialog(options?: Electron.OpenDialogOptions) {
@@ -59,7 +58,7 @@ export class WindowManager implements IWindowService {
 
     public openWorkingFiles(): Promise<IOpenFileRequest> {
         const recentWorkingPath: string = this.fileStorageService.get(WindowManager.workingPathKey);
-    
+
         const filters: IFileExtension[] = [
             {
                 name: '작업 파일',

@@ -8,3 +8,7 @@ export interface IFileService {
 
     resolveStream(resource: string): Promise<IStreamContent>;
 }
+
+export interface IFileHandleService {
+    save(resource: string): any;
+}

@@ -21,6 +21,10 @@ export class WorkbenchEditorService {
         this.editorPart = editorPart;
     }
 
+    public getActiveEditorInput(): IEditorInput {
+		return this.editorPart.getActiveEditorInput();
+	}
+
     public openEditor(input: IResourceInputType): Promise<any>;
     public openEditor(input: IEditorInput): Promise<any>;
     public openEditor(input: any): Promise<any> {
@@ -73,4 +77,6 @@ export class WorkbenchEditorService {
 
         return this.editorPart.openEditors(editors);
     }
+
+
 }

@@ -1,10 +1,10 @@
 import { VerticalScrollbar } from './verticalScrollbar';
 import { HorizontalScrollbar } from './horizontalScrollbar';
-import { Scroll, ScrollEvent, INewScrollPosition } from 'code/base/common/scroll';
-import { Disposable, dispose, IDisposable } from 'code/base/common/lifecycle';
-import { Event } from 'code/base/common/event';
 import { addDisposableEventListener } from '../../dom';
 import { StandardMouseWheelEvent } from '../../mouseEvent';
+import { Disposable, IDisposable, dispose } from '../../../common/lifecycle';
+import { ScrollEvent, Scroll, INewScrollPosition } from '../../../common/scroll';
+import { Event } from '../../../common/event';
 
 const SCROLL_WHEEL_SENSITIVITY = 50;
 

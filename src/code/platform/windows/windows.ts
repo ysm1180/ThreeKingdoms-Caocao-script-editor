@@ -1,3 +1,15 @@
+import { ServiceIdentifier, decorator } from '../instantiation/instantiation';
+
+export const IWindowService: ServiceIdentifier<IWindowService> = decorator<IWindowService>('windowService');
+
+export interface IWindowService {
+    showOpenDialog(options: Electron.OpenDialogOptions): Promise<IOpenFileRequest>;
+
+    showMessageBox(options: Electron.MessageBoxOptions): Promise<IMessageBoxResult>;
+
+    showSaveDialog(options: Electron.SaveDialogOptions): Promise<ISaveFileRequest>;
+}
+
 export interface IOpenFileRequest {
     files: string[];
 }

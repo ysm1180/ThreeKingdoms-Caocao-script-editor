@@ -1,6 +1,9 @@
 export class ClassDescriptor<T> {
     public readonly ctor: any;
-    constructor(ctor: new (...args: any[]) => T) {
+    public readonly staticArguments: any[];
+
+    constructor(ctor: new (...args: any[]) => T, ..._staticArguments: any[]) {
         this.ctor = ctor;
+        this.staticArguments = _staticArguments;
     }
 }
