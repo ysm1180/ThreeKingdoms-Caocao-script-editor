@@ -20,7 +20,7 @@
   "devDependencies": {
     "@types/gulp": "^4.0.5",
     "cross-env": "^5.1.4",
-    "electron": "^1.8.4",
+    "electron": ">=1.8.8",
     "electron-connect": "^0.6.3",
     "eslint": "^4.19.0",
     "gulp": "git://github.com/gulpjs/gulp.git#6d71a658c61edb3090221579d8f97dbe086ba2ed",
