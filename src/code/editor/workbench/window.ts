@@ -19,7 +19,7 @@ export class ElectronWindow {
     }
 
     public registerListeners() {
-        ipcRenderer.on('app:runCommand', (id: string) => {
+        ipcRenderer.on('app:runCommand', (e, id: string) => {
             this.commandService.run(id);
         });
 
@@ -39,8 +39,6 @@ export class ElectronWindow {
         });
 
         ipcRenderer.on('editor:openFiles', (e, data: IOpenFileRequest) => this.onOpenFiles(data));
-
-        ipcRenderer.on('editor:saveFile', (e, data: ISaveFileRequest) => this.onSaveFile(data));
     }
 
     private onOpenFiles(data: IOpenFileRequest): void {
@@ -71,10 +69,6 @@ export class ElectronWindow {
         }
 
         return this.editorService.openEditors(resources);
-    }
-
-    private onSaveFile(data: ISaveFileRequest): void {
-
     }
 
     private resolveKeybindings(actionIds: string[]): Promise<{ id: string; label: string, isNative: boolean; }[]> {

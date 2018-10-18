@@ -1,4 +1,4 @@
-import { KeyCode } from '../../../../base/common/keyCodes';
+import { KeyCode, KeyMode } from '../../../../base/common/keyCodes';
 import { ServicesAccessor } from '../../../../platform/instantiation/instantiation';
 import { KeybindingsRegistry } from '../../../../platform/keybindings/keybindingsRegistry';
 import { IMe5FileService } from '../../services/me5/me5FileService';
@@ -13,7 +13,7 @@ function save(path: string, me5FileService: IFileHandleService) {
 
 KeybindingsRegistry.registerKeybindingRule({
     id: SAVE_FILE_ID,
-    primary: KeyCode.Control | KeyCode.KEY_S,
+    primary: KeyMode.Ctrl | KeyCode.KEY_S,
     handler: (accessor: ServicesAccessor) => {
         const editorService = accessor.get(IWorkbenchEditorService);
         const me5FileService = accessor.get(IMe5FileService);

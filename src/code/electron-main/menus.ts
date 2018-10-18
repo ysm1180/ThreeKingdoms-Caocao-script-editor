@@ -22,9 +22,11 @@ export class AppMenu {
         this.keybindingsResolver = instantiationService.create(KeybindingsResolver);
 
         this.install();
+
+        this._registerListeners();
     }
 
-    private registerListeners(): void {
+    private _registerListeners(): void {
         this.keybindingsResolver.onKeybindingsChanged.add(() => {
             this.install();
         });
@@ -108,7 +110,7 @@ export class AppMenu {
     private runActionInRenderer(id: string): void {
         const activeWindow = WindowManager.win;
         if (activeWindow) {
-            WindowManager.win.send('app:runCommand', { id: id });
+            WindowManager.win.send('app:runCommand', id);
         }
     }
 
