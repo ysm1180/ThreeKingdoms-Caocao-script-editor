@@ -58,10 +58,6 @@ export class WorkbenchLayout extends Disposable implements ISashLayoutProvider {
             this.sidebarWidth = e.mouseX;
             this.layout();
         }, this);
-
-        this.registerDispose(this.editorService.onEditorInputChanged.add((e) => {
-            this.onEditorInputChanged();
-        }));
     }
 
     public layout() {
@@ -120,9 +116,5 @@ export class WorkbenchLayout extends Disposable implements ISashLayoutProvider {
 
     public getVerticalSashHeight(): number {
         return this.sidebarHeight;
-    }
-
-    private onEditorInputChanged(): void {
-        this.layout();
     }
 }

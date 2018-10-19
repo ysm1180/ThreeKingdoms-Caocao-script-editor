@@ -99,6 +99,7 @@ export class EditorPart extends Part {
         
         editor.getContainer().build(this.getContentArea());
         editor.getContainer().show();
+        editor.layout();
 
         this.currentEditor = editor;
 

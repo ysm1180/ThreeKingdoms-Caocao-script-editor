@@ -166,6 +166,10 @@ export class Workbench implements IPartService {
 		} else {
 			this.workbench.removeClass('nosidebar');
         }
+
+        if (hidden) {
+            
+        }
         
         this.layout();
     }
