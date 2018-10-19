@@ -1,6 +1,6 @@
 import { BaseEditor } from './baseEditor';
 import { IEditorInput } from '../../../../../platform/editor/editor';
-import { DomBuilder, $ } from '../../../../../base/browser/domBuilder';
+import { DomBuilder } from '../../../../../base/browser/domBuilder';
 import { CodeEditor } from '../../../../browser/codeEditor';
 import { IInstantiationService } from '../../../../../platform/instantiation/instantiationService';
 import { TextFileEditorModel } from '../../../services/textfile/textFileEditorModel';

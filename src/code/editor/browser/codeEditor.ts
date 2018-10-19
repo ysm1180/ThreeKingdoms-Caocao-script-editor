@@ -24,6 +24,15 @@ export class CodeEditor extends Disposable {
     }
 
     public setModel(model: TextModel) {
+        if (this.model === model) {
+            return;
+        }
+
+        this._detachModel();
+        this._attachModel(model);
+    }
+
+    private _attachModel(model: TextModel) {
         this.model = model;
 
         if (this.model) {
@@ -35,6 +44,27 @@ export class CodeEditor extends Disposable {
 
             this.view.render();
         }
+    }
+    
+    protected _detachModel() {
+        let removeDomNode: HTMLElement = null;
+
+        if (this.view) {
+            this.view.dispose();
+            removeDomNode = this.view.domNode.domNode;
+            this.view = null;
+        }
+
+        if (removeDomNode) {
+            this.domElement.removeChild(removeDomNode);
+        }
+
+        if (this.viewModel) {
+            this.viewModel.dispose();
+            this.viewModel = null;
+        }
+
+        this.model = null;
     }
 
     private _createView(): void {
@@ -55,27 +85,6 @@ export class CodeEditor extends Disposable {
     public layout(dimension?: IDimension): void {
         this.configuration.observeReferenceDomElement(dimension);
         this.render();
-    }
-
-    protected _detachModel() {
-        let removeDomNode: HTMLElement = null;
-
-        if (this.view) {
-            this.view.dispose();
-            removeDomNode = this.view.domNode.domNode;
-            this.view = null;
-        }
-
-        if (removeDomNode) {
-            this.domElement.removeChild(removeDomNode);
-        }
-
-        if (this.viewModel) {
-            this.viewModel.dispose();
-            this.viewModel = null;
-        }
-
-        this.model = null;
     }
 
     public dispose(): void {

@@ -1,6 +1,8 @@
+import { CharCode } from '../../../base/common/charCode';
+
 export class RenderLineInput {
-    private lineContent: string;
-    private tabSize: number;
+    public readonly lineContent: string;
+    public readonly tabSize: number;
 
     constructor(
         lineContent: string,
@@ -8,14 +10,6 @@ export class RenderLineInput {
     ) {
         this.lineContent = lineContent;
         this.tabSize = tabSize;
-    }
-
-    public getLineContent(): string {
-        return this.lineContent;
-    }
-
-    public getTabSize(): number {
-        return this.tabSize;
     }
 
     public equels(other: RenderLineInput): boolean {
@@ -28,8 +22,24 @@ export class RenderLineInput {
 
 export function renderViewLine(input: RenderLineInput): string {
     let html = '';
+    let content = '';
 
-    html += `<span>${input.getLineContent()}</span>`;
+    const lineContent = input.lineContent;
+    const length = input.lineContent.length;
+    for (let charIndex = 0; charIndex < length; charIndex++) {
+        const charCode = lineContent.charCodeAt(charIndex);
+        if (charCode === CharCode.Tab) {
+            for (let tabSize = 0; tabSize < input.tabSize; tabSize++) {
+                content += '&nbsp;';
+            }
+        } else if (charCode === CharCode.Space) {
+            content += '&nbsp;';
+        } else {
+            content += String.fromCharCode(charCode);
+        }
+    }
+
+    html += `<span>${content}</span>`;
 
     return html;
 }

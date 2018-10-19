@@ -8,7 +8,7 @@ export class ViewLines extends Disposable {
     private linesContent: FastDomNode<HTMLElement>;
     private context: ViewContext;
     private domNode: FastDomNode<HTMLElement>;
-    private lines: VisibleLines;
+    private visibleLines: VisibleLines;
 
     private maxLineWidth: number;
 
@@ -18,9 +18,10 @@ export class ViewLines extends Disposable {
         this.context = context;
         this.linesContent = linesContent;  
 
-        this.lines = new VisibleLines();
-        this.domNode = this.lines.getDomNode();
+        this.visibleLines = new VisibleLines();
+        this.domNode = this.visibleLines.getDomNode();
         this.domNode.setClassName('view-lines');
+        
         this.maxLineWidth = 0;
     }
 
@@ -29,13 +30,34 @@ export class ViewLines extends Disposable {
     }
 
     public renderText(viewportData: ViewportData) {
-        this.lines.renderLines(viewportData);
+        this.visibleLines.renderLines(viewportData);
 
+        const maxHorizontalWidth = this._computeScrollWidth();
+        this._ensureMaxLineWidth(maxHorizontalWidth);
+        
+        const top = this.context.viewLayout.scroll.getCurrentScrollPosition();
+        this.linesContent.setTop(-top);
+        
+    }
+
+    private _computeScrollWidth(): number {
+        let result = 0;
+
+        const startLineNumber = this.visibleLines.getStartLineNumber();
+        const endLineNumber = this.visibleLines.getEndLineNumber();
+        for (let lineNumber = startLineNumber; lineNumber <= endLineNumber; lineNumber++) {
+            const width = this.visibleLines.getVisibleLine(lineNumber).getWidth();
+            if (result < width) {
+                result = width;
+            }
+        }
+
+        return result;
     }
 
     private _ensureMaxLineWidth(lineWidth: number): void {
 		let iLineWidth = Math.ceil(lineWidth);
-		if (this.maxLineWidth !== iLineWidth) {
+		if (this.maxLineWidth < iLineWidth) {
 			this.maxLineWidth = iLineWidth;
 			this.context.viewLayout.onMaxLineWidthChanged(this.maxLineWidth);
 		}

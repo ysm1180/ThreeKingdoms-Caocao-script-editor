@@ -30,6 +30,7 @@ export class ScrollbarElement extends Disposable {
 
         this.mouseWheelToDispose = [];
 
+        console.log('register');
         this.registerDispose(this.scroll.onScroll.add((e) => {
             this._onDidScroll(e);
             this.onScroll.fire(e);

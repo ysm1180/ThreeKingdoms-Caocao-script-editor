@@ -3,7 +3,6 @@ import { Workbench } from './workbench';
 import { ElectronWindow } from '../window';
 import { InstantiationService, IInstantiationService } from '../../../platform/instantiation/instantiationService';
 import { ServiceStorage } from '../../../platform/instantiation/serviceStorage';
-import { IWindowService, WindowManager } from '../../../electron-main/windows';
 import { IStorageService, StorageService } from '../services/electron-browser/storageService';
 import { ipcRenderer } from 'electron';
 import { ClassDescriptor } from '../../../platform/instantiation/descriptor';

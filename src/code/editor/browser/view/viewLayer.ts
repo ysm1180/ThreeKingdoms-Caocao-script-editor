@@ -1,5 +1,5 @@
 import { ViewportData } from '../../common/view/viewportData';
-import { ViewLine } from './viewLine';
+import { ViewLine, RenderedViewLine } from './viewLine';
 import { FastDomNode, createFastDomNode } from '../../../base/browser/fastDomNode';
 
 export class RenderedLinesCollection {
@@ -11,7 +11,7 @@ export class RenderedLinesCollection {
         this.lineNumberStart = 1;
     }
 
-    public get(): {lineNumberStart: number, lines: ViewLine[]} {
+    public get(): { lineNumberStart: number, lines: ViewLine[] } {
         return {
             lines: this.lines,
             lineNumberStart: this.lineNumberStart
@@ -24,9 +24,9 @@ export class RenderedLinesCollection {
 
     public getLine(lineNumber: number): ViewLine {
         let lineIndex = lineNumber - this.lineNumberStart;
-		if (lineIndex < 0 || lineIndex >= this.lines.length) {
-			throw new Error('Illegal value for lineNumber');
-		}
+        if (lineIndex < 0 || lineIndex >= this.lines.length) {
+            throw new Error('Illegal value for lineNumber');
+        }
         return this.lines[lineIndex];
     }
 
@@ -35,6 +35,13 @@ export class RenderedLinesCollection {
         this.lineNumberStart = lineNumberStart;
     }
 
+    public getStartLineNumber(): number {
+		return this.lineNumberStart;
+	}
+
+	public getEndLineNumber(): number {
+		return this.lineNumberStart + this.lines.length - 1;
+	}
 }
 
 export class VisibleLines {
@@ -70,6 +77,18 @@ export class VisibleLines {
 
     public getDomNode(): FastDomNode<HTMLElement> {
         return this.domNode;
+    }
+
+    public getStartLineNumber(): number {
+		return this.linesCollection.getStartLineNumber();
+	}
+
+	public getEndLineNumber(): number {
+		return this.linesCollection.getEndLineNumber();
+	}
+
+    public getVisibleLine(lineNumber: number): ViewLine {
+        return this.linesCollection.getLine(lineNumber);
     }
 }
 
@@ -123,5 +142,12 @@ export class ViewLayerRenderer {
 
     private _finishRenderingLines(ctx: IRendererContext, innerHTML: string) {
         this.domNode.innerHTML = innerHTML;
+
+        let child = <HTMLElement>this.domNode.firstChild;
+        for (let i = 0; i < ctx.linesLength; i++) {
+            let line = ctx.lines[i];
+            line.setDomNode(child);
+            child = <HTMLElement>child.nextSibling;
+        }
     }
 }

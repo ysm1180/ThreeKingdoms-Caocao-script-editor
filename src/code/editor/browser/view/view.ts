@@ -6,10 +6,11 @@ import { ViewModel } from '../../common/viewModel/viewModel';
 import { ViewPart } from './viewPart';
 import { EditorScrollbar } from '../viewParts/editorScrollbar';
 import { EditorConfiguration } from '../config/configuration';
-import { Disposable } from '../../../base/common/lifecycle';
-import { IConfigurationChangedEvent } from '../../common/config/editorOptions';
+import { ViewEvent, ViewConfigurationChangedEvent } from '../../common/view/viewEvents';
+import { ViewEventDispatcher } from '../../common/view/viewEventDispatcher';
+import { ViewEventHandler } from '../../common/view/viewEventHandler';
 
-export class View extends Disposable {
+export class View extends ViewEventHandler {
     public domNode: FastDomNode<HTMLElement>;
 
     private scrollbar: EditorScrollbar;
@@ -19,21 +20,24 @@ export class View extends Disposable {
     private viewLines: ViewLines;
     private viewParts: ViewPart[];
 
+    private eventDispatcher: ViewEventDispatcher;
+
     constructor(
         configuration: EditorConfiguration,
         model: ViewModel,
     ) {
         super();
 
-        this.context = new ViewContext(configuration, model);
+        this.eventDispatcher = new ViewEventDispatcher((callback: () => void) => this._renderOnce(callback));
+        this.context = new ViewContext(configuration, model, this.eventDispatcher);
 
         this.viewParts = [];
 
         this._createViewParts();
         this._setLayout();
 
-        this.registerDispose(model.addEventListner((e) => {
-            this.onConfigurationChanged(e);
+        this.registerDispose(model.addEventListener((events: ViewEvent[]) => {
+            this.eventDispatcher.emitMany(events);
         }));
     }
 
@@ -57,7 +61,17 @@ export class View extends Disposable {
         return 'theme-dark';
     }
 
+    private _renderOnce(callback: () => any): any {
+        let r = callback();
+        this._actualRender();
+        return r;
+    }
+
     public render() {
+        this._actualRender();
+    }
+
+    private _actualRender() {
         const viewportData = new ViewportData(
             1,
             this.context.model.getLineCount(),
@@ -76,12 +90,17 @@ export class View extends Disposable {
         const layoutInfo = this.context.configuration.editorOptions.layoutInfo;
         this.domNode.setWidth(layoutInfo.contentWidth);
         this.domNode.setHeight(layoutInfo.contentHeight);
+
+        this.linesContent.setWidth(1000000);
+        this.linesContent.setHeight(1000000);
     }
 
-    public onConfigurationChanged(e: IConfigurationChangedEvent): void {
+    public onConfigurationChanged(e: ViewConfigurationChangedEvent): boolean {
         if (e.layoutInfo) {
             this._setLayout();
         }
+
+        return true;
     }
 
     public dispose(): void {

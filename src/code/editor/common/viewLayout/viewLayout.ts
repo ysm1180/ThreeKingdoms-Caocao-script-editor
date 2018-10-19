@@ -1,13 +1,16 @@
 import { LinesLayout } from './linesLayout';
 import { Disposable } from '../../../base/common/lifecycle';
 import { EditorConfiguration } from '../../browser/config/configuration';
-import { Scroll } from '../../../base/common/scroll';
+import { Scroll, ScrollEvent } from '../../../base/common/scroll';
+import { Event } from '../../../base/common/event';
+import { Viewport } from '../viewModel/viewModel';
 
 export class ViewLayout extends Disposable {
     private configuration: EditorConfiguration;
     private linesLayout: LinesLayout;
 
     public readonly scroll: Scroll;
+    public readonly onDidScroll: Event<ScrollEvent>;
     
     constructor(configuration: EditorConfiguration, lineCount: number, lineHeight: number) {
         super();
@@ -21,6 +24,7 @@ export class ViewLayout extends Disposable {
             width: configuration.editorOptions.layoutInfo.contentWidth,
             height: configuration.editorOptions.layoutInfo.contentHeight,
         });
+        this.onDidScroll = this.scroll.onScroll;
 
         this._updateHeight();
     }
@@ -42,7 +46,9 @@ export class ViewLayout extends Disposable {
     public onMaxLineWidthChanged(maxLineWidth: number): void {
 		this.scroll.setScrollDimensions({
 			scrollWidth: maxLineWidth
-		});
+        });
+        
+        this._updateHeight();
 	}
 
     public onConfigurationChanged(e): void {
@@ -54,4 +60,14 @@ export class ViewLayout extends Disposable {
         this._updateHeight();
     }
 
+    public getCurrnetViewport(): Viewport {
+        const scrollDimensions = this.scroll.getScrollDimensions();
+		const currentScrollPosition = this.scroll.getCurrentScrollPosition();
+		return new Viewport(
+			currentScrollPosition.scrollTop,
+			currentScrollPosition.scrollLeft,
+			scrollDimensions.width,
+			scrollDimensions.height
+		);
+    }
 }

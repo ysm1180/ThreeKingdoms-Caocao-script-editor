@@ -3,7 +3,23 @@ import { LinesCollection } from './linesCollection';
 import { ViewLayout } from '../viewLayout/viewLayout';
 import { EditorConfiguration } from '../../browser/config/configuration';
 import { IConfigurationChangedEvent } from '../config/editorOptions';
-import { Disposable, IDisposable } from '../../../base/common/lifecycle';
+import { ViewEventEmitter, ViewEventsCollector, ViewConfigurationChangedEvent, ViewScrollChangedEvent } from '../view/viewEvents';
+
+export class Viewport {
+	readonly _viewportBrand: void;
+
+	readonly top: number;
+	readonly left: number;
+	readonly width: number;
+	readonly height: number;
+
+	constructor(top: number, left: number, width: number, height: number) {
+		this.top = top | 0;
+		this.left = left | 0;
+		this.width = width | 0;
+		this.height = height | 0;
+	}
+}
 
 export class ViewLineData {
     public readonly content: string;
@@ -27,13 +43,11 @@ export class ViewLineRenderingData {
     }
 }
 
-export class ViewModel extends Disposable {
+export class ViewModel extends ViewEventEmitter {
     private model: TextModel;
     private lines: LinesCollection;
     private viewLayout: ViewLayout;
     private configuration: EditorConfiguration;
-
-    private listeners: ((e: IConfigurationChangedEvent) => void)[];
 
     constructor(
         configuration: EditorConfiguration,
@@ -49,11 +63,22 @@ export class ViewModel extends Disposable {
         const lineHeight = 19;
         this.viewLayout = new ViewLayout(this.configuration, this.getLineCount(), lineHeight);
 
-        this.listeners = [];
+        this.registerDispose(this.viewLayout.onDidScroll.add((e) => {
+            try {
+				const eventsCollector = this._beginEmit();
+				eventsCollector.emit(new ViewScrollChangedEvent(e));
+			} finally {
+				this._endEmit();
+            }
+        }));
 
         this.registerDispose(this.configuration.onDidChange.add((e) => {
-            this._onConfigurationChanged(e);
-            this.runConfigurationChangedEvents(e);
+            try {
+				const eventsCollector = this._beginEmit();
+				this._onConfigurationChanged(eventsCollector, e);
+			} finally {
+				this._endEmit();
+            }
         }));
     }
 
@@ -75,31 +100,9 @@ export class ViewModel extends Disposable {
         return this.lines.getViewLineCount();
     }
 
-    private _onConfigurationChanged(e: IConfigurationChangedEvent): void {
+    private _onConfigurationChanged(eventsCollector: ViewEventsCollector, e: IConfigurationChangedEvent): void {
+        eventsCollector.emit(new ViewConfigurationChangedEvent(e));
         this.viewLayout.onConfigurationChanged(e);
-    }
-
-    public addEventListner(listener: (e: any) => void): IDisposable {
-        this.listeners.push(listener);
-
-        return {
-			dispose: () => {
-				let listeners = this.listeners;
-				for (let i = 0, len = listeners.length; i < len; i++) {
-					if (listeners[i] === listener) {
-						listeners.splice(i, 1);
-						break;
-					}
-				}
-			}
-		};
-    }
-
-    public runConfigurationChangedEvents(e: IConfigurationChangedEvent): void {
-        const listeners = this.listeners.slice(0);
-		for (let i = 0, len = listeners.length; i < len; i++) {
-			listeners[i](e);
-		}
     }
 
     public dispose(): void {

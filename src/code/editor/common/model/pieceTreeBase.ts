@@ -1,5 +1,5 @@
 import { CharCode } from '../../../base/common/charCode';
-import { TreeNode, SENTINEL, NodeColor, leftest, fixInsert, righttest, calculateSize, calculateLF } from './pieceTreeTextBuffer/rbTree';
+import { TreeNode, SENTINEL, NodeColor, leftest, fixInsert, righttest } from './pieceTreeTextBuffer/rbTree';
 
 export function createUintArray(arr: number[]): Uint32Array | Uint16Array {
 	let r;
