@@ -34,10 +34,9 @@ export class ViewLines extends Disposable {
 
         const maxHorizontalWidth = this._computeScrollWidth();
         this._ensureMaxLineWidth(maxHorizontalWidth);
-        
-        const top = this.context.viewLayout.scroll.getCurrentScrollPosition();
+
+        const top = this.context.viewLayout.scroll.getCurrentScrollPosition().scrollTop;
         this.linesContent.setTop(-top);
-        
     }
 
     private _computeScrollWidth(): number {

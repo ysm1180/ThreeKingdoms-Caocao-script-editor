@@ -4,7 +4,7 @@ export class ScrollbarState {
     private visibleSize: number;
     private scrollSize: number;
     private scrollPosition: number;
-    
+
     private scrollbarSize: number;
     private oppositeScrollbarSize: number;
 
@@ -15,7 +15,7 @@ export class ScrollbarState {
     constructor(scrollbarSize: number, oppositeScrollbarSize: number) {
         this.scrollbarSize = Math.round(scrollbarSize);
         this.oppositeScrollbarSize = Math.round(oppositeScrollbarSize);
-        
+
         this.visibleSize = 0;
         this.scrollSize = 0;
 
@@ -74,13 +74,18 @@ export class ScrollbarState {
 
     private _recomputedValues(): void {
         this.computedAvailableSize = Math.round(Math.max(0, this.visibleSize - this.oppositeScrollbarSize));
+        const computedIsNeeded = (this.scrollSize > 0 && this.scrollSize > this.visibleSize);
 
-        if (this.scrollSize > 0) {
-            const sliderSize = Math.max(MINIMUM_SLIDER_SIZE, Math.floor(this.visibleSize * this.computedAvailableSize / this.scrollSize));
-            this.computedSliderSize = Math.round(sliderSize);
-
-            const computedSliderRatio = (this.computedAvailableSize - this.computedSliderSize) / (this.scrollSize - this.visibleSize);
-            this.computedSliderPosition = Math.round(this.scrollPosition * computedSliderRatio);
+        if (!computedIsNeeded) {
+            this.computedSliderSize = 0;
+            this.computedSliderPosition = 0;
+            return;
         }
+
+        const sliderSize = Math.max(MINIMUM_SLIDER_SIZE, Math.floor(this.visibleSize * this.computedAvailableSize / this.scrollSize));
+        this.computedSliderSize = Math.round(sliderSize);
+
+        const computedSliderRatio = (this.computedAvailableSize - this.computedSliderSize) / (this.scrollSize - this.visibleSize);
+        this.computedSliderPosition = Math.round(this.scrollPosition * computedSliderRatio);
     }
 }

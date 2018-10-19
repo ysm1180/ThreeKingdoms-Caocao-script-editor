@@ -44,6 +44,7 @@ export class View extends ViewEventHandler {
     private _createViewParts() {
         this.linesContent = createFastDomNode(document.createElement('div'));
         this.linesContent.setClassName('lines-content');
+        this.linesContent.setPosition('absolute');
 
         this.domNode = createFastDomNode(document.createElement('div'));
         this.domNode.setClassName(this._getEditorTheme());

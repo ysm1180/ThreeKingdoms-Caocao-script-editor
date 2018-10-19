@@ -415,6 +415,10 @@ body {
     background-color: rgba(127, 127, 127, 0.7);
 }
 
+.scrollable-element {
+    overflow: hidden;
+}
+
 .lines-content {
     overflow: hidden;
 }
