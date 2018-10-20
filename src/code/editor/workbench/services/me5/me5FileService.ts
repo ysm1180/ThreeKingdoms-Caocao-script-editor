@@ -19,8 +19,8 @@ export class Me5FileService implements IFileHandleService {
     public resolve(resource: string): Promise<Me5Stat> {
         let done: Promise<Me5Stat>;
         const me5File = new Me5File(resource);
-        done = me5File.open().then((data) => {
-            if (!data) {
+        done = me5File.open().then((file) => {
+            if (!file) {
                 throw new Error();
             }
 

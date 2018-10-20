@@ -31,25 +31,24 @@ export class SidebarPart extends Part {
 
         this.group = this.editorService.getEditorGroup();
         this.group.onEditorStateChanged.add(() => {
-            this.onEditorChanged();
+            this._onEditorChanged();
         });
     }
 
-    private onEditorChanged() {
+    private _onEditorChanged() {
         const activeInput = this.group.activeEditor;
         if (!activeInput) {
-            this.hideActiveComposite();
+            this._hideActiveComposite();
             this.partService.setSideBarHidden(true);
             return;
         }
 
         const descriptors = CompositViewRegistry.getCompositeViewDescriptors(activeInput);
         if (descriptors.length === 0) {
-            this.hideActiveComposite();
+            this._hideActiveComposite();
             this.partService.setSideBarHidden(true);
             return;
         }
-
 
         for (let i = 0; i < descriptors.length; i++) {
             const id = descriptors[i].id;
@@ -59,26 +58,26 @@ export class SidebarPart extends Part {
     }
 
     public openCompositeView(id: string) {
-        const composite = this.doOpenCompositeView(id);
+        const composite = this._doOpenCompositeView(id);
 
         this.onDidCompositeOpen.fire(composite);
+
+        this.activeComposite = composite;
     }
 
-    private doOpenCompositeView(id: string): CompositeView {
+    private _doOpenCompositeView(id: string): CompositeView {
         if (this.activeComposite && this.activeComposite.getId() === id) {
             return this.activeComposite;
         }
 
         if (this.activeComposite) {
-            this.hideActiveComposite();
+            this._hideActiveComposite();
         }
 
-        const composite = this.createCompositeView(id);
+        const composite = this._createCompositeView(id);
         if (!composite) {
             return null;
         }
-
-        this.activeComposite = composite;
 
         let compositeContainer = this.mapCompositeToCompositeContainer[composite.getId()];
         if (!compositeContainer) {
@@ -97,7 +96,7 @@ export class SidebarPart extends Part {
         return composite;
     }
 
-    private createCompositeView(id: string): CompositeView {
+    private _createCompositeView(id: string): CompositeView {
         for (let i = 0; i < this.instantiatedComposites.length; i++) {
             if (this.instantiatedComposites[i].getId() === id) {
                 return this.instantiatedComposites[i];
@@ -114,7 +113,7 @@ export class SidebarPart extends Part {
         return null;
     }
 
-    private hideActiveComposite() {
+    private _hideActiveComposite() {
         if (!this.activeComposite) {
             return;
         }

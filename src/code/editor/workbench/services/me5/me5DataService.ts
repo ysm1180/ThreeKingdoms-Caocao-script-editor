@@ -48,10 +48,10 @@ export class Me5DataService {
             }
 
             return Promise.all(promises);
-        }).then((values: Buffer[]) => {
-            for (const value of values) {
-                if (value) {
-                    const data = new Uint8Array(value.slice(0));
+        }).then((files: BinaryFile[]) => {
+            for (const file of files) {
+                if (file) {
+                    const data = new Uint8Array(file.data.slice(0));
                     element.data = data;
                 }
             }
@@ -101,12 +101,12 @@ export class Me5DataService {
             }
 
             return Promise.all(promises);
-        }).then((values: Buffer[]) => {
+        }).then((files: BinaryFile[]) => {
             const selectItems = [];
-            for (const value of values) {
-                if (value) {
-                    const data = new Uint8Array(value.slice(0));
-                    const item = new Me5Stat(element.root.getId(), false, element.root, 'NEW ITEM', data);
+            for (const file of files) {
+                if (file) {
+                    const data = new Uint8Array(file.data.slice(0));
+                    const item = new Me5Stat(element.root.getId(), false, element.root, file.name, data);
                     item.build(parent, isSelectionAfter ? element : null);
                     selectItems.push(item);
                 }

@@ -20,10 +20,10 @@ export class Me5File extends BinaryFile {
         super(path);
     }
 
-    public open(): Promise<Buffer> {
-        return super.open().then((data) => {
+    public open(): Promise<BinaryFile> {
+        return super.open().then(() => {
             this.itemInfoStartOffset = this.getGroupCount() * Me5File.GROUP_HEADER_SIZE + Me5File.GROUP_INFO_START_OFFSET;
-            return data;
+            return this;
         }, (e: NodeJS.ErrnoException) => {
             return null;
         });

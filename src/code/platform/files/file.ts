@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as fs from 'fs';
 import * as Convert from '../../base/common/convert';
 
@@ -15,17 +16,21 @@ export class BinaryFile {
         this.path = path;
     }
 
-    public open(): Promise<void | Buffer> {
-        return new Promise<Buffer>((c, e) => {
+    public get name(): string {
+        return path.basename(this.path).replace(path.extname(this.path), '');
+    }
+
+    public open(): Promise<BinaryFile> {
+        return new Promise<BinaryFile>((c, e) => {
             fs.readFile(this.path, {}, (err, data) => {
                 if (err) {
                     e(err);
-                    return;
+                    return null;
                 }
 
                 this.data = data;
 
-                c(data);
+                c(this);
             });
         });
     }

@@ -3,7 +3,7 @@ import { ServicesAccessor } from '../../../../platform/instantiation/instantiati
 import { IMe5DataService } from '../../services/me5/me5DataService';
 import { KeybindingsRegistry } from '../../../../platform/keybindings/keybindingsRegistry';
 import { KeyCode, KeyMode } from '../../../../base/common/keyCodes';
-import { explorerRootContext, explorerGroupContext, explorerItemContext } from '../../browser/parts/me5Explorer';
+import { me5ExplorerRootContext, me5ExplorerGroupContext, me5ExplorerItemContext } from '../../browser/parts/me5Explorer';
 import { ContextKeyExpr } from '../../../../platform/contexts/contextKey';
 import { explorerEditContext } from '../me5ExplorerViewer';
 
@@ -20,7 +20,7 @@ KeybindingsRegistry.registerKeybindingRule({
         const me5DataService = accessor.get(IMe5DataService);
         me5DataService.doRename();
     },
-    when: ContextKeyExpr.and(explorerRootContext.not(), explorerEditContext.not()),
+    when: ContextKeyExpr.and(me5ExplorerRootContext.not(), explorerEditContext.not()),
 });
 
 KeybindingsRegistry.registerKeybindingRule({
@@ -30,7 +30,7 @@ KeybindingsRegistry.registerKeybindingRule({
         const me5DataService = accessor.get(IMe5DataService);
         me5DataService.doDelete();
     },
-    when: ContextKeyExpr.and(explorerRootContext.not(), explorerEditContext.not()),
+    when: ContextKeyExpr.and(me5ExplorerRootContext.not(), explorerEditContext.not()),
 });
 
 KeybindingsRegistry.registerKeybindingRule({
@@ -40,7 +40,7 @@ KeybindingsRegistry.registerKeybindingRule({
         const me5DataService = accessor.get(IMe5DataService);
         me5DataService.doChangeItem();
     },
-    when: ContextKeyExpr.and(explorerItemContext, explorerEditContext.not()),
+    when: ContextKeyExpr.and(me5ExplorerItemContext, explorerEditContext.not()),
 });
 
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
@@ -54,7 +54,7 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
         },
     },
     order: 1,
-    when: ContextKeyExpr.and(ContextKeyExpr.not(explorerItemContext), explorerEditContext.not()),
+    when: ContextKeyExpr.and(ContextKeyExpr.not(me5ExplorerItemContext), explorerEditContext.not()),
 });
 
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
@@ -68,7 +68,7 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
         },
     },
     order: 2,
-    when: ContextKeyExpr.and(explorerGroupContext, explorerEditContext.not()),
+    when: ContextKeyExpr.and(me5ExplorerGroupContext, explorerEditContext.not()),
 });
 
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
@@ -78,7 +78,7 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
         id: MODIFICATION_ID,
     },
     order: 1,
-    when: ContextKeyExpr.and(explorerItemContext, explorerEditContext.not()),
+    when: ContextKeyExpr.and(me5ExplorerItemContext, explorerEditContext.not()),
 });
 
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
@@ -88,7 +88,7 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
         id: RENAME_ID,
     },
     order: 2,
-    when: ContextKeyExpr.and(explorerRootContext.not(), explorerEditContext.not()),
+    when: ContextKeyExpr.and(me5ExplorerRootContext.not(), explorerEditContext.not()),
 });
 
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
@@ -98,7 +98,7 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
         id: DELETE_ID,
     },
     order: 3,
-    when: ContextKeyExpr.and(explorerRootContext.not(), explorerEditContext.not()),
+    when: ContextKeyExpr.and(me5ExplorerRootContext.not(), explorerEditContext.not()),
 });
 
 

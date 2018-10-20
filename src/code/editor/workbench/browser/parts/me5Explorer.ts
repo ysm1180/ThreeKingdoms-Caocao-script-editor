@@ -12,14 +12,15 @@ import { ICompositeViewService, CompositeViewService } from '../../services/view
 import { Me5DataSource, Me5DataRenderer, Me5DataController } from '../../parts/me5ExplorerViewer';
 import { IMe5FileService, Me5FileService } from '../../services/me5/me5FileService';
 import { EditorGroup } from './editor/editors';
+import { EditorInput } from '../../common/editor';
 
-export const explorerItemIsMe5GroupId = 'explorerItemIsMe5Group';
-export const explorerItemIsMe5StatId = 'explorerItemIsMe5Stat';
+export const me5ExplorerItemIsMe5GroupId = 'explorerItemIsMe5Group';
+export const me5ExplorerItemIsMe5StatId = 'explorerItemIsMe5Stat';
 
-export const explorerGroupContext = new RawContextKey<boolean>(explorerItemIsMe5GroupId, false);
-export const explorerRootContext = new RawContextKey<boolean>(explorerItemIsMe5StatId, false);
+export const me5ExplorerGroupContext = new RawContextKey<boolean>(me5ExplorerItemIsMe5GroupId, false);
+export const me5ExplorerRootContext = new RawContextKey<boolean>(me5ExplorerItemIsMe5StatId, false);
 
-export const explorerItemContext: ContextKeyNotExpr = ContextKeyExpr.not(ContextKeyExpr.or(explorerGroupContext, explorerRootContext));
+export const me5ExplorerItemContext: ContextKeyNotExpr = ContextKeyExpr.not(ContextKeyExpr.or(me5ExplorerGroupContext, me5ExplorerRootContext));
 
 export class Me5Tree extends Tree {
     private _cache = new Map<IEditorInput, Me5Stat>();
@@ -75,6 +76,8 @@ export class Me5ExplorerView extends CompositeView {
 
     private group: EditorGroup;
 
+    private prevInput: IEditorInput;
+
     constructor(
         @IMe5FileService private me5FileService: Me5FileService,
         @IContextKeyService private contextKeyService: ContextKeyService,
@@ -88,8 +91,10 @@ export class Me5ExplorerView extends CompositeView {
         this.renderer = this.instantiationService.create(Me5DataRenderer);
         this.controller = this.instantiationService.create(Me5DataController);
 
-        this.groupContext = explorerGroupContext.bindTo(this.contextKeyService);
-        this.rootContext = explorerRootContext.bindTo(this.contextKeyService);
+        this.groupContext = me5ExplorerGroupContext.bindTo(this.contextKeyService);
+        this.rootContext = me5ExplorerRootContext.bindTo(this.contextKeyService);
+
+        this.prevInput = null;
     }
 
     public create(container: DomBuilder) {
@@ -111,19 +116,18 @@ export class Me5ExplorerView extends CompositeView {
         
         this.group = this.editorService.getEditorGroup();
 
-        this.registerDispose(this.compositeViewService.onDidCompositeOpen.add((composit) => this.onChangeFile(composit)));
+        this.registerDispose(this.compositeViewService.onDidCompositeOpen.add((composit) => this._onChangedCompositView(composit)));
         this.registerDispose(this.group.onEditorClosed.add((editor) => {
             this.explorerViewer.setCache(editor, null);
 
             const activeEditorInput = this.group.activeEditor;
             if (!activeEditorInput) {
                 this.explorerViewer.setRoot(null);
-                
             }
         }));
     }
 
-    private onChangeFile(composit) {
+    private _onChangedCompositView(composit: CompositeView) {
         if (composit !== this) {
             return;
         }
@@ -138,6 +142,12 @@ export class Me5ExplorerView extends CompositeView {
             return;
         }
 
+        if (this.group.matches(activeEditorInput, this.prevInput)) {
+            return;
+        }
+
+        this.prevInput = activeEditorInput;
+
         let done: Promise<Me5Stat>;
         const filePath = activeEditorInput.getId();
         const cacheData = this.explorerViewer.cache(activeEditorInput);
@@ -149,7 +159,6 @@ export class Me5ExplorerView extends CompositeView {
 
         done.then((stat) => {
             this.explorerViewer.setCache(activeEditorInput, stat);
-
             this.explorerViewer.setRoot(stat).then(() => {
                 const toExpand = this.toExpandElements[stat.getId()];
                 if (toExpand) {
