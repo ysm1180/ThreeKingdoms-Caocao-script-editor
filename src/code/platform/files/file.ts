@@ -9,7 +9,7 @@ export namespace Files {
 }
 
 export class BinaryFile {
-    public data: Buffer = new Buffer([]);
+    public data: Buffer = Buffer.alloc(0);
     private path: string;
 
     constructor(path: string) {
@@ -56,7 +56,7 @@ export class BinaryFile {
         if (this.data.length <= offset + length) {
             const buffer = new Uint8Array(offset + length);
             buffer.set(this.data, 0);
-            this.data = new Buffer(buffer);
+            this.data = Buffer.from(buffer.buffer);
         }
 
         for (let i = 0; i < length; i++) {

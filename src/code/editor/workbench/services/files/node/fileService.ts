@@ -51,7 +51,7 @@ export class FileService implements IFileService {
                 }
 
                 let decoder: NodeJS.ReadWriteStream;
-                const chunkBuffer = new Buffer(1024 * 64);
+                const chunkBuffer = Buffer.alloc(1024 * 64);
 
                 const finish = () => {
                     if (decoder) {

@@ -38,7 +38,7 @@ export class CodeWindow {
         this.window = new BrowserWindow(options);
 
         this.window.loadURL(url.format({
-            pathname: path.join(path.resolve(), 'code/editor/bootstrap/index.html'),
+            pathname: path.join(__dirname, '../editor/bootstrap/index.html'),
             protocol: 'file:',
             slashes: true,
         }));

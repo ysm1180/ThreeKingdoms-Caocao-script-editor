@@ -3,12 +3,70 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/main.js",
+  "build": {
+    "productName": "JojoGameEditor",
+    "appId": "com.electron.jojoeditor",
+    "asar": true,
+    "protocols": {
+      "name": "JojoGameEditor",
+      "schemes": [
+        "JojoGameEditor"
+      ]
+    },
+    "mac": {
+      "target": [
+        "default"
+      ],
+      "icon": "./resources/installer/Icon.icns"
+    },
+    "dmg": {
+      "title": "JojoGameEditor",
+      "icon": "./resources/installer/Icon.icns"
+    },
+    "win": {
+      "target": [
+        "zip",
+        "nsis"
+      ],
+      "icon": "./resources/installer/Icon.ico"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm",
+        "zip",
+        "tar.gz"
+      ],
+      "icon": "./resources/linuxicon"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "directories": {
+      "buildResources": "resources/installer/",
+      "output": "bin/",
+      "app": "."
+    }
+  },
+  "files": [
+      "**/*",
+      "!src/*"
+    ],
   "scripts": {
     "development": "cross-env NODE_ENV='development' gulp development",
     "dev": "npm run development",
     "build": "gulp build",
     "watch": "electron . && gulp watch",
-    "electron": "electron ."
+    "electron": "electron .",
+    "build:osx": "build --mac",
+    "build:linux": "npm run build:linux32 && npm run build:linux64",
+    "build:linux32": "build --linux --ia32",
+    "build:linux64": "build --linux --x64",
+    "build:win": "npm run build && npm run build:win32 && npm run build:win64",
+    "build:win32": "build --win --ia32",
+    "build:win64": "build --win --x64"
   },
   "repository": "git+ssh://git@github.com/ysm1180/newjojogame-script-editor.git",
   "author": "Seongmin Yeon",
@@ -21,6 +79,7 @@
     "@types/gulp": "^4.0.5",
     "cross-env": "^5.1.4",
     "electron": ">=1.8.8",
+    "electron-builder": "^20.28.4",
     "electron-connect": "^0.6.3",
     "eslint": "^4.19.0",
     "gulp": "git://github.com/gulpjs/gulp.git#6d71a658c61edb3090221579d8f97dbe086ba2ed",

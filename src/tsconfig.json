@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"experimentalDecorators": true,
-		"module": "amd",
+		"module": "commonjs",
 		"moduleResolution": "node",
 		"noImplicitAny": false,
 		"removeComments": false,
