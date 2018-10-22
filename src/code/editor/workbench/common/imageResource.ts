@@ -1,4 +1,9 @@
+import * as bmp from 'bmp-js';
+import * as jpeg from 'jpeg-js';
+import { PNG } from 'pngjs';
+import * as sharp from 'sharp';
 import { bytesToNumber } from '../../../base/common/convert';
+
 
 export const enum ImageType {
     Png = 'png',
@@ -19,7 +24,7 @@ export class ImageResource {
 
     public build(data: Uint8Array): boolean {
         this._type = ImageResource.getTypeFromBinary(data);
-        
+
         if (!this._type) {
             return false;
         }
@@ -29,7 +34,11 @@ export class ImageResource {
         if (this._type === ImageType.Png) {
             this._width = bytesToNumber(this.data.slice(16), true);
             this._height = bytesToNumber(this.data.slice(20), true);
-        } 
+        } else if (this._type === ImageType.Jpg) {
+            const jpg = jpeg.decode(this.data);
+            this._width = jpg.width;
+            this._height = jpg.height;
+        }
 
         return true;
     }
@@ -63,5 +72,46 @@ export class ImageResource {
         }
 
         return type;
+    }
+
+    public static convertToJpeg(data: Buffer): Promise<Uint8Array> {
+        return Promise.resolve().then(() => {
+            const type = ImageResource.getTypeFromBinary(data);
+
+            if (type === ImageType.Jpg) {
+                return data;
+            } else if (type === ImageType.Bmp) {
+                const bitmap = bmp.decode(data);
+                for (let i = 0; i < bitmap.data.length / 4; i++) {
+                    let temp = bitmap.data[i * 4];
+                    bitmap.data[i * 4] = bitmap.data[i * 4 + 3];
+                    bitmap.data[i * 4 + 3] = 0xFF;
+
+                    temp = bitmap.data[i * 4 + 1];
+                    bitmap.data[i * 4 + 1] = bitmap.data[i * 4 + 2];
+                    bitmap.data[i * 4 + 2] = temp;
+                }
+
+                return sharp(bitmap.data, {
+                    raw: {
+                        width: bitmap.width,
+                        height: bitmap.height,
+                        channels: 4,
+                    },
+                }).jpeg().toBuffer();
+            } else if (type === ImageType.Png) {
+                const png = PNG.sync.read(data);
+                return sharp(png.data, {
+                    raw: {
+                        width: png.width,
+                        height: png.height,
+                        channels: 4,
+                    },
+                }).jpeg().toBuffer();
+            } else {
+                return data;
+            }
+        });
+
     }
 }

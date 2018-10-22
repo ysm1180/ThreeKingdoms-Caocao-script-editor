@@ -58,7 +58,7 @@ export class Me5FileService implements IFileHandleService {
 
         done.then((rootStat) => {
             if (!rootStat) {
-                return;
+                return Promise.resolve();
             }
 
             const options: ISaveMe5Data = {
@@ -66,7 +66,7 @@ export class Me5FileService implements IFileHandleService {
             };
 
             const file = new Me5File(rootStat.getId());
-            file.save(options, (group) => group.getChildren().length !== 0);
+            return file.save(options, (group) => group.getChildren().length !== 0);
         });
     }
 
