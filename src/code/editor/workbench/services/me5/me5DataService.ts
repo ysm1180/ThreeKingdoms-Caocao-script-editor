@@ -1,3 +1,5 @@
+import * as sharp from 'sharp';
+import * as bmp from 'bmp-js';
 import { BinaryFile } from '../../../../platform/files/file';
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 import { IConfirmation } from '../../../../platform/dialogs/dialogs';
@@ -6,6 +8,7 @@ import { Me5Stat, ItemState } from '../../parts/files/me5Data';
 import { Me5DataController } from '../../parts/me5ExplorerViewer';
 import { IDialogService, DialogService } from '../electron-browser/dialogService';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { ImageType } from '../../common/imageResource';
 
 export const IMe5DataService: ServiceIdentifier<Me5DataService> = decorator<Me5DataService>('me5DataService');
 
@@ -16,6 +19,36 @@ export class Me5DataService {
         @IInstantiationService private instantiationService: IInstantiationService,
     ) {
 
+    }
+
+    private _resolveImageData(file: BinaryFile): Promise<Uint8Array> {
+        return Promise.resolve().then(() => {
+            return file.open().then(() => {
+                if (file.ext === ImageType.Jpg) {
+                    return sharp(file.path).png().toBuffer();
+                } else if (file.ext === ImageType.Bmp) {
+                    const bitmap = bmp.decode(file.data);
+                    for (let i = 0; i < bitmap.data.length / 4; i++) {
+                        let temp = bitmap.data[i * 4];
+                        bitmap.data[i * 4] = bitmap.data[i * 4 + 3];
+                        bitmap.data[i * 4 + 3] = 0xFF;
+
+                        temp = bitmap.data[i * 4 + 1];
+                        bitmap.data[i * 4 + 1] = bitmap.data[i * 4 + 2];
+                        bitmap.data[i * 4 + 2] = temp;
+                    }
+                    return sharp(bitmap.data, {
+                        raw: {
+                            width: bitmap.width,
+                            height: bitmap.height,
+                            channels: 4,
+                        },
+                    }).png().toBuffer();
+                } else if (file.ext === ImageType.Png) {
+                    return file.data;
+                }
+            });
+        });
     }
 
     public doChangeItem() {
@@ -43,17 +76,15 @@ export class Me5DataService {
             const promises = [];
             for (let path of req.files) {
                 const file = new BinaryFile(path);
-                const promise = file.open();
+                const promise = this._resolveImageData(file);
                 promises.push(promise);
             }
 
             return Promise.all(promises);
-        }).then((files: BinaryFile[]) => {
-            for (const file of files) {
-                if (file) {
-                    const data = new Uint8Array(file.data.slice(0));
-                    element.data = data;
-                }
+        }).then((imageData) => {
+            for (const imageDataArray of imageData) {
+                const data = new Uint8Array(imageDataArray.slice(0));
+                element.data = data;
             }
 
             lastTree.refresh(element).then(() => {
@@ -80,6 +111,7 @@ export class Me5DataService {
             parent = element;
         }
 
+        let names = [];
         this.dialogService.openFile({
             title: '추가할 파일을 선택해주세요.',
             multi: true,
@@ -96,20 +128,19 @@ export class Me5DataService {
             const promises = [];
             for (let path of req.files) {
                 const file = new BinaryFile(path);
-                const promise = file.open();
+                names.push(file.name);
+                const promise = this._resolveImageData(file);
                 promises.push(promise);
             }
 
             return Promise.all(promises);
-        }).then((files: BinaryFile[]) => {
+        }).then((binaries: Uint8Array[]) => {
             const selectItems = [];
-            for (const file of files) {
-                if (file) {
-                    const data = new Uint8Array(file.data.slice(0));
-                    const item = new Me5Stat(element.root.getId(), false, element.root, file.name, data);
-                    item.build(parent, isSelectionAfter ? element : null);
-                    selectItems.push(item);
-                }
+            for (const [index, binary] of binaries.entries()) {
+                const data = new Uint8Array(binary.slice(0));
+                const item = new Me5Stat(element.root.getId(), false, element.root, names[index], data);
+                item.build(parent, isSelectionAfter ? element : null);
+                selectItems.push(item);
             }
 
             lastTree.refresh(parent).then(() => {

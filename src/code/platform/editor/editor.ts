@@ -1,9 +1,5 @@
 import { BaseEditor } from '../../editor/workbench/browser/parts/editor/baseEditor';
 
-export interface IEditorEvent {
-    editor: IEditorInput;
-}
-
 export interface IEditorDescriptor {
     getCompositeId(): string;
 

@@ -84,19 +84,19 @@ export class WorkbenchLayout extends Disposable implements ISashLayoutProvider {
         const titleWidth = this.workbenchSize.width;
         this.title.getContainer().position(0, 0)
             .size(titleWidth, this.titleHeight);
-        this.title.layout(titleWidth, this.titleHeight);
+        this.title.layout(new Size(titleWidth, this.titleHeight));
 
         this.sidebar.getContainer().position(this.titleHeight);
         this.sidebar.getContainer().size(this.sidebarWidth, this.sidebarHeight);
-        this.sidebar.layout(this.sidebarWidth, this.sidebarHeight);
+        this.sidebar.layout(new Size(this.sidebarWidth, this.sidebarHeight));
 
         const editorSize = new Size(this.workbenchSize.width - sidebarSize.width, this.sidebarHeight);
         this.editor.getContainer().position(this.titleHeight, sidebarSize.width);
         this.editor.getContainer().size(editorSize.width, editorSize.height);
-        this.editor.layout(editorSize.width, editorSize.height);
+        this.editor.layout(new Size(editorSize.width, editorSize.height));
 
         this.statusbar.getContainer().position(this.titleHeight + this.sidebarHeight, 0);
-        this.statusbar.layout(this.workbenchSize.width, this.statusbarHeight);
+        this.statusbar.layout(new Size(this.workbenchSize.width, this.statusbarHeight));
 
         if (isSidebarVisible) {
             this.sashX.show();

@@ -1,4 +1,4 @@
-export class ResourceFileEditorDataModel {
+export class ResourceFileEditorModel {
 
     constructor(
         private resource: string,

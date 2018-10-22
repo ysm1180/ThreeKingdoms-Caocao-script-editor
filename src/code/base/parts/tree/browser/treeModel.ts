@@ -93,6 +93,7 @@ export class Item {
     public firstChild: Item;
     public lastChild: Item;
 
+    private height: number;
     private depth: number;
 
     private visible: boolean;
@@ -130,10 +131,19 @@ export class Item {
         this.expanded = false;
         this.isRefreshChildren = true;
 
+        this.height = this._getHeight();
         this.depth = 0;
         this.isDisposed = false;
 
         this.traits = {};
+    }
+
+    private _getHeight(): number {
+        return this.context.renderer.getHeight();
+    }
+
+    public getHeight(): number {
+        return this.height;
     }
 
     public getAllTraits(): string[] {

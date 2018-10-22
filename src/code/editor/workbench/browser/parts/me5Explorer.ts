@@ -12,7 +12,7 @@ import { ICompositeViewService, CompositeViewService } from '../../services/view
 import { Me5DataSource, Me5DataRenderer, Me5DataController } from '../../parts/me5ExplorerViewer';
 import { IMe5FileService, Me5FileService } from '../../services/me5/me5FileService';
 import { EditorGroup } from './editor/editors';
-import { EditorInput } from '../../common/editor';
+import { IDimension } from '../../../common/editorCommon';
 
 export const me5ExplorerItemIsMe5GroupId = 'explorerItemIsMe5Group';
 export const me5ExplorerItemIsMe5StatId = 'explorerItemIsMe5Stat';
@@ -110,8 +110,10 @@ export class Me5ExplorerView extends CompositeView {
 
         this.registerDispose(this.explorerViewer.onDidChangeFocus.add((e) => {
             const focused = e.focus as Me5Stat;
-            this.groupContext.set(focused.isGroup && !focused.isRoot);
-            this.rootContext.set(focused.isRoot);
+            if (focused) {
+                this.groupContext.set(focused.isGroup && !focused.isRoot);
+                this.rootContext.set(focused.isRoot);
+            }
         }));
         
         this.group = this.editorService.getEditorGroup();
@@ -122,6 +124,7 @@ export class Me5ExplorerView extends CompositeView {
 
             const activeEditorInput = this.group.activeEditor;
             if (!activeEditorInput) {
+                this.prevInput = null;
                 this.explorerViewer.setRoot(null);
             }
         }));
@@ -171,5 +174,11 @@ export class Me5ExplorerView extends CompositeView {
     private setExpandedElements(key: string) {
         const expandedElements = this.explorerViewer.getExpandedElements();
         this.toExpandElements[key] = expandedElements;
+    }
+
+    public layout(): void {
+        if (this.explorerViewer) {
+            this.explorerViewer.layout();
+        }
     }
 }

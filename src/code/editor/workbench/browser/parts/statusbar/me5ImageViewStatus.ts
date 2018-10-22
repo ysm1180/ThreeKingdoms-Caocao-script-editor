@@ -2,7 +2,10 @@ import { IStatusbarItem, IStatusbarEntry, StatusbarItemAlignment } from '../../.
 import { EditorPart, IEditorService } from '../editor/editorPart';
 import { ContextKeyExpr } from '../../../../../platform/contexts/contextKey';
 import { IDisposable, combinedDisposable } from '../../../../../base/common/lifecycle';
-import { IEditorEvent } from '../../../../../platform/editor/editor';
+import { IEditorInput } from '../../../../../platform/editor/editor';
+import { ResourceEditorInput } from '../../../common/editor/resourceEditorInput';
+import { decodeFromBase64 } from '../../../../../base/common/encode';
+import { ImageResource } from '../../../common/imageResource';
 
 export class ImageViewStatus implements IStatusbarItem {
     private imageSize: HTMLElement;
@@ -29,18 +32,28 @@ export class ImageViewStatus implements IStatusbarItem {
         this.imageSize = document.createElement('span');
         element.appendChild(this.imageSize);
 
-        dispose.push(this.editorService.onEditorInputChanged.add((e) => this.onEditorInputChanged(e)));
+        dispose.push(this.editorService.onEditorInputChanged.add((e) => this._onInputChanged(e)));
 
         return combinedDisposable(dispose);
     }
 
-    public onEditorInputChanged(e: IEditorEvent) {
-        // const input = e.editor as Me5Item;
+    public _onInputChanged(input: IEditorInput) {
+        if (!(input instanceof ResourceEditorInput)) {
+            this.imageSize.textContent = '';
+            return;
+        }
 
-        // input.resolve().then(({ image }) => {
-        //     if (image) {
-        //         this.imageSize.textContent = `이미지 사이즈 : ${image.width} X ${image.height}`;
-        //     }
-        // });
+        const resourceInput = <ResourceEditorInput>input;
+        resourceInput.resolve().then(dataModel => {
+            if (dataModel) {
+                const dataArray = decodeFromBase64(dataModel.getResource());
+                const image = new ImageResource();
+                if (image.build(dataArray)) {
+                    this.imageSize.textContent = `이미지 사이즈 : ${image.width} X ${image.height}`;
+                } else {
+                    this.imageSize.textContent = '';
+                }
+            }
+        });
     }
 }

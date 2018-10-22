@@ -6,6 +6,7 @@ import { CompositeView, CompositViewRegistry } from '../compositeView';
 import { IEditorService, EditorPart } from './editor/editorPart';
 import { EditorGroup } from './editor/editors';
 import { IPartService } from '../../services/part/partService';
+import { IDimension } from '../../../common/editorCommon';
 
 export class SidebarPart extends Part {
     private instantiatedComposites: CompositeView[];
@@ -127,8 +128,12 @@ export class SidebarPart extends Part {
         this.onDidCompositeClose.fire(composite);
     }
 
-    public layout(width: number, height: number) {
-        super.layout(width, height);
+    public layout(size: IDimension) {
+        super.layout(size);
+
+        if (this.activeComposite) {
+            this.activeComposite.layout();
+        }
     }
 
     public dispose() {

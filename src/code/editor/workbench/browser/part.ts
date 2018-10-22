@@ -1,5 +1,6 @@
 import { DomBuilder, $ } from '../../../base/browser/domBuilder';
 import { Disposable } from '../../../base/common/lifecycle';
+import { IDimension } from '../../common/editorCommon';
 
 export class Part extends Disposable {
     private parent: DomBuilder;
@@ -28,9 +29,9 @@ export class Part extends Disposable {
         });
     }
 
-    public layout(width: number, height: number) {
+    public layout(size: IDimension) {
         if (this.content) {
-            this.content.size(width, height);
+            this.content.size(size.width, size.height);
         }
     }
 }

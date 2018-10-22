@@ -14,10 +14,7 @@ export class EditorScrollbar extends ViewPart {
     ) {
         super(context);
 
-        const scrollbarOptions: ScrollableElementOptions = {
-            verticalScrollbarSize: 14,
-            horizontalScrollbarSize: 14,
-        };
+        const scrollbarOptions: ScrollableElementOptions = {};
 
         this.scrollbar = new ScrollbarElement(linesContent.domNode, scrollbarOptions, context.viewLayout.scroll);
 

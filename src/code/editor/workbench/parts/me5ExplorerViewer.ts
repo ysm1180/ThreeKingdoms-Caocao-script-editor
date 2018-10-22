@@ -47,6 +47,8 @@ export interface IMe5TemplateData {
 }
 
 export class Me5DataRenderer implements IDataRenderer {
+    public static ITEM_HEIGHT = 22;
+
     private editContext: ContextKey<boolean>;
 
     constructor(
@@ -110,6 +112,10 @@ export class Me5DataRenderer implements IDataRenderer {
                 done(true);
             }),
         ];
+    }
+
+    public getHeight(): number {
+        return Me5DataRenderer.ITEM_HEIGHT;
     }
 }
 

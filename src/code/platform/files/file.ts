@@ -10,19 +10,27 @@ export namespace Files {
 
 export class BinaryFile {
     public data: Buffer = Buffer.alloc(0);
-    private path: string;
+    private _path: string;
 
     constructor(path: string) {
-        this.path = path;
+        this._path = path;
+    }
+
+    public get path(): string {
+        return this._path;
+    }
+
+    public get ext(): string {
+        return path.extname(this._path).substr(1).toLowerCase();
     }
 
     public get name(): string {
-        return path.basename(this.path).replace(path.extname(this.path), '');
+        return path.basename(this._path).replace(path.extname(this._path), '');
     }
 
     public open(): Promise<BinaryFile> {
         return new Promise<BinaryFile>((c, e) => {
-            fs.readFile(this.path, {}, (err, data) => {
+            fs.readFile(this._path, {}, (err, data) => {
                 if (err) {
                     e(err);
                     return null;
@@ -63,7 +71,7 @@ export class BinaryFile {
             this.data[offset + i] = data[i];
         }
 
-        const fd = fs.openSync(this.path, 'w');
+        const fd = fs.openSync(this._path, 'w');
         const bytes = new Uint8Array(this.data.slice(0));
         fs.writeSync(fd, bytes, 0, bytes.length, 0);
         fs.fdatasyncSync(fd);

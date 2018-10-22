@@ -4,13 +4,15 @@ import { ArrayIterator, IIterator } from '../../../common/iterator';
 import { StandardMouseEvent } from '../../../browser/mouseEvent';
 import { addClass, removeClass } from '../../../browser/dom';
 import { MouseContextMenuEvent } from '../../../../platform/events/contextMenuEvent';
+import { ScrollableElement } from '../../../browser/ui/scrollbar/scrollbarElement';
+import { Disposable } from '../../../common/lifecycle';
 
 export interface IRow {
     element: HTMLElement;
     templateData: any;
 }
 
-export class ViewItem {
+export class ViewItem extends Disposable {
     private context: TreeContext;
 
     public model: Model.Item;
@@ -20,10 +22,18 @@ export class ViewItem {
 
     public styles: any;
 
+    public top: number;
+    public height: number;
+
     constructor(context: TreeContext, model: Model.Item) {
+        super();
+
         this.model = model;
         this.id = this.model.id;
         this.context = context;
+
+        this.top = 0;
+        this.height = this.model.getHeight();
 
         this.styles = {};
     }
@@ -74,6 +84,7 @@ export class ViewItem {
             classes.push('has-children');
         }
         this.element.className = classes.join(' ');
+        this.element.style.height = `${this.height}px`;
         this.element.style.paddingLeft = ((this.model.getDepth() - 1) * this.context.options.indentPixels) + 'px';
 
         if (!skipContextRender) {
@@ -112,6 +123,11 @@ export class ViewItem {
         this.element.parentElement.removeChild(this.element);
         this.row = null;
     }
+
+    public dispose(): void {
+        this.model = null;
+        this.row = null;
+    }
 }
 
 export class RootViewItem extends ViewItem {
@@ -139,6 +155,7 @@ export class TreeView {
     private domNode: HTMLElement;
     private wrapper: HTMLElement;
     private rowContainer: HTMLElement;
+    private scrollableElement: ScrollableElement;
 
     private root: ViewItem;
     private items: { [id: string]: ViewItem };
@@ -146,7 +163,7 @@ export class TreeView {
     private previousRefreshingChildren: { [id: string]: Model.Item[] } = {};
 
     private indexes: { [id: string]: number };
-    private map: ViewItem[];
+    private itemMap: ViewItem[];
 
     constructor(context: TreeContext, container: HTMLElement) {
         this.context = context;
@@ -156,18 +173,22 @@ export class TreeView {
 
         this.wrapper = document.createElement('div');
         this.wrapper.className = 'tree-wrapper';
+        this.scrollableElement = new ScrollableElement(this.wrapper, {});
+        this.scrollableElement.onScroll.add((e) => {
+            this.render(e.scrollTop, e.height, e.scrollLeft, e.width, e.scrollWidth);
+        });
 
         this.rowContainer = document.createElement('div');
         this.rowContainer.className = 'tree-rows';
 
         this.wrapper.appendChild(this.rowContainer);
-        this.domNode.appendChild(this.wrapper);
+        this.domNode.appendChild(this.scrollableElement.getDomNode());
         container.appendChild(this.domNode);
 
         this.model = null;
         this.items = {};
         this.indexes = {};
-        this.map = [];
+        this.itemMap = [];
 
         this.wrapper.addEventListener('click', (e) => this.onClick(e));
         this.domNode.addEventListener('contextmenu', (e) => this.onContextMenu(e));
@@ -235,6 +256,10 @@ export class TreeView {
         this.model.onDidRemoveTraitItem.add(this.onItemRemoveTrait, this);
     }
 
+    private onRowsChanged(scrollTop: number = this.scrollTop) {
+        this.scrollTop = scrollTop;
+    }
+
     public onClearingRoot(item: Model.Item) {
         if (item) {
             this.onRemoveItems(item.getNavigator());
@@ -276,9 +301,13 @@ export class TreeView {
         const viewItem = this.items[item.id];
         if (viewItem) {
             viewItem.expanded = true;
-            this.onInsertItems(item.getNavigator(), item.id);
+            const height = this.onInsertItems(item.getNavigator(), item.id);
+            let scrollTop = this.scrollTop;
+            if (viewItem.top + viewItem.height <= this.scrollTop) {
+				scrollTop += height;
+            }
+            this.onRowsChanged(scrollTop);
         }
-
     }
 
     public onDidCollapse(e: Model.IItemCollapseEvent) {
@@ -287,6 +316,7 @@ export class TreeView {
         if (viewItem) {
             viewItem.expanded = false;
             this.onRemoveItems(item.getNavigator());
+            this.onRowsChanged();
         }
 
     }
@@ -294,7 +324,7 @@ export class TreeView {
     public onItemRefresh(e: Model.IItemRefreshEvent) {
         const item = <Model.Item>e.item;
         const viewItem = this.items[item.id];
-        this.refreshItem(viewItem);
+        this.refreshViewItem(viewItem);
     }
 
     public onItemChildrenRefresing(e: Model.IItemChildrenRefreshEvent) {
@@ -328,14 +358,17 @@ export class TreeView {
     }
 
     // item is contiguous
-    public onRemoveItems(iter: IIterator<Model.Item>) {
+    public onRemoveItems(iter: IIterator<Model.Item>): void {
         let item: Model.Item;
         let index: number;
         let startIndex: number = null;
+        let sizeDiff: number = 0;
+        let viewItem: ViewItem;
 
         while (item = iter.next()) {
             index = this.indexes[item.id];
-            const viewItem = this.map[index];
+            viewItem = this.itemMap[index];
+            sizeDiff -= viewItem.height;
 
             delete this.indexes[item.id];
             this.onRemoveItem(viewItem);
@@ -346,11 +379,12 @@ export class TreeView {
         }
 
         if (startIndex !== null) {
-            this.map.splice(startIndex, index - startIndex + 1);
+            this.itemMap.splice(startIndex, index - startIndex + 1);
 
             let viewItem: ViewItem;
-            for (let i = startIndex; i < this.map.length; i++) {
-                viewItem = this.map[i];
+            for (let i = startIndex; i < this.itemMap.length; i++) {
+                viewItem = this.itemMap[i];
+                viewItem.top += sizeDiff;
                 this.indexes[viewItem.id] = i;
             }
         }
@@ -358,47 +392,60 @@ export class TreeView {
 
     public onRemoveItem(item: ViewItem) {
         this.removeItemFromDOM(item);
+        item.dispose();
         delete this.items[item.id];
     }
 
-    public onInsertItems(iter: IIterator<Model.Item>, afterItemId: string = null) {
+    public onInsertItems(iter: IIterator<Model.Item>, afterItemId: string = null): number {
         let item: Model.Item;
         let index: number;
         let viewItem: ViewItem;
+        let totalSize: number;
 
         if (afterItemId === null) {
             index = 0;
+            totalSize = 0;
         } else {
             index = this.indexes[afterItemId] + 1;
+            viewItem = this.itemMap[index - 1];
+
+            totalSize = viewItem.top + viewItem.height;
         }
 
         const insertedItems: ViewItem[] = [];
         let insertedItemIndex: number = index;
+        let sizeDiff: number = 0;
         while (item = iter.next()) {
             viewItem = new ViewItem(this.context, item);
+            viewItem.top = totalSize + sizeDiff;
+            
             this.indexes[item.id] = insertedItemIndex++;
             insertedItems.push(viewItem);
+            sizeDiff += viewItem.height;
         }
 
-        this.map.splice(index, 0, ...insertedItems);
+        this.itemMap.splice(index, 0, ...insertedItems);
 
-        for (let j = insertedItemIndex; j < this.map.length; j++) {
-            viewItem = this.map[j];
+        for (let j = insertedItemIndex; j < this.itemMap.length; j++) {
+            viewItem = this.itemMap[j];
+            viewItem.top += sizeDiff;
             this.indexes[viewItem.id] = j;
         }
 
         for (let j = insertedItems.length - 1; j >= 0; j--) {
             this.onInsertItem(insertedItems[j]);
         }
+
+        return sizeDiff;
     }
 
     public onInsertItem(item: ViewItem) {
-        this.refreshItem(item);
+        this.refreshViewItem(item);
         this.items[item.id] = item;
     }
 
     private getItemAfter(item: ViewItem) {
-        return this.map[this.indexes[item.model.id] + 1] || null;
+        return this.itemMap[this.indexes[item.model.id] + 1] || null;
     }
 
     public insertItemInDOM(item: ViewItem) {
@@ -423,7 +470,7 @@ export class TreeView {
 
     }
 
-    public refreshItem(item: ViewItem) {
+    public refreshViewItem(item: ViewItem) {
         if (!item) {
             return;
         }
@@ -439,5 +486,51 @@ export class TreeView {
 
     public isFocused(): boolean {
         return document.activeElement === this.domNode;
+    }
+
+    private render(scrollTop: number, viewHeight: number, scrollLeft: number, viewWidth: number, scrollWidth: number): void {
+        this.rowContainer.style.top = `${-scrollTop}px`;
+    }
+
+    public layout(): void {
+        this.viewHeight = this.wrapper.offsetHeight;
+        this.scrollHeight = this.getContentHeight();
+    }
+
+    public get viewHeight() {
+        const scrollDimensions = this.scrollableElement.getScrollDimensions();
+        return scrollDimensions.height;
+    }
+
+    public set viewHeight(height: number) {
+        this.scrollableElement.setScrollDimensions({
+            height
+        });
+    }
+
+    public set scrollHeight(scrollHeight: number) {
+        console.log(scrollHeight);
+        this.scrollableElement.setScrollDimensions({
+            scrollHeight
+        });
+    }
+
+    public get scrollTop(): number {
+		const scrollPosition = this.scrollableElement.getScrollPosition();
+		return scrollPosition.scrollTop;
+    }
+    
+    public set scrollTop(scrollTop: number) {
+		this.scrollableElement.setScrollDimensions({
+			scrollHeight: this.getContentHeight()
+		});
+		this.scrollableElement.setScrollPosition({
+			scrollTop: scrollTop
+		});
+	}
+
+    public getContentHeight(): number {
+        var last = this.itemMap[this.itemMap.length - 1];
+        return !last ? 0 : last.top + last.height;
     }
 }

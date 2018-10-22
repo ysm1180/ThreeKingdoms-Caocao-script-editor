@@ -60,19 +60,23 @@ body {
     color: #4D4D4D;
 }
 
-.tree>.tree-wrapper {
+.tree .scrollable-element {
+    height: 100%;
+}
+
+.tree .tree-wrapper {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-.tree>.tree-wrapper>.tree-rows {
+.tree .tree-rows {
     position: absolute;
     width: 100%;
     height: 100%;
 }
 
-.tree>.tree-wrapper>.tree-rows>.tree-row {
+.tree .tree-rows>.tree-row {
     cursor: pointer;
     overflow: hidden;
     width: 100%;
@@ -80,29 +84,29 @@ body {
     box-sizing: border-box;
 }
 
-.tree>.tree-wrapper>.tree-rows>.tree-row:hover {
+.tree .tree-rows>.tree-row:hover {
     background-color: #2A2D2E;
 }
 
-.tree>.tree-wrapper>.tree-rows>.tree-row.selected {
+.tree .tree-rows>.tree-row.selected {
     background-color: #094771;
 }
 
-.tree.highlight>.tree-wrapper>.tree-rows>.tree-row.selected {
+.tree.highlight .tree-rows>.tree-row.selected {
     background-color: #252526;
 }
 
-.tree>.tree-wrapper>.tree-rows>.tree-row.has-children>.content:before {
+.tree .tree-rows>.tree-row.has-children>.content:before {
     display: inline-block;
     background-image: url('../workbench/browser/view/media/collapsed.svg');
 }
 
-.tree>.tree-wrapper>.tree-rows>.tree-row.has-children.expanded>.content:before {
+.tree .tree-rows>.tree-row.has-children.expanded>.content:before {
     display: inline-block;
     background-image: url('../workbench/browser/view/media/expanded.svg');
 }
 
-.tree>.tree-wrapper>.tree-rows>.tree-row>.content:before {
+.tree .tree-rows>.tree-row>.content:before {
     background-size: 16px;
     background-position: 50% 50%;
     background-repeat: no-repeat;
@@ -114,13 +118,13 @@ body {
     content: " ";
 }
 
-.tree>.tree-wrapper>.tree-rows>.tree-row>.content {
+.tree .tree-rows>.tree-row>.content {
     height: 100%;
     position: relative;
     display: flex;
 }
 
-.tree>.tree-wrapper>.tree-rows>.tree-row>.content>.label {
+.tree .tree-rows>.tree-row>.content>.label {
     display: flex;
     flex: 1;
     flex-wrap: nowrap;
@@ -129,7 +133,7 @@ body {
     text-overflow: ellipsis;
 }
 
-.tree>.tree-wrapper>.tree-rows>.tree-row>.content>.label>.label-description {
+.tree .tree-rows>.tree-row>.content>.label>.label-description {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -137,7 +141,7 @@ body {
     line-height: 22px;
 }
 
-.tree>.tree-wrapper>.tree-rows>.tree-row>.content>.label:before {
+.tree .tree-rows>.tree-row>.content>.label:before {
     background-size: 16px;
     background-position: 0;
     background-repeat: no-repeat;
@@ -149,13 +153,13 @@ body {
     flex-shrink: 0;
 }
 
-.tree>.tree-wrapper>.tree-rows>.tree-row>.content>.label:after {
+.tree .tree-rows>.tree-row>.content>.label:after {
     opacity: .75;
     padding: 0 12px 0 5px;
     margin-left: auto;
 }
 
-.tree>.tree-wrapper>.tree-rows>.tree-row>.content>.label>input {
+.tree .tree-rows>.tree-row>.content>.label>input {
     outline: 0;
     border: 0;
     background-color: #3C3C3C;
@@ -267,14 +271,6 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-}
-
-.resource-viewer-editor>.image-view>img {
-    position: absolute;
-    pointer-events: none;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
 }
 
 .statusbar {

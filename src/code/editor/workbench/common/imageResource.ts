@@ -13,16 +13,25 @@ export class ImageResource {
     private _type: ImageType;
 
     constructor() {
+        this._width = 0;
+        this._height = 0;
     }
 
-    public build(data: Uint8Array) {
-        this._data = data;
-        this._type = ImageResource.getTypeFromBinary(this._data);
+    public build(data: Uint8Array): boolean {
+        this._type = ImageResource.getTypeFromBinary(data);
         
+        if (!this._type) {
+            return false;
+        }
+
+        this._data = data;
+
         if (this._type === ImageType.Png) {
             this._width = bytesToNumber(this.data.slice(16), true);
             this._height = bytesToNumber(this.data.slice(20), true);
-        }
+        } 
+
+        return true;
     }
 
     public get type(): ImageType {

@@ -3,18 +3,18 @@ import { HorizontalScrollbar } from './horizontalScrollbar';
 import { addDisposableEventListener } from '../../dom';
 import { StandardMouseWheelEvent } from '../../mouseEvent';
 import { Disposable, IDisposable, dispose } from '../../../common/lifecycle';
-import { ScrollEvent, Scroll, INewScrollPosition } from '../../../common/scroll';
+import { ScrollEvent, Scroll, INewScrollPosition, IScrollPosition, IScrollDimensions, INewScrollDimensions } from '../../../common/scroll';
 import { Event } from '../../../common/event';
 
 const SCROLL_WHEEL_SENSITIVITY = 50;
 
 export interface ScrollableElementOptions {
-    horizontalScrollbarSize: number;
-    verticalScrollbarSize: number;
+    horizontalScrollbarSize?: number;
+    verticalScrollbarSize?: number;
 }
 
 export class ScrollbarElement extends Disposable {
-    private scroll: Scroll;
+    protected scroll: Scroll;
     private domNode: HTMLElement;
     private verticalScrollbar: VerticalScrollbar;
     private horizontalScrollbar: HorizontalScrollbar;
@@ -26,6 +26,7 @@ export class ScrollbarElement extends Disposable {
     constructor(element: HTMLElement, options: ScrollableElementOptions, scroll?: Scroll) {
         super();
 
+        element.style.overflow = 'hidden';
         this.scroll = scroll;
 
         this.mouseWheelToDispose = [];
@@ -35,11 +36,13 @@ export class ScrollbarElement extends Disposable {
             this.onScroll.fire(e);
         }));
 
+        options = resolveOptions(options);
         this.verticalScrollbar = new VerticalScrollbar(scroll, options);
         this.horizontalScrollbar = new HorizontalScrollbar(scroll, options);
 
         this.domNode = document.createElement('div');
         this.domNode.className = 'scrollable-element';
+        this.domNode.style.overflow = 'hideen';
         this.domNode.appendChild(element);
         this.domNode.appendChild(this.verticalScrollbar.getDomNode().domNode);
         this.domNode.appendChild(this.horizontalScrollbar.getDomNode().domNode);
@@ -105,4 +108,39 @@ export class ScrollbarElement extends Disposable {
         this.mouseWheelToDispose.push(addDisposableEventListener(this.domNode, 'mousewheel', onMouseWheel));
         this.mouseWheelToDispose.push(addDisposableEventListener(this.domNode, 'DOMMouseScroll', onMouseWheel));
     }
+
+    public getScrollDimensions(): IScrollDimensions {
+        return this.scroll.getScrollDimensions();
+    }
+
+    public setScrollDimensions(dimensions: INewScrollDimensions): void {
+        this.scroll.setScrollDimensions(dimensions);
+    }
+}
+
+export class ScrollableElement extends ScrollbarElement {
+    constructor(element: HTMLElement, options: ScrollableElementOptions) {
+        options = options || {};
+
+        const scroll = new Scroll();
+        super(element, options, scroll);
+        this.registerDispose(scroll);
+    }
+
+    public setScrollPosition(update: INewScrollPosition): void {
+        this.scroll.setScrollPositionNow(update);
+    }
+
+    public getScrollPosition(): IScrollPosition {
+        return this.scroll.getCurrentScrollPosition();
+    }
+}
+
+function resolveOptions(opts: ScrollableElementOptions): ScrollableElementOptions {
+	let result: ScrollableElementOptions = {
+		horizontalScrollbarSize: (typeof opts.horizontalScrollbarSize !== 'undefined' ? opts.horizontalScrollbarSize : 14),
+		verticalScrollbarSize: (typeof opts.verticalScrollbarSize !== 'undefined' ? opts.verticalScrollbarSize : 14),
+	};
+
+	return result;
 }

@@ -9,7 +9,7 @@ export class VerticalScrollbar extends AbstractScrollbar {
             extraClassName: 'vertical',
             scrollbarState: new ScrollbarState(
                 options.verticalScrollbarSize,
-                options.horizontalScrollbarSize
+                0
             ),
             scroll: scroll,
         });

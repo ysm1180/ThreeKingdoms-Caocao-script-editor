@@ -1,7 +1,7 @@
 import { IEditorInput } from '../../../../platform/editor/editor';
 import { ResourceViewEditor } from '../../browser/parts/editor/resourceViewEditor';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
-import { ResourceFileEditorDataModel } from '../../browser/parts/editor/editorDataModel';
+import { ResourceFileEditorModel } from '../../browser/parts/editor/editorDataModel';
 import { encodeToBase64 } from '../../../../base/common/encode';
 import { EditorInput } from '../editor';
 
@@ -35,11 +35,11 @@ export class ResourceEditorInput extends EditorInput {
         return this.resource === other.getId();
     }
 
-    public resolve(): Promise<ResourceFileEditorDataModel> {
+    public resolve(): Promise<ResourceFileEditorModel> {
         return Promise.resolve().then(() => {
             if (this.data) {
                 const base64 = encodeToBase64(this.data);
-                return this.instantiationService.create(ResourceFileEditorDataModel, base64);
+                return this.instantiationService.create(ResourceFileEditorModel, base64);
             }
 
             return null;

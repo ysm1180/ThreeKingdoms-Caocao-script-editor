@@ -2,6 +2,7 @@ import { DomBuilder } from '../../../base/browser/domBuilder';
 import { Disposable } from '../../../base/common/lifecycle';
 import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
 import { IEditorInput } from '../../../platform/editor/editor';
+import { IDimension } from '../../common/editorCommon';
 
 export abstract class CompositeView extends Disposable {
     private id: string;
@@ -26,6 +27,8 @@ export abstract class CompositeView extends Disposable {
     public getContainer(): DomBuilder {
         return this.parent;
     }
+
+    public abstract layout(): void;
 }
 
 export class CompositeViewDescriptor {

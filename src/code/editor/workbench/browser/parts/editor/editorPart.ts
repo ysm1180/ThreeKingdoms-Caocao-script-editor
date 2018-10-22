@@ -1,12 +1,13 @@
 import { DomBuilder, $ } from '../../../../../base/browser/domBuilder';
 import { Event } from '../../../../../base/common/event';
-import { IEditorInput, IEditorEvent } from '../../../../../platform/editor/editor';
+import { IEditorInput } from '../../../../../platform/editor/editor';
 import { Part } from '../../part';
 import { EditorGroup } from './editors';
 import { BaseEditor } from './baseEditor';
 import { decorator, ServiceIdentifier } from '../../../../../platform/instantiation/instantiation';
 import { IInstantiationService } from '../../../../../platform/instantiation/instantiationService';
 import { EditorRegistry, EditorDescriptor } from '../../editor';
+import { IDimension } from '../../../../common/editorCommon';
 
 export const IEditorService: ServiceIdentifier<EditorPart> = decorator<EditorPart>('editorPart');
 
@@ -16,7 +17,7 @@ export class EditorPart extends Part {
 
     private instantiatedEditors: BaseEditor[];
 
-    public onEditorInputChanged = new Event<IEditorEvent>();
+    public onEditorInputChanged = new Event<IEditorInput>();
 
     constructor(
         @IInstantiationService private instantiationService: IInstantiationService,
@@ -40,14 +41,11 @@ export class EditorPart extends Part {
         super.create(parent);
     }
 
-    public layout(width: number, height: number) {
-        super.layout(width, height);
+    public layout(size: IDimension) {
+        super.layout(size);
 
         if (this.currentEditor) {
-            this.currentEditor.layout({
-                width: width,
-                height: height,
-            });
+            this.currentEditor.layout(size);
         }
     }
 
@@ -77,11 +75,7 @@ export class EditorPart extends Part {
 
     private doSetInput(input: IEditorInput, editor: BaseEditor) {
         return editor.setInput(input).then(() => {
-            const eventData: IEditorEvent = {
-                editor: input,
-            };
-
-            this.onEditorInputChanged.fire(eventData);
+            this.onEditorInputChanged.fire(input);
         });
     }
 

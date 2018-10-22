@@ -96,8 +96,8 @@ export class Me5File extends BinaryFile {
         return this.readBytes(offset + itemNameLength, itemSize);
     }
 
-    public save(data: ISaveMe5Data, filter?: FilterFuntion<Me5Stat>) {
-        const groups = data.root.getChildren(filter);
+    public save(data: ISaveMe5Data, groupFilter?: FilterFuntion<Me5Stat>) {
+        const groups = data.root.getChildren(groupFilter);
         
         const itemLengths = groups.map((group) => group.getChildren().length);
         this.setAllItemCount(itemLengths.reduce((pre, cur) => pre + cur, 0));
@@ -107,7 +107,7 @@ export class Me5File extends BinaryFile {
         
         let baseItemIndex = 0;
         for (const group of groups) {
-            this.setGroupInfo(group, baseItemIndex, filter);
+            this.setGroupInfo(group, baseItemIndex, groupFilter);
 
             const items = group.getChildren();
             for (const item of items) {

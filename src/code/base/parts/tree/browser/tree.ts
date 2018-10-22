@@ -2,6 +2,7 @@ import { RelayEvent } from '../../../common/event';
 import { TreeModel, IFocusEvent } from './treeModel';
 import { TreeView } from './treeView';
 import { ContextMenuEvent } from '../../../../platform/events/contextMenuEvent';
+import { IDimension } from '../../../../editor/common/editorCommon';
 
 export interface IDataSource {
     getId(element: any): string;
@@ -12,6 +13,7 @@ export interface IDataSource {
 export interface IDataRenderer {
     renderTemplate(container: HTMLElement): any;
     render(tree: Tree, element: any, templateData: any): void;
+    getHeight(): number;
 }
 
 export interface IDataController {
@@ -68,6 +70,8 @@ export class Tree {
         this.view.setModel(this.model);
 
         this.onDidChangeFocus.event = this.model.onDidFocus;
+
+        this.layout();
     }
 
     public setRoot(element: any): Promise<any> {
@@ -120,5 +124,9 @@ export class Tree {
 
     public getExpandedElements(): any[] {
         return this.model.getExpandedElements();
+    }
+
+    public layout(): void {
+        this.view.layout();
     }
 }

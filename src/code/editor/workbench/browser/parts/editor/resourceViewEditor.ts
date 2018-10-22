@@ -1,7 +1,7 @@
 import { $, DomBuilder } from '../../../../../base/browser/domBuilder';
 import { IEditorInput } from '../../../../../platform/editor/editor';
 import { BaseEditor } from './baseEditor';
-import { ResourceFileEditorDataModel } from './editorDataModel';
+import { ResourceFileEditorModel } from './editorDataModel';
 import { BinaryResourceViewer } from './resourceViewer';
 import { IDimension } from '../../../../common/editorCommon';
 
@@ -31,8 +31,8 @@ export class ResourceViewEditor extends BaseEditor {
             return Promise.resolve();
         }
 
-        return input.resolve().then((data: ResourceFileEditorDataModel) => {
-            if (!data || !(data instanceof ResourceFileEditorDataModel)) {
+        return input.resolve().then((data: ResourceFileEditorModel) => {
+            if (!data || !(data instanceof ResourceFileEditorModel)) {
                 return;
             }
 
