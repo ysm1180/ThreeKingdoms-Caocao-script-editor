@@ -3,11 +3,12 @@
 ```
 npm install gulpjs/gulp-cli -g
 npm install 
+npm run rebuild
 ```
 
-## Build & Run
+## Build & Run & Watch
 ```
-npm run start
+npm run development
 ```
 
 ## Reference
