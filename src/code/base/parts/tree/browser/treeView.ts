@@ -509,7 +509,6 @@ export class TreeView {
     }
 
     public set scrollHeight(scrollHeight: number) {
-        console.log(scrollHeight);
         this.scrollableElement.setScrollDimensions({
             scrollHeight
         });

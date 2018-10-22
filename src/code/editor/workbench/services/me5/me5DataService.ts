@@ -8,7 +8,7 @@ import { Me5Stat, ItemState } from '../../parts/files/me5Data';
 import { Me5DataController } from '../../parts/me5ExplorerViewer';
 import { IDialogService, DialogService } from '../electron-browser/dialogService';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
-import { ImageType } from '../../common/imageResource';
+import { ImageType, ImageResource } from '../../common/imageResource';
 
 export const IMe5DataService: ServiceIdentifier<Me5DataService> = decorator<Me5DataService>('me5DataService');
 
@@ -24,29 +24,7 @@ export class Me5DataService {
     private _resolveImageData(file: BinaryFile): Promise<Uint8Array> {
         return Promise.resolve().then(() => {
             return file.open().then(() => {
-                if (file.ext === ImageType.Jpg) {
-                    return sharp(file.path).png().toBuffer();
-                } else if (file.ext === ImageType.Bmp) {
-                    const bitmap = bmp.decode(file.data);
-                    for (let i = 0; i < bitmap.data.length / 4; i++) {
-                        let temp = bitmap.data[i * 4];
-                        bitmap.data[i * 4] = bitmap.data[i * 4 + 3];
-                        bitmap.data[i * 4 + 3] = 0xFF;
-
-                        temp = bitmap.data[i * 4 + 1];
-                        bitmap.data[i * 4 + 1] = bitmap.data[i * 4 + 2];
-                        bitmap.data[i * 4 + 2] = temp;
-                    }
-                    return sharp(bitmap.data, {
-                        raw: {
-                            width: bitmap.width,
-                            height: bitmap.height,
-                            channels: 4,
-                        },
-                    }).png().toBuffer();
-                } else if (file.ext === ImageType.Png) {
-                    return file.data;
-                }
+                return ImageResource.convertToJpeg(file.data);
             });
         });
     }

@@ -408,6 +408,10 @@ body {
 }
 
 .slider {
+    background-color: rgba(127, 127, 127, 0.4);
+}
+
+.slider:hover {
     background-color: rgba(127, 127, 127, 0.7);
 }
 
