@@ -1,8 +1,10 @@
 import { FastDomNode, createFastDomNode } from '../../fastDomNode';
 import { ScrollbarState } from './scrollbarState';
 import { Widget } from '../widget';
-import { IMouseEvent } from '../../mouseEvent';
+import { IMouseEvent, StandardMouseEvent } from '../../mouseEvent';
 import { Scroll, INewScrollPosition } from '../../../common/scroll';
+import { addDisposableEventListener, EventType } from '../../dom';
+import { dispose } from '../../../common/lifecycle';
 
 export interface AbstractScrollbarOptions {
     extraClassName: string;
@@ -40,6 +42,13 @@ export abstract class AbstractScrollbar extends Widget {
         this.slider.setHeight(height);
 
         this.domNode.appendChild(this.slider);
+
+        this.onmousedown(this.slider.domNode, (e) => {
+            if (e.leftButton) {
+                e.preventDefault();
+                this._sliderMouseDown(e);
+            }
+        });
     }
 
     public getDomNode(): FastDomNode<HTMLElement> {
@@ -80,6 +89,7 @@ export abstract class AbstractScrollbar extends Widget {
         offsetX = e.event.offsetX;
         offsetY = e.event.offsetY;
 
+        this._setDesiredScrollPositionNow(this.scrollbarState.getDesiredScrollPositionFromOffset(this._mouseDownRelativePosition(offsetX, offsetY)));
     }
 
     private _domNodeMouseDown(e: IMouseEvent): void {
@@ -89,8 +99,36 @@ export abstract class AbstractScrollbar extends Widget {
         this._onMouseDown(e);
     }
 
+    private _sliderMouseDown(e: IMouseEvent): void {
+        const initialScrollState = this.scrollbarState.clone();
+		const initialMousePosition = this._sliderMousePosition(e);
+		this.slider.toggleClassName ('active', true);
+
+        const unbind = [];
+        unbind.push(addDisposableEventListener(window.document, EventType.MOUSE_MOVE, (event: MouseEvent) => {
+            const standardMouseEvent = new StandardMouseEvent(event);
+            const mousePosition = this._sliderMousePosition(standardMouseEvent);
+            const mouseDelta = mousePosition - initialMousePosition;
+            this._setDesiredScrollPositionNow(initialScrollState.getDesiredScrollPositionFromDelta(mouseDelta));
+            console.log(mouseDelta);
+        }));
+        unbind.push(addDisposableEventListener(window.document, EventType.MOUSE_UP, (event) => {
+            this.slider.toggleClassName('active', false);
+            dispose(unbind);
+        }));
+    }
+    
+    private _setDesiredScrollPositionNow(_desiredScrollPosition: number): void {
+		let desiredScrollPosition: INewScrollPosition = {};
+		this.writeScrollPosition(desiredScrollPosition, _desiredScrollPosition);
+
+		this.scroll.setScrollPositionNow(desiredScrollPosition);
+	}
+
     protected abstract _updateSlider(sliderSize: number, sliderPosition: number): void;
     protected abstract _renderDomNode(largeSize: number, smallSize: number): void;
+    protected abstract _sliderMousePosition(e: IMouseEvent): number;
+    protected abstract _mouseDownRelativePosition(offsetX: number, offsetY: number): number;
 
     public abstract writeScrollPosition(target: INewScrollPosition, scrollPosition: number): void;
 }

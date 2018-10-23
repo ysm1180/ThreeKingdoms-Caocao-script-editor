@@ -154,8 +154,8 @@ export class FastDomNode<T extends HTMLElement> {
 		this.domNode.className = this._className;
 	}
 
-	public toggleClassName(className: string): void {
-		dom.toggleClass(this.domNode, className);
+	public toggleClassName(className: string, force?: boolean): void {
+		dom.toggleClass(this.domNode, className, force);
 		this._className = this.domNode.className;
 	}
 

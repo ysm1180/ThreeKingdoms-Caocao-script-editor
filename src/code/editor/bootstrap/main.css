@@ -408,11 +408,15 @@ body {
 }
 
 .slider {
-    background-color: rgba(127, 127, 127, 0.4);
+    background-color: rgba(127, 127, 127, 0.3);
 }
 
 .slider:hover {
-    background-color: rgba(127, 127, 127, 0.7);
+    background-color: rgba(127, 127, 127, 0.5);
+}
+
+.slider.active {
+    background-color: rgba(127, 127, 127, 0.7);    
 }
 
 .scrollable-element {

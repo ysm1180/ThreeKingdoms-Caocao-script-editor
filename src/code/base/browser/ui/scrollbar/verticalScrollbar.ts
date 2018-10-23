@@ -1,7 +1,8 @@
-import { AbstractScrollbar } from './scrollbar';
+import { AbstractScrollbar } from './abstractScrollbar';
 import { ScrollableElementOptions } from './scrollbarElement';
 import { ScrollbarState } from './scrollbarState';
 import { Scroll, ScrollEvent, INewScrollPosition } from '../../../../base/common/scroll';
+import { IMouseEvent } from '../../mouseEvent';
 
 export class VerticalScrollbar extends AbstractScrollbar {
     constructor(scroll: Scroll, options: ScrollableElementOptions) {
@@ -38,4 +39,12 @@ export class VerticalScrollbar extends AbstractScrollbar {
     public writeScrollPosition(target: INewScrollPosition, scrollPosition: number) {
         target.scrollTop = scrollPosition;
     }
+
+    protected _sliderMousePosition(e: IMouseEvent): number {
+		return e.posy;
+    }
+    
+    protected _mouseDownRelativePosition(offsetX: number, offsetY: number): number {
+		return offsetY;
+	}
 }

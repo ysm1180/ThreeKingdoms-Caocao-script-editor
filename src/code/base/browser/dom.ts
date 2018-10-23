@@ -40,9 +40,9 @@ export function removeClass(node: HTMLElement, className: string): void {
     }
 }
 
-export function toggleClass(node: HTMLElement, className: string): void {
+export function toggleClass(node: HTMLElement, className: string, force?: boolean): void {
     if (className && node.classList) {
-        node.classList.toggle(className);
+        node.classList.toggle(className, force);
     }
 }
 
