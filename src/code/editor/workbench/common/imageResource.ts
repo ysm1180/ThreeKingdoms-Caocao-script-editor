@@ -78,8 +78,11 @@ export class ImageResource {
         return Promise.resolve().then(() => {
             const type = ImageResource.getTypeFromBinary(data);
 
+            const jpegOption = {
+                quality: 100,
+            };
             if (type === ImageType.Jpg) {
-                return data;
+                return sharp(data).jpeg(jpegOption).toBuffer();
             } else if (type === ImageType.Bmp) {
                 const bitmap = bmp.decode(data);
                 for (let i = 0; i < bitmap.data.length / 4; i++) {
@@ -98,7 +101,7 @@ export class ImageResource {
                         height: bitmap.height,
                         channels: 4,
                     },
-                }).jpeg().toBuffer();
+                }).jpeg(jpegOption).toBuffer();
             } else if (type === ImageType.Png) {
                 const png = PNG.sync.read(data);
                 return sharp(png.data, {
@@ -107,7 +110,7 @@ export class ImageResource {
                         height: png.height,
                         channels: 4,
                     },
-                }).jpeg().toBuffer();
+                }).jpeg(jpegOption).toBuffer();
             } else {
                 return data;
             }
