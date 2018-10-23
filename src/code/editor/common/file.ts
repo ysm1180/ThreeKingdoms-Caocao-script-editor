@@ -177,7 +177,7 @@ export class Me5File extends BinaryFile {
         const offset = this.itemInfoStartOffset + (baseItemIndex + item.getIndex(filter)) * Me5File.ITEM_HEADER_SIZE;
         this.writeInt(offset, 0); // item offset
         this.writeInt(offset + 4, Convert.getByteLength(item.name));
-        this.writeInt(offset + 8, item.data.length); // item size
+        this.writeInt(offset + 8, 0); // item size
     }
 
     private _setGroup(offset: number, group: Me5Stat): number {
@@ -198,6 +198,7 @@ export class Me5File extends BinaryFile {
         this.write(offset, length, Convert.strToBytes(name));
 
         return ImageResource.convertToJpeg(Buffer.from(item.data.buffer)).then((data) => {
+            this.writeInt(startItemOffset + 8, data.length);
             this.write(offset + length, data.length, data);
 
             return Promise.resolve(length + data.length);

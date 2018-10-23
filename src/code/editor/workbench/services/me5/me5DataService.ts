@@ -7,7 +7,6 @@ import { Me5DataController } from '../../parts/me5ExplorerViewer';
 import { IDialogService, DialogService } from '../electron-browser/dialogService';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { ImageResource, ImageType } from '../../common/imageResource';
-import { combinedDisposable } from '../../../../base/common/lifecycle';
 
 export const IMe5DataService: ServiceIdentifier<Me5DataService> = decorator<Me5DataService>('me5DataService');
 
@@ -30,7 +29,7 @@ export class Me5DataService {
 
     public doChangeItem() {
         const lastTree = this.treeService.LastFocusedTree;
-        const element = <Me5Stat>lastTree.getSelection()[0];
+        const element = <Me5Stat>lastTree.getFocus();
 
         if (!element || element.isGroup) {
             return;
@@ -64,7 +63,7 @@ export class Me5DataService {
                 element.data = data;
             }
 
-            if (!imageData.length) {
+            if (imageData.length > 0) {
                 lastTree.refresh(element).then(() => {
                     return lastTree.expand(parent);
                 }).then(() => {
@@ -77,7 +76,7 @@ export class Me5DataService {
 
     public doInsertItem(isSelectionAfter?: boolean) {
         const lastTree = this.treeService.LastFocusedTree;
-        let element = <Me5Stat>lastTree.getSelection()[0];
+        let element = <Me5Stat>lastTree.getFocus();
         let parent: Me5Stat;
 
         if (!element) {
@@ -122,12 +121,12 @@ export class Me5DataService {
                 selectItems.push(item);
             }
 
-            if (!binaries.length) {
+            if (binaries.length > 0) {
                 lastTree.refresh(parent).then(() => {
                     return lastTree.expand(parent);
                 }).then(() => {
                     lastTree.setSelection(selectItems);
-    
+
                     const controller: Me5DataController = this.instantiationService.create(Me5DataController);
                     controller.onClick(lastTree, selectItems[0]);
                 });
@@ -137,12 +136,12 @@ export class Me5DataService {
 
     public doInsertGroup() {
         const lastTree = this.treeService.LastFocusedTree;
-        const element = <Me5Stat>lastTree.getSelection()[0];
+        const element = <Me5Stat>lastTree.getFocus();
 
         let root;
         let itemAfter;
-        if (element.isRoot) {
-            root = element;
+        if (element === lastTree.getRoot()) {
+            root = <Me5Stat>lastTree.getRoot();
             itemAfter = null;
         } else {
             root = element.parent;
@@ -157,7 +156,7 @@ export class Me5DataService {
 
     public doRename() {
         const lastTree = this.treeService.LastFocusedTree;
-        const element = <Me5Stat>lastTree.getSelection()[0];
+        const element = <Me5Stat>lastTree.getFocus();
 
         if (!element || element.isRoot) {
             return;
@@ -171,29 +170,31 @@ export class Me5DataService {
 
     public doDelete() {
         const lastTree = this.treeService.LastFocusedTree;
-        const elements = <Me5Stat[]>lastTree.getSelection();
+        const elements = [<Me5Stat>lastTree.getFocus()];
 
-        const confirmation: IConfirmation = {
-            title: 'ME5 항목 삭제',
-            message: '해당 항목을 삭제하시겠습니까?',
-            type: 'question',
-        };
+        if (elements.length > 0) {
+            const confirmation: IConfirmation = {
+                title: 'ME5 항목 삭제',
+                message: '해당 항목을 삭제하시겠습니까?',
+                type: 'question',
+            };
 
-        this.dialogService.confirm(confirmation).then(result => {
-            if (result.confirmed) {
-                elements.forEach(element => {
-                    const parent = element.parent;
-                    element.dispose();
-                    lastTree.refresh(parent).then(() => {
+            this.dialogService.confirm(confirmation).then(result => {
+                if (result.confirmed) {
+                    elements.forEach(element => {
+                        const parent = element.parent;
+                        element.dispose();
+                        lastTree.refresh(parent).then(() => {
+                        });
                     });
-                });
-            }
-        });
+                }
+            });
+        }
     }
 
     public doExportImage() {
         const lastTree = this.treeService.LastFocusedTree;
-        const element = <Me5Stat>lastTree.getSelection()[0];
+        const element = <Me5Stat>lastTree.getFocus();
 
         this.dialogService.saveFile({
             title: '다른 이름으로 저장',

@@ -80,6 +80,7 @@ export class ImageResource {
 
             const jpegOption = {
                 quality: 100,
+                chromaSubsampling: '4:4:4',
             };
             if (type === ImageType.Jpg) {
                 return sharp(data).jpeg(jpegOption).toBuffer();
@@ -103,14 +104,7 @@ export class ImageResource {
                     },
                 }).jpeg(jpegOption).toBuffer();
             } else if (type === ImageType.Png) {
-                const png = PNG.sync.read(data);
-                return sharp(png.data, {
-                    raw: {
-                        width: png.width,
-                        height: png.height,
-                        channels: 4,
-                    },
-                }).jpeg(jpegOption).toBuffer();
+                return sharp(data).jpeg(jpegOption).toBuffer();
             } else {
                 return data;
             }

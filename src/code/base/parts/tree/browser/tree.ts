@@ -90,6 +90,10 @@ export class Tree {
         return this.model.getSelection();
     }
 
+    public getFocus(): any {
+        return this.model.getFocus();
+    }
+
     public refresh(element: any, skipRenderChildren: boolean = false): Promise<any> {
         return this.model.refresh(element, skipRenderChildren);
     }
