@@ -116,7 +116,7 @@ export class ImageResource {
             const type = ImageResource.getTypeFromBinary(data);
 
             if (type === ImageType.Png) {
-                return sharp(data).png().toBuffer();
+                return data;
             } else if (type === ImageType.Bmp) {
                 const bitmap = bmp.decode(data);
                 for (let i = 0; i < bitmap.data.length / 4; i++) {

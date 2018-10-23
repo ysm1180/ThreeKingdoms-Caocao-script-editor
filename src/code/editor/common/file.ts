@@ -197,7 +197,7 @@ export class Me5File extends BinaryFile {
         this.writeInt(startItemOffset, offset);
         this.write(offset, length, Convert.strToBytes(name));
 
-        return ImageResource.convertToJpeg(Buffer.from(item.data.buffer)).then((data) => {
+        return ImageResource.convertToPng(Buffer.from(item.data.buffer)).then((data) => {
             this.writeInt(startItemOffset + 8, data.length);
             this.write(offset + length, data.length, data);
 

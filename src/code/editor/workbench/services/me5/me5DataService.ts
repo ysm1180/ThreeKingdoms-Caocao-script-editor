@@ -22,7 +22,7 @@ export class Me5DataService {
     private _resolveImageData(file: BinaryFile): Promise<Uint8Array> {
         return Promise.resolve().then(() => {
             return file.open().then(() => {
-                return ImageResource.convertToJpeg(file.data);
+                return ImageResource.convertToPng(file.data);
             });
         });
     }
