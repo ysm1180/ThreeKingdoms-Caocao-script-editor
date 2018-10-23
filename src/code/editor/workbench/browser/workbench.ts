@@ -47,6 +47,8 @@ export class Workbench implements IPartService {
     ) {
         this.container = container;
         this.serviceStorage = serviceStorage;
+
+        this.sideBarHidden = true;
     }
 
     public startup() {
@@ -99,7 +101,7 @@ export class Workbench implements IPartService {
     private createWorkbench() {
         this.workbenchContainer = $('.workbench-container');
         this.workbench = $().div({
-            class: 'workbench'
+            class: 'workbench nosidebar'
         }).appendTo(this.workbenchContainer);
     }
 
