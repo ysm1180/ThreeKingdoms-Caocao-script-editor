@@ -2,12 +2,18 @@ import { DomBuilder, $ } from '../../../../../base/browser/domBuilder';
 import { Event } from '../../../../../base/common/event';
 import { IEditorInput } from '../../../../../platform/editor/editor';
 import { Part } from '../../part';
-import { EditorGroup } from './editors';
+import { EditorGroup } from './editorGroup';
 import { BaseEditor } from './baseEditor';
 import { decorator, ServiceIdentifier } from '../../../../../platform/instantiation/instantiation';
 import { IInstantiationService } from '../../../../../platform/instantiation/instantiationService';
 import { EditorRegistry, EditorDescriptor } from '../../editor';
 import { IDimension } from '../../../../common/editorCommon';
+import { RawContextKey } from '../../../../../platform/contexts/contextKey';
+import { IContextKeyService, ContextKeyService, ContextKey } from '../../../../../platform/contexts/contextKeyService';
+
+export const editorInputIsActivatedId = 'editorInputIsactivatedId';
+
+export const editorInputActivatedContext = new RawContextKey<boolean>(editorInputIsActivatedId, false);
 
 export const IEditorService: ServiceIdentifier<EditorPart> = decorator<EditorPart>('editorPart');
 
@@ -17,9 +23,12 @@ export class EditorPart extends Part {
 
     private instantiatedEditors: BaseEditor[];
 
+    private editorActivatedContext: ContextKey<boolean>;
+
     public onEditorInputChanged = new Event<IEditorInput>();
 
     constructor(
+        @IContextKeyService contextKeyService: ContextKeyService,
         @IInstantiationService private instantiationService: IInstantiationService,
     ) {
         super();
@@ -27,6 +36,8 @@ export class EditorPart extends Part {
         this.editorGroup = this.instantiationService.create(EditorGroup);
         this.currentEditor = null;
         this.instantiatedEditors = [];
+
+        this.editorActivatedContext = editorInputActivatedContext.bindTo(contextKeyService);
     }
 
     public getEditorGroup() {
@@ -69,6 +80,8 @@ export class EditorPart extends Part {
         if (!editor) {
             return Promise.resolve(null);
         }
+
+        this.editorActivatedContext.set(true);
 
         return this.doSetInput(input, editor);
     }
@@ -141,6 +154,8 @@ export class EditorPart extends Part {
             this.doHideEditor(this.currentEditor);
         }
 
+        this.editorActivatedContext.set(false);
+        
         this.currentEditor = null;
     }
 

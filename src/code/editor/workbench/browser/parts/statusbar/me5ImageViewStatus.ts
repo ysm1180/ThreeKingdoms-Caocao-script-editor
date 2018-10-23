@@ -7,7 +7,7 @@ import { ResourceEditorInput } from '../../../common/editor/resourceEditorInput'
 import { decodeFromBase64 } from '../../../../../base/common/encode';
 import { ImageResource } from '../../../common/imageResource';
 
-export class ImageViewStatus implements IStatusbarItem {
+export class ImageViewStatusItem implements IStatusbarItem {
     private imageSize: HTMLElement;
 
     public static ID = 'STATUS_IMAGE_VIEW';

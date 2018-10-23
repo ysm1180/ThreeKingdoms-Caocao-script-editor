@@ -1,5 +1,3 @@
-import * as sharp from 'sharp';
-import * as bmp from 'bmp-js';
 import { BinaryFile } from '../../../../platform/files/file';
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 import { IConfirmation } from '../../../../platform/dialogs/dialogs';
@@ -8,7 +6,7 @@ import { Me5Stat, ItemState } from '../../parts/files/me5Data';
 import { Me5DataController } from '../../parts/me5ExplorerViewer';
 import { IDialogService, DialogService } from '../electron-browser/dialogService';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
-import { ImageType, ImageResource } from '../../common/imageResource';
+import { ImageResource } from '../../common/imageResource';
 
 export const IMe5DataService: ServiceIdentifier<Me5DataService> = decorator<Me5DataService>('me5DataService');
 
@@ -65,12 +63,14 @@ export class Me5DataService {
                 element.data = data;
             }
 
-            lastTree.refresh(element).then(() => {
-                return lastTree.expand(parent);
-            }).then(() => {
-                const controller: Me5DataController = this.instantiationService.create(Me5DataController);
-                controller.onClick(lastTree, element);
-            });
+            if (!imageData.length) {
+                lastTree.refresh(element).then(() => {
+                    return lastTree.expand(parent);
+                }).then(() => {
+                    const controller: Me5DataController = this.instantiationService.create(Me5DataController);
+                    controller.onClick(lastTree, element);
+                });
+            }
         });
     }
 
@@ -121,14 +121,16 @@ export class Me5DataService {
                 selectItems.push(item);
             }
 
-            lastTree.refresh(parent).then(() => {
-                return lastTree.expand(parent);
-            }).then(() => {
-                lastTree.setSelection(selectItems);
-
-                const controller: Me5DataController = this.instantiationService.create(Me5DataController);
-                controller.onClick(lastTree, selectItems[0]);
-            });
+            if (!binaries.length) {
+                lastTree.refresh(parent).then(() => {
+                    return lastTree.expand(parent);
+                }).then(() => {
+                    lastTree.setSelection(selectItems);
+    
+                    const controller: Me5DataController = this.instantiationService.create(Me5DataController);
+                    controller.onClick(lastTree, selectItems[0]);
+                });
+            }
         });
     }
 

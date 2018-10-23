@@ -4,10 +4,12 @@ import { KeybindingsRegistry } from '../../../../platform/keybindings/keybinding
 import { IMe5FileService } from '../../services/me5/me5FileService';
 import { IFileHandleService } from '../../services/files/files';
 import { IWorkbenchEditorService } from '../../services/editor/editorService';
+import { editorInputActivatedContext } from '../../browser/parts/editor/editorPart';
 
 export const SAVE_FILE_ID = 'SAVE_FILE';
 
 function save(path: string, me5FileService: IFileHandleService) {
+
     me5FileService.save(path);
 }
 
@@ -21,4 +23,5 @@ KeybindingsRegistry.registerKeybindingRule({
         const input = editorService.getActiveEditorInput();
         save(input.getId(), me5FileService);
     },
+    when: editorInputActivatedContext,
 });

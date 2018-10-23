@@ -11,8 +11,7 @@ import { Me5Stat } from '../../parts/files/me5Data';
 import { ICompositeViewService, CompositeViewService } from '../../services/view/compositeViewService';
 import { Me5DataSource, Me5DataRenderer, Me5DataController } from '../../parts/me5ExplorerViewer';
 import { IMe5FileService, Me5FileService } from '../../services/me5/me5FileService';
-import { EditorGroup } from './editor/editors';
-import { IDimension } from '../../../common/editorCommon';
+import { EditorGroup } from './editor/editorGroup';
 
 export const me5ExplorerItemIsMe5GroupId = 'explorerItemIsMe5Group';
 export const me5ExplorerItemIsMe5StatId = 'explorerItemIsMe5Stat';

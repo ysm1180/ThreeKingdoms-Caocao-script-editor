@@ -4,7 +4,7 @@ import { IInstantiationService } from '../../../../platform/instantiation/instan
 import { Part } from '../part';
 import { CompositeView, CompositViewRegistry } from '../compositeView';
 import { IEditorService, EditorPart } from './editor/editorPart';
-import { EditorGroup } from './editor/editors';
+import { EditorGroup } from './editor/editorGroup';
 import { IPartService } from '../../services/part/partService';
 import { IDimension } from '../../../common/editorCommon';
 

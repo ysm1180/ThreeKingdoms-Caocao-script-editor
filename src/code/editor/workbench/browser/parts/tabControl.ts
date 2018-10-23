@@ -1,6 +1,6 @@
 import * as Dom from '../../../../base/browser/dom';
 import { IDisposable, combinedDisposable } from '../../../../base/common/lifecycle';
-import { EditorGroup } from './editor/editors';
+import { EditorGroup } from './editor/editorGroup';
 import { EditorPart, IEditorService } from './editor/editorPart';
 
 export class TabControl {
