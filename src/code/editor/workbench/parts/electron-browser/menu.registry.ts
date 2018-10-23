@@ -12,6 +12,7 @@ const MODIFICATION_ID = 'MODIFICATION';
 const INSERT_ITEM_ID = 'INSERT_ITEM';
 const RENAME_ID = 'RENAME_COMMAND';
 const DELETE_ID = 'DELETE_COMMAND';
+const EXPORT_ITEM = 'EXPORT_ITEM';
 
 KeybindingsRegistry.registerKeybindingRule({
     id: RENAME_ID,
@@ -99,6 +100,20 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
     },
     order: 3,
     when: ContextKeyExpr.and(me5ExplorerRootContext.not(), explorerEditContext.not()),
+});
+
+MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
+    group: 'item',
+    label: '이미지 추출',
+    command: {
+        id: EXPORT_ITEM,
+        handler: (accessor: ServicesAccessor) => {
+            const me5DataService = accessor.get(IMe5DataService);
+            me5DataService.doExportImage();
+        },
+    },
+    order: 1,
+    when: ContextKeyExpr.and(me5ExplorerItemContext, explorerEditContext.not()),
 });
 
 

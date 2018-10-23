@@ -79,7 +79,7 @@ export class Me5FileService implements IFileHandleService {
             }]
         };
 
-        return this.dialogService.save(saving).then((data) => {
+        return this.dialogService.saveFile(saving).then((data) => {
             if (!data.file) {
                 return null;
             }

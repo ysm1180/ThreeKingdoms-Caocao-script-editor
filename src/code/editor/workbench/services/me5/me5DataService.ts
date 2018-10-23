@@ -6,7 +6,8 @@ import { Me5Stat, ItemState } from '../../parts/files/me5Data';
 import { Me5DataController } from '../../parts/me5ExplorerViewer';
 import { IDialogService, DialogService } from '../electron-browser/dialogService';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
-import { ImageResource } from '../../common/imageResource';
+import { ImageResource, ImageType } from '../../common/imageResource';
+import { combinedDisposable } from '../../../../base/common/lifecycle';
 
 export const IMe5DataService: ServiceIdentifier<Me5DataService> = decorator<Me5DataService>('me5DataService');
 
@@ -187,6 +188,35 @@ export class Me5DataService {
                     });
                 });
             }
+        });
+    }
+
+    public doExportImage() {
+        const lastTree = this.treeService.LastFocusedTree;
+        const element = <Me5Stat>lastTree.getSelection()[0];
+
+        this.dialogService.saveFile({
+            title: '다른 이름으로 저장',
+            extensions: [
+                { name: '이미지', extensions: 'png;jpg' },
+            ],
+        }).then((req) => {
+            if (!req || !req.file) {
+                return null;
+            }
+
+            const data = element.data;
+            const file = new BinaryFile(req.file);
+            let convertPromise;
+            if (file.ext === ImageType.Png) {
+                convertPromise = ImageResource.convertToPng(Buffer.from(data.buffer));
+            } else {
+                convertPromise = ImageResource.convertToJpeg(Buffer.from(data.buffer));
+            }
+
+            return convertPromise.then((binary: Uint8Array) => {
+                file.write(0, binary.length, binary);
+            });
         });
     }
 }

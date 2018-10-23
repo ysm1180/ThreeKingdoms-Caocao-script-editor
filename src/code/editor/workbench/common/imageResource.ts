@@ -115,6 +115,38 @@ export class ImageResource {
                 return data;
             }
         });
+    }
 
+    public static convertToPng(data: Buffer): Promise<Uint8Array> {
+        return Promise.resolve().then(() => {
+            const type = ImageResource.getTypeFromBinary(data);
+
+            if (type === ImageType.Png) {
+                return sharp(data).png().toBuffer();
+            } else if (type === ImageType.Bmp) {
+                const bitmap = bmp.decode(data);
+                for (let i = 0; i < bitmap.data.length / 4; i++) {
+                    let temp = bitmap.data[i * 4];
+                    bitmap.data[i * 4] = bitmap.data[i * 4 + 3];
+                    bitmap.data[i * 4 + 3] = 0xFF;
+
+                    temp = bitmap.data[i * 4 + 1];
+                    bitmap.data[i * 4 + 1] = bitmap.data[i * 4 + 2];
+                    bitmap.data[i * 4 + 2] = temp;
+                }
+
+                return sharp(bitmap.data, {
+                    raw: {
+                        width: bitmap.width,
+                        height: bitmap.height,
+                        channels: 4,
+                    },
+                }).png().toBuffer();
+            } else if (type === ImageType.Jpg) {
+                return sharp(data).png().toBuffer();
+            } else {
+                return data;
+            }
+        });
     }
 }

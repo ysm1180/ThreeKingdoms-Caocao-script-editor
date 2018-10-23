@@ -88,7 +88,7 @@ export class DialogService {
         return options;
     }
 
-    public save(saving: ISavingFile): Promise<ISaveFileRequest> {
+    public saveFile(saving: ISavingFile): Promise<ISaveFileRequest> {
         const options = this.getSavingFileOptions(saving);
 
         return this.windowService.showSaveDialog(options);
