@@ -198,10 +198,11 @@ export class TreeView {
         const mouseEvent = new StandardMouseEvent(e);
         const item = this.getItemAround(mouseEvent.target);
 
-        if (!item) {
+        if (!item || item === this.root) {
             return;
         }
 
+        this.model.setFocus(item.model.getElement());
         this.model.setSelection([item.model.getElement()]);
         this.model.toggleExpansion(item.model.getElement());
 
@@ -209,14 +210,13 @@ export class TreeView {
     }
 
     private onContextMenu(e: MouseEvent): void {
-
         const mouseEvent = new StandardMouseEvent(e);
         const item = this.getItemAround(mouseEvent.target);
         if (!item) {
             return;
         }
 
-        this.model.setSelection([item.model.getElement()]);
+        this.model.setFocus(item.model.getElement());
 
         const event = new MouseContextMenuEvent(mouseEvent);
         this.context.controller.onContextMenu(this.context.tree, item.model.getElement(), event);

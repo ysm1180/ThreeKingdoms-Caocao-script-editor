@@ -92,6 +92,10 @@ body {
     background-color: #094771;
 }
 
+.tree .tree-rows>.tree-row.focused:not(.selected) {
+    background-color: #062F4A;
+}
+
 .tree.highlight .tree-rows>.tree-row.selected {
     background-color: #252526;
 }
@@ -261,9 +265,6 @@ body {
 .editor-container>.resource-viewer-editor {
     display: flex;
     height: 100%;
-    text-align: center;
-    align-items: center;
-    overflow: auto;
 }
 
 .resource-viewer-editor>.image-view {
