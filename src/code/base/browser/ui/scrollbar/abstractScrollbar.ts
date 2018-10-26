@@ -110,7 +110,6 @@ export abstract class AbstractScrollbar extends Widget {
             const mousePosition = this._sliderMousePosition(standardMouseEvent);
             const mouseDelta = mousePosition - initialMousePosition;
             this._setDesiredScrollPositionNow(initialScrollState.getDesiredScrollPositionFromDelta(mouseDelta));
-            console.log(mouseDelta);
         }));
         unbind.push(addDisposableEventListener(window.document, EventType.MOUSE_UP, (event) => {
             this.slider.toggleClassName('active', false);

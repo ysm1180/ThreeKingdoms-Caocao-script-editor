@@ -6,7 +6,7 @@ export const IFileService: ServiceIdentifier<IFileService> = decorator<IFileServ
 export interface IFileService {
     resolveContent(resource: string): Promise<IContent>;
 
-    resolveStream(resource: string): Promise<IStreamContent>;
+    resolveStreamContent(resource: string, encoding?: string): Promise<IStreamContent>;
 }
 
 export interface IFileHandleService {

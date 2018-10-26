@@ -83,10 +83,10 @@ export class EditorPart extends Part {
 
         this.editorActivatedContext.set(true);
 
-        return this.doSetInput(input, editor);
+        return this.setInput(input, editor);
     }
 
-    private doSetInput(input: IEditorInput, editor: BaseEditor) {
+    public setInput(input: IEditorInput, editor: BaseEditor): Promise<void> {
         return editor.setInput(input).then(() => {
             this.onEditorInputChanged.fire(input);
         });
@@ -179,5 +179,9 @@ export class EditorPart extends Part {
 
     private doCloseInactiveEditor(input: IEditorInput) {
         this.editorGroup.closeEditor(input, false);
+    }
+
+    public getCurrentEditor() {
+        return this.currentEditor;
     }
 }

@@ -1,6 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as Convert from '../../base/common/convert';
+import { isString } from '../../base/common/types';
+import { isBuffer } from 'util';
 
 export namespace Files {
     export const me5 = 'me5';
@@ -11,9 +13,15 @@ export namespace Files {
 export class BinaryFile {
     public data: Buffer = Buffer.alloc(0);
     private _path: string;
+    private resource: Buffer;
 
-    constructor(path: string) {
-        this._path = path;
+    constructor(resource: string | Buffer) {
+        if (isString(resource)) {
+            this._path = resource;
+        } else if (isBuffer(resource)) {
+            this._path = null;
+            this.data = resource;
+        }
     }
 
     public get path(): string {
@@ -21,26 +29,40 @@ export class BinaryFile {
     }
 
     public get ext(): string {
-        return path.extname(this._path).substr(1).toLowerCase();
+        if (this._path) {
+            return path.extname(this._path).substr(1).toLowerCase();
+        }
+
+        return null;
     }
 
     public get name(): string {
-        return path.basename(this._path).replace(path.extname(this._path), '');
+        if (this._path) {
+            return path.basename(this._path).replace(path.extname(this._path), '');
+        }
+
+        return null;
     }
 
     public open(): Promise<BinaryFile> {
-        return new Promise<BinaryFile>((c, e) => {
-            fs.readFile(this._path, {}, (err, data) => {
-                if (err) {
-                    e(err);
-                    return null;
-                }
-
-                this.data = data;
-
-                c(this);
-            });
-        });
+        if (this._path) {
+            return new Promise<BinaryFile>((c, e) => {
+                fs.readFile(this.resource, {}, (err, data) => {
+                    if (err) {
+                        e(err);
+                        return null;
+                    }
+    
+                    this.data = data;
+    
+                    c(this);
+                });
+            });    
+        } else if (this.data.length > 0) {
+            return Promise.resolve(this);
+        } else {
+            return Promise.reject(new Error('Fail to open file'));
+        }
     }
 
     public readNumber(offset: number): number {
@@ -71,7 +93,7 @@ export class BinaryFile {
             this.data[offset + i] = data[i];
         }
 
-        const fd = fs.openSync(this._path, 'w');
+        const fd = fs.openSync(this.resource, 'w');
         const bytes = new Uint8Array(this.data.slice(0));
         fs.writeSync(fd, bytes, 0, bytes.length, 0);
         fs.fdatasyncSync(fd);

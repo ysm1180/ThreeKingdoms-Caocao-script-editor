@@ -37,7 +37,7 @@ export class TextFileEditor extends BaseEditor {
             const modelPromise = model.load();
 
             return modelPromise.then((model: TextFileEditorModel) => {
-                this.editorControl.setModel(model.textModel);
+                this.editorControl.setModel(model.model);
             });
         });
     }

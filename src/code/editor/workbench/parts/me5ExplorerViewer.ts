@@ -132,7 +132,6 @@ export class Me5DataController implements IDataController {
 
     public onClick(tree: Tree, element: Me5Stat) {
         tree.focus();
-        tree.setFocus(element);
 
         const root = element.root;
         const input: ResourceEditorInput = this.instantiationService.create(ResourceEditorInput, root.getId(), element.name, element.data);

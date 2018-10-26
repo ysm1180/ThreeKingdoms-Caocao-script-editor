@@ -354,6 +354,8 @@ export class TreeView {
 
             this.onRemoveItems(new ArrayIterator<Model.Item>(this.previousRefreshingChildren[item.id]));
             this.onInsertItems(new ArrayIterator<Model.Item>(afterRefreshingChildren), item.getDepth() > 0 ? item.id : null);
+
+            this.onRowsChanged();
         }
     }
 

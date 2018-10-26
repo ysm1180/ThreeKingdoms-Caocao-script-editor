@@ -1,5 +1,5 @@
 import { ISavingFile } from '../../../../platform/dialogs/dialogs';
-import { ISaveMe5Data, Me5File } from '../../../common/file';
+import { ISaveMe5Data, Me5File } from '../../../common/me5File';
 import { Me5Stat } from '../../parts/files/me5Data';
 import { IDialogService, DialogService } from '../electron-browser/dialogService';
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';

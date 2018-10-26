@@ -1,22 +1,21 @@
-import { PieceTreeTextBufferBuilder, PieceTreeTextBufferFactory } from './model/pieceTreeTextBufferBuilder';
+import { PieceTreeTextBufferBuilder } from './model/pieceTreeTextBufferBuilder';
 import * as models from './models';
 import { IStringStream } from '../../platform/files/files';
 
 export function createTextBufferBuilder() {
-    return new PieceTreeTextBufferBuilder();
+	return new PieceTreeTextBufferBuilder();
 }
 
 export function createTextBufferFactory(text: string): models.ITextBufferFactory {
-    const builder = createTextBufferBuilder();
-    builder.acceptChunk(text);
-    return builder.finish();
+	const builder = createTextBufferBuilder();
+	builder.acceptChunk(text);
+	return builder.finish();
 }
 
 export function createTextBuffer(value: string | models.ITextBufferFactory) {
-    const factory = (typeof value === 'string' ? createTextBufferFactory(value) : value);
-    return factory.create();
+	const factory = (typeof value === 'string' ? createTextBufferFactory(value) : value);
+	return factory.create();
 }
-
 
 export function createTextBufferFactoryFromStream(stream: IStringStream, filter?: (chunk: string) => string): Promise<models.ITextBufferFactory> {
 	return new Promise<models.ITextBufferFactory>((c, e) => {
@@ -48,16 +47,16 @@ export function createTextBufferFactoryFromStream(stream: IStringStream, filter?
 }
 
 export class TextModel {
-    private buffer: models.ITextBuffer;
-    
-    constructor(source: string | models.ITextBufferFactory) {
-        this.buffer = createTextBuffer(source);
+	private buffer: models.ITextBuffer;
+
+	constructor(source: string | models.ITextBufferFactory) {
+		this.buffer = createTextBuffer(source);
 	}
-	
+
 	public getLineCount(): number {
 		return this.buffer.getLineCount();
 	}
-	
+
 	public getLinesContent(): string[] {
 		return this.buffer.getLinesContent();
 	}

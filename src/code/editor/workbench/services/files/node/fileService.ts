@@ -10,7 +10,7 @@ export class FileService implements IFileService {
     }
 
     public resolveContent(resource: string): Promise<IContent> {
-        return this.resolveStream(resource).then((stream) => {
+        return this.resolveStreamContent(resource).then((stream) => {
             return new Promise<IContent>((resolve, reject) => {
                 const result: IContent = {
                     value: '',
@@ -25,21 +25,21 @@ export class FileService implements IFileService {
         });
     }
 
-    public resolveStream(resource: string): Promise<IStreamContent> {
+    public resolveStreamContent(resource: string, encoding?: string): Promise<IStreamContent> {
         const result: IStreamContent = {
             value: void 0,
         };
 
-        return this.fillContents(result, resource).then(() => result);
+        return this.fillContents(result, resource, encoding).then(() => result);
     }
 
-    private fillContents(content: IStreamContent, resource: string) {
-        return this.resolveFileData(resource).then((data: IContentData) => {
+    private fillContents(content: IStreamContent, resource: string, encoding?: string) {
+        return this.resolveFileData(resource, encoding).then((data: IContentData) => {
             content.value = data.stream;
         });
     }
 
-    private resolveFileData(resource: string) {
+    private resolveFileData(resource: string, encoding: string = 'binary') {
         const result: IContentData = {
             stream: void 0,
         };
@@ -51,7 +51,7 @@ export class FileService implements IFileService {
                 }
 
                 let decoder: NodeJS.ReadWriteStream;
-                const chunkBuffer = Buffer.alloc(1024 * 64);
+                const chunkBuffer = Buffer.alloc(1024 * 1024);
 
                 const finish = () => {
                     if (decoder) {
@@ -74,7 +74,7 @@ export class FileService implements IFileService {
                         if (decoder) {
                             handleChunk(bytesRead);
                         } else {
-                            result.stream = decoder = iconv.decodeStream('utf8');
+                            result.stream = decoder = iconv.decodeStream(encoding);
                             resolve(result);
                             handleChunk(bytesRead);
                         }

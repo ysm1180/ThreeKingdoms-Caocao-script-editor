@@ -66,7 +66,7 @@ export class WorkbenchEditorService {
         const ext = path.extname(resource);
 
         if (ext === '.me5') {
-            return this.instantiationService.create(ResourceEditorInput, resource, label, null);
+            return this.instantiationService.create(ResourceEditorInput, resource, label);
         }
 
         return this.instantiationService.create(FileEditorInput, resource, label);
@@ -78,5 +78,10 @@ export class WorkbenchEditorService {
         return this.editorPart.openEditors(editors);
     }
 
+    public refresh() {
+        const activeEditorInput = this.editorPart.getActiveEditorInput();
+        const currentEditor = this.editorPart.getCurrentEditor();
 
+        this.editorPart.setInput(activeEditorInput, currentEditor);
+    }
 }

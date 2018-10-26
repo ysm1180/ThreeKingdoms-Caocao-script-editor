@@ -1,9 +1,9 @@
 import { $, DomBuilder } from '../../../../../base/browser/domBuilder';
-import { IEditorInput } from '../../../../../platform/editor/editor';
 import { BaseEditor } from './baseEditor';
-import { ResourceFileEditorModel } from './editorDataModel';
+import { ResourceFileEditorModel } from './resourceFileEditorModel';
 import { BinaryResourceViewer } from './resourceViewer';
 import { IDimension } from '../../../../common/editorCommon';
+import { ResourceEditorInput } from '../../../common/editor/resourceEditorInput';
 
 export class ResourceViewEditor extends BaseEditor {
     static ID = 'editor.resourceViewerEditor';
@@ -25,21 +25,21 @@ export class ResourceViewEditor extends BaseEditor {
         this.viewer.build(parent);
     }
 
-    public setInput(input: IEditorInput): Promise<void> {
+    public setInput(input: ResourceEditorInput): Promise<void> {
         if (!input) {
             this.viewer.hide();
             return Promise.resolve();
         }
 
-        return input.resolve().then((data: ResourceFileEditorModel) => {
-            if (!data || !(data instanceof ResourceFileEditorModel)) {
+        return input.resolve().then((model: ResourceFileEditorModel) => {
+            if (!(model instanceof ResourceFileEditorModel)) {
                 return;
             }
 
             this.viewer.show();
 
             BinaryResourceViewer.show(
-                { resource: data.getResource() },
+                { resource: model.getResource() },
                 this.viewer
             );
         });

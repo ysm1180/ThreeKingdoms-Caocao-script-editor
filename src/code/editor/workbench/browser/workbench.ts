@@ -24,6 +24,7 @@ import { TextFileService } from '../services/textfile/textFileService';
 import { IFileService } from '../services/files/files';
 import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
 import { IWindowService } from '../../../platform/windows/windows';
+import { ResourceFileService, IResourceFileSerivce } from '../services/resourceFile/resourceFileService';
 
 export class Workbench implements IPartService {
     private container: HTMLElement;
@@ -82,6 +83,7 @@ export class Workbench implements IPartService {
 
         this.serviceStorage.set(IFileService, new ClassDescriptor(FileService));
         this.serviceStorage.set(ITextFileService, new ClassDescriptor(TextFileService));
+        this.serviceStorage.set(IResourceFileSerivce, new ClassDescriptor(ResourceFileService));
 
         this.editor = this.instantiationService.create(EditorPart);
         this.serviceStorage.set(IEditorService, this.editor);

@@ -12,7 +12,7 @@ export class TextFileEditorModel {
 
     }
 
-    public get textModel(): TextModel {
+    public get model(): TextModel {
         return this._textModel;
     }
 
@@ -26,12 +26,8 @@ export class TextFileEditorModel {
 
     private loadFromFile(): Promise<TextFileEditorModel> {
         return this.textFileService.resolveTextContent(this.resource)
-            .then((content) => this.loadWithContent(content),
+            .then((content) => this.doLoadWithContent(content),
                 () => this.onHandleFailed());
-    }
-
-    private loadWithContent(content: IRawTextContent) {
-        return this.doLoadWithContent(content);
     }
 
     private doLoadWithContent(content: IRawTextContent) {

@@ -1,16 +1,14 @@
 import { IEditorInput } from '../../../../platform/editor/editor';
 import { ResourceViewEditor } from '../../browser/parts/editor/resourceViewEditor';
-import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
-import { ResourceFileEditorModel } from '../../browser/parts/editor/editorDataModel';
-import { encodeToBase64 } from '../../../../base/common/encode';
+import { ResourceFileEditorModel } from '../../browser/parts/editor/resourceFileEditorModel';
 import { EditorInput } from '../editor';
+import { IResourceFileSerivce, ResourceFileService } from '../../services/resourceFile/resourceFileService';
 
 export class ResourceEditorInput extends EditorInput {
     constructor(
         private resource: string,
         private name: string,
-        private data: Uint8Array,
-        @IInstantiationService private instantiationService: IInstantiationService,
+        @IResourceFileSerivce private resourceFileService: ResourceFileService,
     ) {
         super();
     }
@@ -37,12 +35,7 @@ export class ResourceEditorInput extends EditorInput {
 
     public resolve(): Promise<ResourceFileEditorModel> {
         return Promise.resolve().then(() => {
-            if (this.data) {
-                const base64 = encodeToBase64(this.data);
-                return this.instantiationService.create(ResourceFileEditorModel, base64);
-            }
-
-            return null;
+            return this.resourceFileService.models.loadOrCreate(this.resource);
         });
     }
 }

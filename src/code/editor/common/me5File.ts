@@ -2,23 +2,28 @@ import * as Convert from '../../base/common/convert';
 import { BinaryFile } from '../../platform/files/file';
 import { Me5Stat, FilterFuntion } from '../workbench/parts/files/me5Data';
 import { ImageResource } from '../workbench/common/imageResource';
+import { isBuffer } from 'util';
 
 export interface ISaveMe5Data {
     root: Me5Stat;
 }
 
 export class Me5File extends BinaryFile {
-    private static readonly ALL_ITEM_COUNT_OFFSET = 1;
-    private static readonly GROUP_COUNT_OFFSET = 5;
+    public static readonly ALL_ITEM_COUNT_OFFSET = 1;
+    public static readonly GROUP_COUNT_OFFSET = 5;
 
-    private static readonly ITEM_HEADER_SIZE = 12;
-    private static readonly GROUP_HEADER_SIZE = 12;
+    public static readonly ITEM_HEADER_SIZE = 12;
+    public static readonly GROUP_HEADER_SIZE = 12;
 
-    private static readonly GROUP_INFO_START_OFFSET = 9;
+    public static readonly GROUP_INFO_START_OFFSET = 9;
     private itemInfoStartOffset: number;
 
-    constructor(path: string) {
-        super(path);
+    constructor(resource: string | Buffer) {
+        super(resource);
+
+        if (isBuffer(resource)) {
+            this.itemInfoStartOffset = this.getGroupCount() * Me5File.GROUP_HEADER_SIZE + Me5File.GROUP_INFO_START_OFFSET;
+        }
     }
 
     public open(): Promise<BinaryFile> {
@@ -58,6 +63,13 @@ export class Me5File extends BinaryFile {
         return this.readNumber(this.itemInfoStartOffset + itemIndex * Me5File.ITEM_HEADER_SIZE);
     }
 
+    public getGroupOffset(groupIndex: number): number {
+        let offset = this.getItemOffset(groupIndex, 0);
+        const length = this.getGroupNameLength(groupIndex);
+        offset -= length;
+        return offset;
+    }
+
     public getItemOffset(groupIndex: number, subItemIndex: number): number {
         const firstItemIndex = this._getFirstItemIndexInGroup(groupIndex);
         return this._getOffsetByItemIndex(firstItemIndex + subItemIndex);
@@ -73,10 +85,7 @@ export class Me5File extends BinaryFile {
     }
 
     public getGroupName(groupIndex: number): string {
-        let offset = this.getItemOffset(groupIndex, 0);
-        const length = this.getGroupNameLength(groupIndex);
-        offset -= length;
-        return this.readString(offset, length);
+        return this.readString(this.getGroupOffset(groupIndex), length);
     }
 
     public getItemName(groupIndex: number, subItemIndex: number): string {
