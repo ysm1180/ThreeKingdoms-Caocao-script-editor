@@ -4,7 +4,7 @@ import './parts/electron-browser/sidebar.registry';
 import './parts/electron-browser/statusbar.registry';
 import './parts/electron-browser/file.registry';
 
-import { WorkbenchShell } from './browser/shell';
+import { WorkbenchShell } from './b/shell';
 
 
 export function startup() {

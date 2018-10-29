@@ -1,8 +1,8 @@
 import * as Convert from '../../base/common/convert';
 import { BinaryFile } from '../../platform/files/file';
+import { isBuffer } from 'util';
 import { Me5Stat, FilterFuntion } from '../workbench/parts/files/me5Data';
 import { ImageResource } from '../workbench/common/imageResource';
-import { isBuffer } from 'util';
 
 export interface ISaveMe5Data {
     root: Me5Stat;

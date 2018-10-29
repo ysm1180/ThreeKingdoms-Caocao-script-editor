@@ -1,5 +1,6 @@
 import { LinkedList } from '../../../../base/common/linkedList';
 import { IDisposable, toDisposable, once, Disposable } from '../../../../base/common/lifecycle';
+import { IResourceFileSerivce, ResourceFileService } from '../../services/resourceFile/resourceFileService';
 
 export enum ItemState {
     Normal,
@@ -17,22 +18,29 @@ export class Me5Stat extends Disposable {
     private _isGroup: boolean;
     private _name: string;
     private _children = new LinkedList<Me5Stat>();
-    private _data: Uint8Array;
+    private _dataIndex: number;
     private readonly id = String(Me5Stat.INDEX++);
 
-    constructor(resource: string, isGroup: boolean, public root: Me5Stat, name?: string, data?: Uint8Array) {
+    constructor(
+        resource: string,
+        isGroup: boolean,
+        public root: Me5Stat,
+        name: string,
+        index: number,
+        @IResourceFileSerivce private resourceFileService: ResourceFileService,
+    ) {
         super();
 
         this._parent = null;
 
         if (!this.root) {
             this.root = this;
-        } 
+        }
 
         this._resource = resource;
         this.isGroup = isGroup;
         this._name = name;
-        this._data = data;
+        this._dataIndex = index;
     }
 
     public getId(): string {
@@ -58,7 +66,7 @@ export class Me5Stat extends Disposable {
     public get state(): ItemState {
         return this._state;
     }
- 
+
     public set state(state: ItemState) {
         this._state = state;
     }
@@ -87,11 +95,13 @@ export class Me5Stat extends Disposable {
     }
 
     public get data(): Uint8Array {
-        return this._data;
+        const model = this.resourceFileService.models.get(this.resource);
+        const data = model.resourceModel.getData(this._dataIndex);
+        return data;
     }
 
-    public set data(value: Uint8Array) {
-        this._data = value;
+    public set index(value: number) {
+        this._dataIndex = value;
     }
 
     public getChildren(filter?: FilterFuntion<Me5Stat>): Me5Stat[] {

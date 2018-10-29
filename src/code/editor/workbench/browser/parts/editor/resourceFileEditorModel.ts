@@ -13,7 +13,7 @@ export class ResourceFileEditorModel {
         this._resourceModel = null;
     }
 
-    public get model(): ResourceModel {
+    public get resourceModel(): ResourceModel {
         return this._resourceModel;
     }
 
@@ -50,12 +50,12 @@ export class ResourceFileEditorModel {
     }
 
     public getCurrentData() {
-        return this._resourceModel ? this._resourceModel.getCurrentBuffer() : null;
+        return this._resourceModel ? this._resourceModel.getCurrentData() : null;
     }
 
-    public setCurrentDataIndex(index: number) {
+    public setDataIndex(index: number) {
         if (this._resourceModel) {
-            this._resourceModel.setCurrentBufferIndex(index);
+            this._resourceModel.setDataIndex(index);
         }
     }
 

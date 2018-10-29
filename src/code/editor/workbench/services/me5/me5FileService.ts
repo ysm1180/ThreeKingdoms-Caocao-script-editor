@@ -5,6 +5,7 @@ import { IDialogService, DialogService } from '../electron-browser/dialogService
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
 import { IFileHandleService } from '../files/files';
+import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 
 export const IMe5FileService: ServiceIdentifier<Me5FileService> = decorator<Me5FileService>('me5FileService');
 
@@ -12,35 +13,34 @@ export class Me5FileService implements IFileHandleService {
     constructor(
         @IDialogService private dialogService: DialogService,
         @ITreeService private treeService: TreeService,
+        @IInstantiationService private instantiationService: IInstantiationService,
     ) {
 
     }
 
-    public resolve(resource: string): Promise<Me5Stat> {
+    public resolve(filePath: string, resource?: Buffer): Promise<Me5Stat> {
         let done: Promise<Me5Stat>;
-        const me5File = new Me5File(resource);
+        const me5File = new Me5File(resource ? resource : filePath);
         done = me5File.open().then((file) => {
             if (!file) {
                 throw new Error();
             }
 
-            const stat = new Me5Stat(resource, true, null);
+            let baseItemIndex = 0;
+            const stat = this.instantiationService.create(Me5Stat, filePath, true, null, null, null);
             for (let i = 0, groupCount = me5File.getGroupCount(); i < groupCount; i++) {
-                const group = new Me5Stat(resource, true, stat, me5File.getGroupName(i));
+                const group = this.instantiationService.create(Me5Stat, filePath, true, stat, me5File.getGroupName(i), null);
                 group.build(stat);
                 for (let j = 0, itemCount = me5File.getGroupItemCount(i); j < itemCount; ++j) {
-                    const item = new Me5Stat(resource, false, stat, me5File.getItemName(i, j), me5File.getItemData(i, j));
+                    const item = this.instantiationService.create(Me5Stat, filePath, false, stat, me5File.getItemName(i, j), baseItemIndex);
                     item.build(group);
+                    baseItemIndex++;
                 }
             }
 
             return stat;
         }).catch(() => {
-            const stat = new Me5Stat(resource, true, null);
-            const group = new Me5Stat(resource, true, stat, 'NEW GROUP');
-            group.build(stat);
-
-            return stat;
+            return null;
         });
 
         return done;

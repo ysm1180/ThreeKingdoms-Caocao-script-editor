@@ -32,7 +32,7 @@ export class ImageViewStatusItem implements IStatusbarItem {
         this.imageSize = document.createElement('span');
         element.appendChild(this.imageSize);
 
-        dispose.push(this.editorService.onEditorInputChanged.add((e) => this._onInputChanged(e)));
+        dispose.push(this.editorService.onDidEditorSetInput.add((e) => this._onInputChanged(e)));
 
         return combinedDisposable(dispose);
     }

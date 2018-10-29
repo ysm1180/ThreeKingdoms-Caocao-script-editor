@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { IResourceInput } from '../../platform/editor/editor';
-import { IOpenFileRequest, ISaveFileRequest } from '../../platform/windows/windows';
+import { IOpenFileRequest } from '../../platform/windows/windows';
 import { IInstantiationService } from '../../platform/instantiation/instantiationService';
 import { IWorkbenchEditorService, WorkbenchEditorService } from './services/editor/editorService';
 import { ICommandService, CommandService } from '../../platform/commands/commandService';

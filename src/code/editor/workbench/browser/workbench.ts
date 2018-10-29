@@ -183,7 +183,7 @@ export class Workbench implements IPartService {
     }
 
     public registerListeners() {
-        this.editor.onEditorInputChanged.add(() => {
+        this.editor.onDidEditorSetInput.add(() => {
             this.statusbar.update();
         });
     }

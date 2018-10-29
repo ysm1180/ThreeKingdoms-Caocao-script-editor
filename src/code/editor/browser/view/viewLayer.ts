@@ -1,5 +1,5 @@
 import { ViewportData } from '../../common/view/viewportData';
-import { ViewLine, RenderedViewLine } from './viewLine';
+import { ViewLine } from './viewLine';
 import { FastDomNode, createFastDomNode } from '../../../base/browser/fastDomNode';
 
 export class RenderedLinesCollection {

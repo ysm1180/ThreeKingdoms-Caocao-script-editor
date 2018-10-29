@@ -25,7 +25,6 @@ export class ResourceFileEditorModelManager {
             modelLoadPromise = model.load();
         }
 
-
         return modelLoadPromise.then((model) => {
             this.mapResourceModel.set(resource, model);
 

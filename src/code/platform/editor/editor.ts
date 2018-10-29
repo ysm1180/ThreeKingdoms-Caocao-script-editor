@@ -1,13 +1,3 @@
-import { BaseEditor } from '../../editor/workbench/browser/parts/editor/baseEditor';
-
-export interface IEditorDescriptor {
-    getCompositeId(): string;
-
-    getEditorId(): string;
-
-    create(): BaseEditor;
-}
-
 export interface IEditorInput {
     getId(): any;
 

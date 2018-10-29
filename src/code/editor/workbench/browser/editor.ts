@@ -4,6 +4,13 @@ import { IEditorInput } from '../../../platform/editor/editor';
 import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
 import { isArray } from '../../../base/common/types';
 
+export interface IEditorDescriptor {
+    getCompositeId(): string;
+
+    getEditorId(): string;
+
+    create(): BaseEditor;
+}
 export class EditorInputDescriptor {
 	private ctor: new (...args: any[]) => IEditorInput;
 

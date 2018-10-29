@@ -1,11 +1,11 @@
 import { DomBuilder, $ } from '../../../../../base/browser/domBuilder';
 import { ImageResource } from '../../../common/imageResource';
-import { decodeFromBase64 } from '../../../../../base/common/encode';
+import { encodeToBase64 } from '../../../../../base/common/encode';
 import { AudioResource } from '../../../common/audioResource';
 import { AudioPlayer } from '../../../../../base/browser/ui/audio';
 
 export interface IBinaryResourceDescritor {
-    resource: string;
+    resource: Buffer;
 }
 
 export class BinaryResourceViewer {
@@ -23,11 +23,11 @@ export class BinaryResourceViewer {
     }
 
     private static isImageResource(descriptor: IBinaryResourceDescritor): boolean {
-        return ImageResource.getTypeFromBinary(decodeFromBase64(descriptor.resource)) !== null;
+        return ImageResource.getTypeFromBinary(descriptor.resource) !== null;
     }
 
     private static isAudioResource(descriptor: IBinaryResourceDescritor): boolean {
-        return AudioResource.getTypeFromBinary(decodeFromBase64(descriptor.resource)) !== null;
+        return AudioResource.getTypeFromBinary(descriptor.resource) !== null;
     }
 }
 
@@ -38,11 +38,11 @@ export class BinaryImageView {
     ) {
         container.empty();
 
-        const type = ImageResource.getTypeFromBinary(decodeFromBase64(descriptor.resource));
+        const type = ImageResource.getTypeFromBinary(descriptor.resource);
         $($(container).div({
             class: 'image-view'
         })).img({
-            src: `data:image/${type};base64,${descriptor.resource}`
+            src: `data:image/${type};base64,${encodeToBase64(descriptor.resource)}`
         });
     }
 }
@@ -54,7 +54,7 @@ export class BinaryAudioPlayer {
     ) {
         container.empty();
 
-        const type = AudioResource.getTypeFromBinary(decodeFromBase64(descriptor.resource));
+        const type = AudioResource.getTypeFromBinary(descriptor.resource);
         const audioContainer = $(container).div({
             class: 'audio-player'
         });

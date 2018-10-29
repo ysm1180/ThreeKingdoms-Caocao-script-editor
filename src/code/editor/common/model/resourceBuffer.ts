@@ -1,10 +1,8 @@
 export class BinaryBufferBase {
     public readonly buffer: Buffer;
-    public readonly bufferIndex: number;
 
-    constructor(buffer: Buffer, bufferIndex: number) {
+    constructor(buffer: Buffer) {
         this.buffer = buffer;
-        this.bufferIndex = bufferIndex;
     }
 }
 
@@ -17,14 +15,17 @@ export abstract class ResourceBuffer {
         this.create(buffer);
     }
 
-    public getBuffer(bufferIndex: number): Buffer {
-        for (const binaryBuffer of this.binaryBuffers) {
-            if (binaryBuffer.bufferIndex === bufferIndex) {
-                return binaryBuffer.buffer;
-            }
+    public get(bufferIndex: number): Buffer {
+        if (this.binaryBuffers.length <= bufferIndex) {
+            return null;
         }
 
-        return null;
+        return this.binaryBuffers[bufferIndex].buffer;
+    }
+
+    public add(buffer: Buffer): number {
+        this.binaryBuffers.push(new BinaryBufferBase(buffer));
+        return this.binaryBuffers.length;
     }
 
     protected abstract create(buffer: Buffer): void;

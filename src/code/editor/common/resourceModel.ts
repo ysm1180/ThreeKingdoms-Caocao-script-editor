@@ -1,7 +1,7 @@
 import { ResourceBufferBuilder, ResourceBufferFactory } from './model/resourceBufferBuilder';
 import { IStringStream } from '../../platform/files/files';
-import { ResourceBuffer } from './model/resourceBuffer';
 import { Me5ResourceBuffer } from '../workbench/common/model/me5ResourceBuffer';
+import { ResourceBuffer } from './model/resourceBuffer';
 
 export function createResourceBufferBuilder() {
 	return new ResourceBufferBuilder();
@@ -45,19 +45,30 @@ export class ResourceModel {
 
     constructor(buffer: ResourceBuffer) {
 		this.buffer = buffer;
-		this.currentBufferIndex = 0;
+		this.currentBufferIndex = -1;
 	}
 	
-	public getBuffer(bufferIndex: number) {
-		return this.buffer.getBuffer(bufferIndex);
+	public getData(bufferIndex: number) {
+		return this.buffer.get(bufferIndex);
 	}
 
-	public setCurrentBufferIndex(index: number) { 
+	public setDataIndex(index: number) { 
 		this.currentBufferIndex = index;
 	}
 
-	public getCurrentBuffer() {
-		return this.buffer.getBuffer(this.currentBufferIndex);
+	public getCurrentData() {
+		if (this.currentBufferIndex === -1) {
+			return null;
+		}
+
+		return this.buffer.get(this.currentBufferIndex);
 	}
 
+	public getBuffer(): ResourceBuffer {
+		return this.buffer;
+	}
+
+	public add(buffer: Buffer): number {
+		return this.buffer.add(buffer);
+	}
 }
