@@ -11,7 +11,6 @@ export const enum ImageType {
 }
 
 export class ImageResource {
-    private _data: Uint8Array;
     private _width: number;
     private _height: number;
     private _type: ImageType;
@@ -28,13 +27,11 @@ export class ImageResource {
             return false;
         }
 
-        this._data = data;
-
         if (this._type === ImageType.Png) {
-            this._width = bytesToNumber(this.data.slice(16), true);
-            this._height = bytesToNumber(this.data.slice(20), true);
+            this._width = bytesToNumber(data.slice(16), true);
+            this._height = bytesToNumber(data.slice(20), true);
         } else if (this._type === ImageType.Jpg) {
-            const jpg = jpeg.decode(this.data);
+            const jpg = jpeg.decode(data);
             this._width = jpg.width;
             this._height = jpg.height;
         }
@@ -44,10 +41,6 @@ export class ImageResource {
 
     public get type(): ImageType {
         return this._type;
-    }
-
-    public get data(): Uint8Array {
-        return this._data;
     }
 
     public get width(): number {

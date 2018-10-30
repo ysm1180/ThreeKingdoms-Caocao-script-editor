@@ -6,6 +6,8 @@ import { IEditorInput } from '../../../../../platform/editor/editor';
 import { ResourceEditorInput } from '../../../common/editor/resourceEditorInput';
 import { decodeFromBase64 } from '../../../../../base/common/encode';
 import { ImageResource } from '../../../common/imageResource';
+import { IResourceFileSerivce } from '../../../services/resourceFile/resourcefiles';
+import { ResourceFileService } from '../../../services/resourceFile/resourceFileService';
 
 export class ImageViewStatusItem implements IStatusbarItem {
     private imageSize: HTMLElement;
@@ -15,6 +17,7 @@ export class ImageViewStatusItem implements IStatusbarItem {
     constructor(
         private entry: IStatusbarEntry,
         @IEditorService private editorService: EditorPart,
+        @IResourceFileSerivce private resourceFileService: ResourceFileService,
     ) {
     }
 
@@ -43,17 +46,11 @@ export class ImageViewStatusItem implements IStatusbarItem {
             return;
         }
 
-        // const resourceInput = <ResourceEditorInput>input;
-        // resourceInput.resolve().then(dataModel => {
-        //     if (dataModel) {
-        //         const dataArray = decodeFromBase64(dataModel.getResource());
-        //         const image = new ImageResource();
-        //         if (image.build(dataArray)) {
-        //             this.imageSize.textContent = `이미지 사이즈 : ${image.width} X ${image.height}`;
-        //         } else {
-        //             this.imageSize.textContent = '';
-        //         }
-        //     }
-        // });
+        const dataModel = this.resourceFileService.models.get(input.getId());
+        const image = new ImageResource();
+        const dataArray = new Uint8Array(dataModel.getCurrentData());
+        if (image.build(dataArray)) {
+            this.imageSize.textContent = `이미지 사이즈 : ${image.width} X ${image.height}`;
+        }
     }
 }
