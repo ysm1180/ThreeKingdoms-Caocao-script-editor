@@ -1,4 +1,4 @@
-export function encodeToBase64(data: Uint8Array) {
+export function encodeToBase64(data: Uint8Array): string {
     if (data && data.length > 0) {
         let index = data.length;
         const base64 = [];
@@ -8,7 +8,7 @@ export function encodeToBase64(data: Uint8Array) {
         return btoa(base64.join(''));
     }
 
-    return null;
+    return '';
 }
 
 export function decodeFromBase64(base64: string): Uint8Array {

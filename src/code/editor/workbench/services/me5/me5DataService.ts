@@ -7,6 +7,8 @@ import { Me5DataController } from '../../parts/me5ExplorerViewer';
 import { IDialogService, DialogService } from '../electron-browser/dialogService';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { ImageResource, ImageType } from '../../common/imageResource';
+import { ResourceFileService } from '../resourceFile/resourceFileService';
+import { IResourceFileSerivce } from '../resourceFile/resourcefiles';
 
 export const IMe5DataService: ServiceIdentifier<Me5DataService> = decorator<Me5DataService>('me5DataService');
 
@@ -14,6 +16,7 @@ export class Me5DataService {
     constructor(
         @ITreeService private treeService: TreeService,
         @IDialogService private dialogService: DialogService,
+        @IResourceFileSerivce private resourceFileSerivce: ResourceFileService,
         @IInstantiationService private instantiationService: IInstantiationService,
     ) {
 
@@ -60,7 +63,6 @@ export class Me5DataService {
         }).then((imageData) => {
             for (const imageDataArray of imageData) {
                 const data = new Uint8Array(imageDataArray.slice(0));
-                element.data = data;
             }
 
             if (imageData.length > 0) {
@@ -115,8 +117,10 @@ export class Me5DataService {
         }).then((binaries: Uint8Array[]) => {
             const selectItems = [];
             for (const [index, binary] of binaries.entries()) {
-                const data = new Uint8Array(binary.slice(0));
-                const item = new Me5Stat(element.root.getId(), false, element.root, names[index], data);
+                const resource = element.root.getId();
+                const model = this.resourceFileSerivce.models.get(resource);
+                const bufferIndex = model.resourceModel.add(Buffer.from(binary.buffer));
+                const item = this.instantiationService.create(Me5Stat, element.root.getId(), false, element.root, names[index], bufferIndex);
                 item.build(parent, isSelectionAfter ? element : null);
                 selectItems.push(item);
             }
@@ -148,7 +152,7 @@ export class Me5DataService {
             itemAfter = element;
         }
 
-        const newGroup = new Me5Stat(root.getId(), true, root, 'NEW GROUP');
+        const newGroup = this.instantiationService.create(Me5Stat, root.getId(), true, root, 'NEW GROUP', null);
         newGroup.build(root, itemAfter);
 
         lastTree.refresh(root);

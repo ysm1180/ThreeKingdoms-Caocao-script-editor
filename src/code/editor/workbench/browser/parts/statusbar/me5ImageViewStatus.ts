@@ -32,7 +32,7 @@ export class ImageViewStatusItem implements IStatusbarItem {
         this.imageSize = document.createElement('span');
         element.appendChild(this.imageSize);
 
-        dispose.push(this.editorService.onEditorInputChanged.add((e) => this._onInputChanged(e)));
+        dispose.push(this.editorService.onDidEditorSetInput.add((e) => this._onInputChanged(e)));
 
         return combinedDisposable(dispose);
     }
@@ -43,17 +43,17 @@ export class ImageViewStatusItem implements IStatusbarItem {
             return;
         }
 
-        const resourceInput = <ResourceEditorInput>input;
-        resourceInput.resolve().then(dataModel => {
-            if (dataModel) {
-                const dataArray = decodeFromBase64(dataModel.getResource());
-                const image = new ImageResource();
-                if (image.build(dataArray)) {
-                    this.imageSize.textContent = `이미지 사이즈 : ${image.width} X ${image.height}`;
-                } else {
-                    this.imageSize.textContent = '';
-                }
-            }
-        });
+        // const resourceInput = <ResourceEditorInput>input;
+        // resourceInput.resolve().then(dataModel => {
+        //     if (dataModel) {
+        //         const dataArray = decodeFromBase64(dataModel.getResource());
+        //         const image = new ImageResource();
+        //         if (image.build(dataArray)) {
+        //             this.imageSize.textContent = `이미지 사이즈 : ${image.width} X ${image.height}`;
+        //         } else {
+        //             this.imageSize.textContent = '';
+        //         }
+        //     }
+        // });
     }
 }

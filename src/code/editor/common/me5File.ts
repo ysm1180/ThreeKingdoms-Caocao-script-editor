@@ -85,6 +85,7 @@ export class Me5File extends BinaryFile {
     }
 
     public getGroupName(groupIndex: number): string {
+        const length = this.getGroupNameLength(groupIndex);
         return this.readString(this.getGroupOffset(groupIndex), length);
     }
 

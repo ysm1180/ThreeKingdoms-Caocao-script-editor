@@ -5,7 +5,7 @@ import { IDimension } from '../../../../common/editorCommon';
 
 export abstract class BaseEditor extends Disposable {
     private parent: DomBuilder;
-
+    private input: IEditorInput;
     private id: string;
 
     constructor(id: string) {
@@ -13,6 +13,11 @@ export abstract class BaseEditor extends Disposable {
 
         this.parent = null;
         this.id = id;
+        this.input = null;
+    }
+
+    public getInput(): IEditorInput {
+        return this.input;
     }
 
     public getId(): string {
@@ -27,11 +32,17 @@ export abstract class BaseEditor extends Disposable {
         return this.parent;
     }
 
-    public abstract setInput(input: IEditorInput): Promise<any>;
+    public setInput(input: IEditorInput): Promise<void> {
+        this.input = input;
+
+        return Promise.resolve();
+    }
+
     public abstract layout(dimension?: IDimension): void;
 
     public dispose() {
         this.parent = null;
+        this.input = null;
 
         super.dispose();
     }

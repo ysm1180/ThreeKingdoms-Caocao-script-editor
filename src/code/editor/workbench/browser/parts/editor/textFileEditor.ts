@@ -32,12 +32,14 @@ export class TextFileEditor extends BaseEditor {
         if (!input) {
             return Promise.resolve();
         }
-
-        return input.resolve().then((model: TextFileEditorModel) => {
-            const modelPromise = model.load();
-
-            return modelPromise.then((model: TextFileEditorModel) => {
-                this.editorControl.setModel(model.model);
+        
+        return super.setInput(input).then(() => {
+            return input.resolve().then((model: TextFileEditorModel) => {
+                const modelPromise = model.load();
+    
+                return modelPromise.then((model: TextFileEditorModel) => {
+                    this.editorControl.setModel(model.model);
+                });
             });
         });
     }

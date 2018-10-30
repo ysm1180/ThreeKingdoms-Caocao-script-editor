@@ -25,7 +25,8 @@ export class EditorPart extends Part {
 
     private editorActivatedContext: ContextKey<boolean>;
 
-    public onEditorInputChanged = new Event<IEditorInput>();
+    public onDidEditorSetInput = new Event<IEditorInput>();
+    public onEditorsChanged = new Event<void>();
 
     constructor(
         @IContextKeyService contextKeyService: ContextKeyService,
@@ -83,12 +84,19 @@ export class EditorPart extends Part {
 
         this.editorActivatedContext.set(true);
 
-        return this.setInput(input, editor);
+        return this.setInput(input, editor, true);
     }
 
-    public setInput(input: IEditorInput, editor: BaseEditor): Promise<void> {
+    public setInput(input: IEditorInput, editor: BaseEditor, forceOpen: boolean = false): Promise<void> {
+        const previousInput = editor.getInput();
+        const inputChanged = (!previousInput || !previousInput.matches(input) || forceOpen);
+
         return editor.setInput(input).then(() => {
-            this.onEditorInputChanged.fire(input);
+            this.onDidEditorSetInput.fire(input);
+
+            if (inputChanged) {
+                this.onEditorsChanged.fire();
+            }
         });
     }
 

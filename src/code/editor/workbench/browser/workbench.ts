@@ -24,7 +24,8 @@ import { TextFileService } from '../services/textfile/textFileService';
 import { IFileService } from '../services/files/files';
 import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
 import { IWindowService } from '../../../platform/windows/windows';
-import { ResourceFileService, IResourceFileSerivce } from '../services/resourceFile/resourceFileService';
+import { ResourceFileService } from '../services/resourceFile/resourceFileService';
+import { IResourceFileSerivce } from '../services/resourceFile/resourcefiles';
 
 export class Workbench implements IPartService {
     private container: HTMLElement;
@@ -78,12 +79,12 @@ export class Workbench implements IPartService {
         this.serviceStorage.set(IKeybindingService, new ClassDescriptor(KeybindingService, window));
         this.serviceStorage.set(IContextMenuService, new ClassDescriptor(ContextMenuService));
 
-        this.serviceStorage.set(IMe5DataService, new ClassDescriptor(Me5DataService));
-        this.serviceStorage.set(IMe5FileService, new ClassDescriptor(Me5FileService));
-
         this.serviceStorage.set(IFileService, new ClassDescriptor(FileService));
         this.serviceStorage.set(ITextFileService, new ClassDescriptor(TextFileService));
         this.serviceStorage.set(IResourceFileSerivce, new ClassDescriptor(ResourceFileService));
+        
+        this.serviceStorage.set(IMe5DataService, new ClassDescriptor(Me5DataService));
+        this.serviceStorage.set(IMe5FileService, new ClassDescriptor(Me5FileService));
 
         this.editor = this.instantiationService.create(EditorPart);
         this.serviceStorage.set(IEditorService, this.editor);
@@ -183,7 +184,7 @@ export class Workbench implements IPartService {
     }
 
     public registerListeners() {
-        this.editor.onEditorInputChanged.add(() => {
+        this.editor.onDidEditorSetInput.add(() => {
             this.statusbar.update();
         });
     }

@@ -1,11 +1,9 @@
 import { IFileService } from '../files/files';
-import { decorator } from '../../../../platform/instantiation/instantiation';
 import { createMe5ResourceBufferFactoryFromStream } from '../../../common/resourceModel';
 import { IRawResourceContent } from '../textfile/textfiles';
 import { ResourceFileEditorModelManager } from './resourceFileEditorModelManager';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 
-export const IResourceFileSerivce = decorator<ResourceFileService>('resourceFileService');
 
 export class ResourceFileService {
     private _models: ResourceFileEditorModelManager;

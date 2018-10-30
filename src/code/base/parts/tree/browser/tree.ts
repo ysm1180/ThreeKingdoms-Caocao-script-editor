@@ -2,7 +2,6 @@ import { RelayEvent } from '../../../common/event';
 import { TreeModel, IFocusEvent } from './treeModel';
 import { TreeView } from './treeView';
 import { ContextMenuEvent } from '../../../../platform/events/contextMenuEvent';
-import { IDimension } from '../../../../editor/common/editorCommon';
 
 export interface IDataSource {
     getId(element: any): string;

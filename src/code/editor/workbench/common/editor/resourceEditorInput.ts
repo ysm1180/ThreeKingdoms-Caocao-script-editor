@@ -2,7 +2,8 @@ import { IEditorInput } from '../../../../platform/editor/editor';
 import { ResourceViewEditor } from '../../browser/parts/editor/resourceViewEditor';
 import { ResourceFileEditorModel } from '../../browser/parts/editor/resourceFileEditorModel';
 import { EditorInput } from '../editor';
-import { IResourceFileSerivce, ResourceFileService } from '../../services/resourceFile/resourceFileService';
+import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
+import { IResourceFileSerivce } from '../../services/resourceFile/resourcefiles';
 
 export class ResourceEditorInput extends EditorInput {
     constructor(

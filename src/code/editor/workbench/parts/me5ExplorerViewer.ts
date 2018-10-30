@@ -11,9 +11,9 @@ import { ContextMenuEvent } from '../../../platform/events/contextMenuEvent';
 import { RawContextKey } from '../../../platform/contexts/contextKey';
 import { ContextKey, IContextKeyService, ContextKeyService } from '../../../platform/contexts/contextKeyService';
 import { Me5Stat, ItemState } from './files/me5Data';
-import { IInstantiationService } from '../../../platform/instantiation/instantiationService';
-import { ResourceEditorInput } from '../common/editor/resourceEditorInput';
 import { IWorkbenchEditorService, WorkbenchEditorService } from '../services/editor/editorService';
+import { ResourceFileService } from '../services/resourceFile/resourceFileService';
+import { IResourceFileSerivce } from '../services/resourceFile/resourcefiles';
 
 
 export const explorerEditableItemId = 'explorerRename';
@@ -125,7 +125,7 @@ export class Me5DataController implements IDataController {
     constructor(
         @IWorkbenchEditorService private editorService: WorkbenchEditorService,
         @IContextMenuService private contextMenuService: ContextMenuService,
-        @IInstantiationService private instantiationService: IInstantiationService,
+        @IResourceFileSerivce private resourceFileService: ResourceFileService,
     ) {
 
     }
@@ -133,10 +133,10 @@ export class Me5DataController implements IDataController {
     public onClick(tree: Tree, element: Me5Stat) {
         tree.focus();
 
-        const root = element.root;
-        const input: ResourceEditorInput = this.instantiationService.create(ResourceEditorInput, root.getId(), element.name, element.data);
-
-        this.editorService.openEditor(input);
+        const input = this.editorService.getActiveEditorInput();
+        const model = this.resourceFileService.models.get(input.getId());
+        model.setDataIndex(element.index);
+        this.editorService.refresh();
     }
 
     public onContextMenu(tree: Tree, element: Me5Stat, event: ContextMenuEvent) {

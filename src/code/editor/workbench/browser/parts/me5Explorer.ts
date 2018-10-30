@@ -12,6 +12,10 @@ import { ICompositeViewService, CompositeViewService } from '../../services/view
 import { Me5DataSource, Me5DataRenderer, Me5DataController } from '../../parts/me5ExplorerViewer';
 import { IMe5FileService, Me5FileService } from '../../services/me5/me5FileService';
 import { EditorGroup } from './editor/editorGroup';
+import { IDisposable, dispose } from '../../../../base/common/lifecycle';
+import { ResourceEditorInput } from '../../common/editor/resourceEditorInput';
+import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
+import { IResourceFileSerivce } from '../../services/resourceFile/resourcefiles';
 
 export const me5ExplorerItemIsMe5GroupId = 'explorerItemIsMe5Group';
 export const me5ExplorerItemIsMe5StatId = 'explorerItemIsMe5Stat';
@@ -77,11 +81,14 @@ export class Me5ExplorerView extends CompositeView {
 
     private prevInput: IEditorInput;
 
+    private onceEvents: IDisposable[];
+
     constructor(
         @IMe5FileService private me5FileService: Me5FileService,
         @IContextKeyService private contextKeyService: ContextKeyService,
         @IEditorService private editorService: EditorPart,
         @ICompositeViewService private compositeViewService: CompositeViewService,
+        @IResourceFileSerivce private resourceFileService: ResourceFileService,
         @IInstantiationService private instantiationService: IInstantiationService,
     ) {
         super(EXPLORER_VIEW_ID);
@@ -94,6 +101,8 @@ export class Me5ExplorerView extends CompositeView {
         this.rootContext = me5ExplorerRootContext.bindTo(this.contextKeyService);
 
         this.prevInput = null;
+
+        this.onceEvents = [];
     }
 
     public create(container: DomBuilder) {
@@ -117,7 +126,7 @@ export class Me5ExplorerView extends CompositeView {
         
         this.group = this.editorService.getEditorGroup();
 
-        this.registerDispose(this.compositeViewService.onDidCompositeOpen.add((composit) => this._onChangedCompositView(composit)));
+        this.registerDispose(this.compositeViewService.onDidCompositeOpen.add((composit) => this._onCompositeOpen(composit)));
         this.registerDispose(this.group.onEditorClosed.add((editor) => {
             this.explorerViewer.setCache(editor, null);
 
@@ -129,17 +138,24 @@ export class Me5ExplorerView extends CompositeView {
         }));
     }
 
-    private _onChangedCompositView(composit: CompositeView) {
+    private _onCompositeOpen(composit: CompositeView) {
         if (composit !== this) {
             return;
         }
 
+        this.onceEvents.push(this.editorService.onEditorsChanged.add(() => {
+            this._onOpenInput();
+            dispose(this.onceEvents);
+        }));
+    }
+
+    private _onOpenInput() {
         const previousRoot = this.explorerViewer.getRoot() as Me5Stat;
         if (previousRoot) {
             this.setExpandedElements(previousRoot.getId());
         }
 
-        const activeEditorInput = this.group.activeEditor;
+        const activeEditorInput = <ResourceEditorInput>this.group.activeEditor;
         if (!activeEditorInput) {
             return;
         }
@@ -156,7 +172,9 @@ export class Me5ExplorerView extends CompositeView {
         if (cacheData) {
             done = Promise.resolve(cacheData);
         } else {
-            done = this.me5FileService.resolve(filePath);
+            const model = this.resourceFileService.models.get(filePath);
+            model.setDataIndex(0);
+            done = this.me5FileService.resolve(filePath, model.getCurrentData());
         }
 
         done.then((stat) => {

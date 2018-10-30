@@ -2,7 +2,7 @@ import { DomBuilder } from '../../../../base/browser/domBuilder';
 import { Part } from '../part';
 import { TabControl } from './tabControl';
 import { IEditorService, EditorPart } from './editor/editorPart';
-import { IInstantiationService, InstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 
 export const ITitlePartService: ServiceIdentifier<TitlePart> = decorator<TitlePart>('titlePart');

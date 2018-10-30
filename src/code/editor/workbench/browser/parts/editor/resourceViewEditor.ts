@@ -31,17 +31,23 @@ export class ResourceViewEditor extends BaseEditor {
             return Promise.resolve();
         }
 
-        return input.resolve().then((model: ResourceFileEditorModel) => {
-            if (!(model instanceof ResourceFileEditorModel)) {
-                return;
-            }
+        return super.setInput(input).then(() => {
+            return input.resolve().then((editorModel: ResourceFileEditorModel) => {
+                if (!(editorModel instanceof ResourceFileEditorModel)) {
+                    return;
+                }
 
-            this.viewer.show();
+                const resource = editorModel.resourceModel.getCurrentData();
+                if (resource) {
+                    this.viewer.show();
 
-            BinaryResourceViewer.show(
-                { resource: model.getResource() },
-                this.viewer
-            );
+                    BinaryResourceViewer.show(
+                        { resource },
+                        this.viewer
+                    );
+                }
+
+            });
         });
     }
 
