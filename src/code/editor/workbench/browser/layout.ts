@@ -1,7 +1,7 @@
 import { SidebarPart } from './parts/sidebarPart';
 import { DomBuilder, Size } from '../../../base/browser/domBuilder';
 import { Sash, ISashLayoutProvider } from '../../../base/browser/ui/sash';
-import { EditorPart, IEditorService } from './parts/editor/editorPart';
+import { EditorPart, IEditorGroupService } from './parts/editor/editorPart';
 import { TitlePart } from './parts/titlePart';
 import { StatusbarPart } from './parts/statusbarPart';
 import { IPartService } from '../services/part/partService';
@@ -40,7 +40,7 @@ export class WorkbenchLayout extends Disposable implements ISashLayoutProvider {
             statusbar: StatusbarPart,
         },
         @IPartService private partService: IPartService,
-        @IEditorService private editorService: EditorPart,
+        @IEditorGroupService private editorService: EditorPart,
     ) {
         super();
 

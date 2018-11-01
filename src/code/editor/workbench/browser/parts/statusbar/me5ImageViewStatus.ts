@@ -1,5 +1,5 @@
 import { IStatusbarItem, IStatusbarEntry, StatusbarItemAlignment } from '../../../../../platform/statusbar/statusbar';
-import { EditorPart, IEditorService } from '../editor/editorPart';
+import { EditorPart, IEditorGroupService } from '../editor/editorPart';
 import { ContextKeyExpr } from '../../../../../platform/contexts/contextKey';
 import { IDisposable, combinedDisposable } from '../../../../../base/common/lifecycle';
 import { IEditorInput } from '../../../../../platform/editor/editor';
@@ -16,7 +16,7 @@ export class ImageViewStatusItem implements IStatusbarItem {
 
     constructor(
         private entry: IStatusbarEntry,
-        @IEditorService private editorService: EditorPart,
+        @IEditorGroupService private editorService: EditorPart,
         @IResourceFileSerivce private resourceFileService: ResourceFileService,
     ) {
     }
@@ -35,7 +35,7 @@ export class ImageViewStatusItem implements IStatusbarItem {
         this.imageSize = document.createElement('span');
         element.appendChild(this.imageSize);
 
-        dispose.push(this.editorService.onDidEditorSetInput.add((e) => this._onInputChanged(e)));
+        dispose.push(this.editorService.onEditorInputChanged.add((e) => this._onInputChanged(e)));
 
         return combinedDisposable(dispose);
     }

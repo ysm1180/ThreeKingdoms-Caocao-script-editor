@@ -6,6 +6,7 @@ export class EditorGroup {
 
     private active: IEditorInput;
 
+    public onEditorStructureChanged = new Event<IEditorInput>();
     public onEditorStateChanged = new Event<IEditorInput>();
     public onEditorOpened = new Event<IEditorInput>();
     public onEditorClosed = new Event<IEditorInput>();
@@ -15,7 +16,7 @@ export class EditorGroup {
         this.editors = [];
     }
 
-    public get activeEditor() {
+    public get activeEditorInput() {
         return this.active;
     }
 
@@ -54,7 +55,7 @@ export class EditorGroup {
         if (index === -1) {
             this.editors.push(editor);
             
-            this.fireEvent(this.onEditorOpened, editor);
+            this.fireEvent(this.onEditorOpened, editor, true);
         } 
 
         this.setActive(editor);
@@ -80,7 +81,7 @@ export class EditorGroup {
 
         this.editors.splice(index, 1);
 
-        this.fireEvent(this.onEditorClosed, editor);
+        this.fireEvent(this.onEditorClosed, editor, true);
     }
 
     private setActive(editor: IEditorInput) {
@@ -95,12 +96,16 @@ export class EditorGroup {
 
         this.active = editor;
 
-        this.fireEvent(this.onEditorActivated, editor);
+        this.fireEvent(this.onEditorActivated, editor, false);
     }
 
-    private fireEvent(event: Event<IEditorInput>, editor: IEditorInput) {
+    private fireEvent(event: Event<IEditorInput>, editor: IEditorInput, isStructure: boolean) {
         event.fire(editor);
-        this.onEditorStateChanged.fire(editor);
+        if (isStructure) {
+            this.onEditorStructureChanged.fire(editor);
+        } else {
+            this.onEditorStateChanged.fire(editor);
+        }
     }
 
     public isActive(editor: IEditorInput): boolean {

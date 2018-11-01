@@ -1,7 +1,7 @@
 import { DomBuilder } from '../../../../base/browser/domBuilder';
 import { Part } from '../part';
 import { TabControl } from './tabControl';
-import { IEditorService, EditorPart } from './editor/editorPart';
+import { IEditorGroupService, EditorPart } from './editor/editorPart';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 
@@ -11,7 +11,7 @@ export class TitlePart extends Part {
     private tab: TabControl;
 
     constructor(
-        @IEditorService private editorService: EditorPart,
+        @IEditorGroupService private editorService: EditorPart,
         @IInstantiationService private instantiationService: IInstantiationService
     ) {
         super();
@@ -26,7 +26,8 @@ export class TitlePart extends Part {
 
         const editors = this.editorService.getEditorGroup();
         this.tab.setContext(editors);
-        editors.onEditorStateChanged.add(() => {
+
+        this.editorService.onEditorChanged.add(() => {
             this.update();
         });
     }

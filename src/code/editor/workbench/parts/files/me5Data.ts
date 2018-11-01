@@ -1,6 +1,6 @@
 import { LinkedList } from '../../../../base/common/linkedList';
 import { IResourceFileSerivce } from '../../services/resourceFile/resourcefiles';
-import { Disposable, once, toDisposable } from '../../../../base/common/lifecycle';
+import { Disposable, once, toDisposable, IDisposable } from '../../../../base/common/lifecycle';
 import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
 
 export enum ItemState {
@@ -95,10 +95,10 @@ export class Me5Stat extends Disposable {
         return this.root === this;
     }
 
-    public get data(): Uint8Array {
-        const model = this.resourceFileService.models.get(this.resource);
+    public get data(): Buffer {
+        const model = this.resourceFileService.models.get(this._resource);
         const data = model.resourceModel.getData(this._dataIndex);
-        return data;
+        return Buffer.from(data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength));
     }
 
     public get index() {

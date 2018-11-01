@@ -1,7 +1,7 @@
 import * as Dom from '../../../../base/browser/dom';
 import { IDisposable, combinedDisposable } from '../../../../base/common/lifecycle';
 import { EditorGroup } from './editor/editorGroup';
-import { EditorPart, IEditorService } from './editor/editorPart';
+import { EditorPart, IEditorGroupService } from './editor/editorPart';
 
 export class TabControl {
     private parent: HTMLElement;
@@ -13,7 +13,7 @@ export class TabControl {
     private toDispose: IDisposable[];
 
     constructor(
-        @IEditorService private editorService: EditorPart
+        @IEditorGroupService private editorService: EditorPart
     ) {
         this.labels = [];
         

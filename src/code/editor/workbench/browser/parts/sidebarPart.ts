@@ -3,7 +3,7 @@ import { DomBuilder, $ } from '../../../../base/browser/domBuilder';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { Part } from '../part';
 import { CompositeView, CompositViewRegistry } from '../compositeView';
-import { IEditorService, EditorPart } from './editor/editorPart';
+import { IEditorGroupService, EditorPart } from './editor/editorPart';
 import { EditorGroup } from './editor/editorGroup';
 import { IPartService } from '../../services/part/partService';
 import { IDimension } from '../../../common/editorCommon';
@@ -21,7 +21,7 @@ export class SidebarPart extends Part {
 
     constructor(
         @IPartService private partService: IPartService,
-        @IEditorService private editorService: EditorPart,
+        @IEditorGroupService private editorService: EditorPart,
         @IInstantiationService private instantiationService: IInstantiationService,
     ) {
         super();
@@ -31,13 +31,13 @@ export class SidebarPart extends Part {
         this.mapCompositeToCompositeContainer = {};
 
         this.group = this.editorService.getEditorGroup();
-        this.group.onEditorStateChanged.add(() => {
+        this.registerDispose(this.editorService.onEditorChanged.add(() => {
             this._onEditorChanged();
-        });
+        }));
     }
 
     private _onEditorChanged() {
-        const activeInput = this.group.activeEditor;
+        const activeInput = this.group.activeEditorInput;
         if (!activeInput) {
             this._hideActiveComposite();
             this.partService.setSideBarHidden(true);
@@ -93,6 +93,7 @@ export class SidebarPart extends Part {
         }
 
         compositeContainer.build(this.getContentArea());
+        compositeContainer.show();
 
         return composite;
     }
@@ -124,6 +125,7 @@ export class SidebarPart extends Part {
 
         const compositeContainer = this.mapCompositeToCompositeContainer[composite.getId()];
         compositeContainer.offDOM();
+        compositeContainer.hide();
 
         this.onDidCompositeClose.fire(composite);
     }
@@ -137,6 +139,10 @@ export class SidebarPart extends Part {
     }
 
     public dispose() {
+        if (this.activeComposite) {
+            this.activeComposite.dispose();
+        }
+
         super.dispose();
     }
 }

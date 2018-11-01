@@ -12,3 +12,9 @@ export interface IFileService {
 export interface IFileHandleService {
     save(resource: string): any;
 }
+
+export interface IEditorModel {
+    load(): Promise<IEditorModel>;
+
+    dispose(): void;
+}

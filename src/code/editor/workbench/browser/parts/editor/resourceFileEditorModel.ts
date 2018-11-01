@@ -3,8 +3,9 @@ import { ResourceFileService } from '../../../services/resourceFile/resourceFile
 import { IRawResourceContent } from '../../../services/textfile/textfiles';
 import { ResourceBufferFactory } from '../../../../common/model/resourceBufferBuilder';
 import { IResourceFileSerivce } from '../../../services/resourceFile/resourcefiles';
+import { IEditorModel } from '../../../services/files/files';
 
-export class ResourceFileEditorModel {
+export class ResourceFileEditorModel implements IEditorModel {
     private _resourceModel: ResourceModel;
 
     constructor(
@@ -22,7 +23,7 @@ export class ResourceFileEditorModel {
         return this.resource;
     }
 
-    public load() {
+    public load(): Promise<ResourceFileEditorModel> {
         if (this._resourceModel) {
             return Promise.resolve(this);
         }
@@ -36,7 +37,7 @@ export class ResourceFileEditorModel {
                 () => this.onHandleFailed());
     }
 
-    private doLoadWithContent(content: IRawResourceContent) {
+    private doLoadWithContent(content: IRawResourceContent): Promise<ResourceFileEditorModel> {
         return this.doCreateResourceModel(content.value);
     }
 
@@ -54,7 +55,7 @@ export class ResourceFileEditorModel {
         return this._resourceModel ? this._resourceModel.getCurrentData() : null;
     }
 
-    public setDataIndex(index: number) {
+    public setDataIndex(index: number): void {
         if (this._resourceModel) {
             this._resourceModel.setDataIndex(index);
         }
@@ -62,6 +63,10 @@ export class ResourceFileEditorModel {
 
     private onHandleFailed() {
         console.error('Resource File Load Failed');
-        return null;
+        return Promise.reject(null);
+    }
+
+    public dispose(): void {
+
     }
 }

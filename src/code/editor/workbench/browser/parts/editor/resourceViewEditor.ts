@@ -46,7 +46,6 @@ export class ResourceViewEditor extends BaseEditor {
                         this.viewer
                     );
                 }
-
             });
         });
     }

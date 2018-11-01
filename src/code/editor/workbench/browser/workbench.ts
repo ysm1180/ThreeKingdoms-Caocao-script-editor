@@ -6,7 +6,7 @@ import { ICommandService, CommandService } from '../../../platform/commands/comm
 import { IKeybindingService, KeybindingService } from '../../../platform/keybindings/keybindingService';
 import { SidebarPart } from './parts/sidebarPart';
 import { WorkbenchLayout } from './layout';
-import { EditorPart, IEditorService } from './parts/editor/editorPart';
+import { EditorPart, IEditorGroupService } from './parts/editor/editorPart';
 import { TitlePart, ITitlePartService } from './parts/titlePart';
 import { IContextMenuService, ContextMenuService } from '../services/contextmenuService';
 import { IMe5DataService, Me5DataService } from '../services/me5/me5DataService';
@@ -34,10 +34,10 @@ export class Workbench implements IPartService {
     private workbench: DomBuilder;
     private workbenchLayout: WorkbenchLayout;
 
-    private title: TitlePart;
-    private sidebar: SidebarPart;
-    private editor: EditorPart;
-    private statusbar: StatusbarPart;
+    private titlePart: TitlePart;
+    private sidebarPart: SidebarPart;
+    private editorPart: EditorPart;
+    private statusbarPart: StatusbarPart;
     private sideBarHidden: boolean;
 
     private serviceStorage: ServiceStorage;
@@ -86,19 +86,19 @@ export class Workbench implements IPartService {
         this.serviceStorage.set(IMe5DataService, new ClassDescriptor(Me5DataService));
         this.serviceStorage.set(IMe5FileService, new ClassDescriptor(Me5FileService));
 
-        this.editor = this.instantiationService.create(EditorPart);
-        this.serviceStorage.set(IEditorService, this.editor);
-        this.serviceStorage.set(IWorkbenchEditorService, new ClassDescriptor(WorkbenchEditorService, this.editor));
+        this.editorPart = this.instantiationService.create(EditorPart);
+        this.serviceStorage.set(IEditorGroupService, this.editorPart);
+        this.serviceStorage.set(IWorkbenchEditorService, new ClassDescriptor(WorkbenchEditorService, this.editorPart));
         
-        this.sidebar = this.instantiationService.create(SidebarPart);
+        this.sidebarPart = this.instantiationService.create(SidebarPart);
 
-        this.serviceStorage.set(ICompositeViewService, new ClassDescriptor(CompositeViewService, this.sidebar));
+        this.serviceStorage.set(ICompositeViewService, new ClassDescriptor(CompositeViewService, this.sidebarPart));
 
-        this.title = this.instantiationService.create(TitlePart);
-        this.serviceStorage.set(ITitlePartService, this.title);
+        this.titlePart = this.instantiationService.create(TitlePart);
+        this.serviceStorage.set(ITitlePartService, this.titlePart);
 
-        this.statusbar = this.instantiationService.create(StatusbarPart);
-        this.serviceStorage.set(IStatusbarService, this.statusbar);
+        this.statusbarPart = this.instantiationService.create(StatusbarPart);
+        this.serviceStorage.set(IStatusbarService, this.statusbarPart);
     }
 
     private createWorkbench() {
@@ -121,7 +121,7 @@ export class Workbench implements IPartService {
         const titleContainer = $(this.workbench).div({
             class: 'title'
         });
-        this.title.create(titleContainer);
+        this.titlePart.create(titleContainer);
     }
 
     private createSidebar(): void {
@@ -129,7 +129,7 @@ export class Workbench implements IPartService {
             class: 'sidebar'
         });
 
-        this.sidebar.create(sidebarContainer);
+        this.sidebarPart.create(sidebarContainer);
     }
 
     private createEditor(): void {
@@ -137,7 +137,7 @@ export class Workbench implements IPartService {
             class: 'editor'
         });
 
-        this.editor.create(editorContainer);
+        this.editorPart.create(editorContainer);
     }
 
     private createStatusbar(): void {
@@ -145,7 +145,7 @@ export class Workbench implements IPartService {
             class: 'statusbar'
         });
 
-        this.statusbar.create(statusbarContainer);
+        this.statusbarPart.create(statusbarContainer);
     }
 
     private createLayout(): void {
@@ -153,10 +153,10 @@ export class Workbench implements IPartService {
             $(this.container),
             this.workbench,
             {
-                title: this.title,
-                sidebar: this.sidebar,
-                editor: this.editor,
-                statusbar: this.statusbar,
+                title: this.titlePart,
+                sidebar: this.sidebarPart,
+                editor: this.editorPart,
+                statusbar: this.statusbarPart,
             });
     }
 
@@ -184,12 +184,12 @@ export class Workbench implements IPartService {
     }
 
     public registerListeners() {
-        this.editor.onDidEditorSetInput.add(() => {
-            this.statusbar.update();
+        this.editorPart.onEditorInputChanged.add(() => {
+            this.statusbarPart.update();
         });
     }
 
     public dispose() {
-        this.sidebar.dispose();
+        this.sidebarPart.dispose();
     }
 }

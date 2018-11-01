@@ -12,10 +12,9 @@ import { RawContextKey } from '../../../../../platform/contexts/contextKey';
 import { IContextKeyService, ContextKeyService, ContextKey } from '../../../../../platform/contexts/contextKeyService';
 
 export const editorInputIsActivatedId = 'editorInputIsactivatedId';
-
 export const editorInputActivatedContext = new RawContextKey<boolean>(editorInputIsActivatedId, false);
 
-export const IEditorService: ServiceIdentifier<EditorPart> = decorator<EditorPart>('editorPart');
+export const IEditorGroupService: ServiceIdentifier<EditorPart> = decorator<EditorPart>('editorPart');
 
 export class EditorPart extends Part {
     private editorGroup: EditorGroup;
@@ -25,8 +24,8 @@ export class EditorPart extends Part {
 
     private editorActivatedContext: ContextKey<boolean>;
 
-    public onDidEditorSetInput = new Event<IEditorInput>();
-    public onEditorsChanged = new Event<void>();
+    public onEditorInputChanged = new Event<IEditorInput>();
+    public onEditorChanged = new Event<void>();
 
     constructor(
         @IContextKeyService contextKeyService: ContextKeyService,
@@ -34,11 +33,20 @@ export class EditorPart extends Part {
     ) {
         super();
 
-        this.editorGroup = this.instantiationService.create(EditorGroup);
+        this.editorGroup = this._createGroup();
         this.currentEditor = null;
         this.instantiatedEditors = [];
 
         this.editorActivatedContext = editorInputActivatedContext.bindTo(contextKeyService);
+    }
+
+    private _createGroup(): EditorGroup {
+        const group: EditorGroup = this.instantiationService.create(EditorGroup);
+        
+        this.registerDispose(group.onEditorStructureChanged.add(e => this.onEditorChanged.fire()));
+        this.registerDispose(group.onEditorStateChanged.add(e => this.onEditorChanged.fire()));
+
+        return group;
     }
 
     public getEditorGroup() {
@@ -46,7 +54,7 @@ export class EditorPart extends Part {
     }
 
     public getActiveEditorInput(): IEditorInput {
-		return this.editorGroup.activeEditor;
+		return this.editorGroup.activeEditorInput;
     }
 
     public create(parent: DomBuilder) {
@@ -92,10 +100,8 @@ export class EditorPart extends Part {
         const inputChanged = (!previousInput || !previousInput.matches(input) || forceOpen);
 
         return editor.setInput(input).then(() => {
-            this.onDidEditorSetInput.fire(input);
-
             if (inputChanged) {
-                this.onEditorsChanged.fire();
+                this.onEditorInputChanged.fire(input);
             }
         });
     }
@@ -176,10 +182,10 @@ export class EditorPart extends Part {
     }
 
     private doCloseActiveEditor() {
-        this.editorGroup.closeEditor(this.editorGroup.activeEditor);
+        this.editorGroup.closeEditor(this.editorGroup.activeEditorInput);
 
         if (this.editorGroup.count > 0) {
-            this.openEditor(this.editorGroup.activeEditor);
+            this.openEditor(this.editorGroup.activeEditorInput);
         } else {
             this.doCloseEditor();
         }

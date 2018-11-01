@@ -6,7 +6,7 @@ import { RawContextKey, ContextKeyExpr, ContextKeyNotExpr } from '../../../../pl
 import { ContextKey, IContextKeyService, ContextKeyService } from '../../../../platform/contexts/contextKeyService';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { CompositeView } from '../compositeView';
-import { IEditorService, EditorPart } from './editor/editorPart';
+import { IEditorGroupService, EditorPart } from './editor/editorPart';
 import { Me5Stat } from '../../parts/files/me5Data';
 import { ICompositeViewService, CompositeViewService } from '../../services/view/compositeViewService';
 import { Me5DataSource, Me5DataRenderer, Me5DataController } from '../../parts/me5ExplorerViewer';
@@ -86,7 +86,7 @@ export class Me5ExplorerView extends CompositeView {
     constructor(
         @IMe5FileService private me5FileService: Me5FileService,
         @IContextKeyService private contextKeyService: ContextKeyService,
-        @IEditorService private editorService: EditorPart,
+        @IEditorGroupService private editorService: EditorPart,
         @ICompositeViewService private compositeViewService: CompositeViewService,
         @IResourceFileSerivce private resourceFileService: ResourceFileService,
         @IInstantiationService private instantiationService: IInstantiationService,
@@ -127,14 +127,9 @@ export class Me5ExplorerView extends CompositeView {
         this.group = this.editorService.getEditorGroup();
 
         this.registerDispose(this.compositeViewService.onDidCompositeOpen.add((composit) => this._onCompositeOpen(composit)));
+        this.registerDispose(this.compositeViewService.onDidCompositeClose.add((composit) => this._onCompositClose(composit)));
         this.registerDispose(this.group.onEditorClosed.add((editor) => {
             this.explorerViewer.setCache(editor, null);
-
-            const activeEditorInput = this.group.activeEditor;
-            if (!activeEditorInput) {
-                this.prevInput = null;
-                this.explorerViewer.setRoot(null);
-            }
         }));
     }
 
@@ -143,10 +138,18 @@ export class Me5ExplorerView extends CompositeView {
             return;
         }
 
-        this.onceEvents.push(this.editorService.onEditorsChanged.add(() => {
+        this.onceEvents.push(this.editorService.onEditorInputChanged.add(() => {
             this._onOpenInput();
-            dispose(this.onceEvents);
+            this.onceEvents = dispose(this.onceEvents);
         }));
+    }
+
+    private _onCompositClose(composit: CompositeView) {
+        if (composit !== this) {
+            return;
+        }
+
+        this.onceEvents = dispose(this.onceEvents);
     }
 
     private _onOpenInput() {
@@ -155,7 +158,7 @@ export class Me5ExplorerView extends CompositeView {
             this.setExpandedElements(previousRoot.getId());
         }
 
-        const activeEditorInput = <ResourceEditorInput>this.group.activeEditor;
+        const activeEditorInput = <ResourceEditorInput>this.group.activeEditorInput;
         if (!activeEditorInput) {
             return;
         }
@@ -197,5 +200,11 @@ export class Me5ExplorerView extends CompositeView {
         if (this.explorerViewer) {
             this.explorerViewer.layout();
         }
+    }
+
+    public dispose(): void {
+        dispose(this.onceEvents);
+
+        this.onceEvents = [];
     }
 }
