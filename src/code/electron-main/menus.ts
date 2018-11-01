@@ -39,9 +39,9 @@ export class AppMenu {
         const fileMenuItem = new MenuItem({ label: '파일(&F)', submenu: fileMenu });
         this.setFileMenuItem(fileMenu);
 
-        const editMenu = new Menu();
-        const editMenuItem = new MenuItem({ label: '편집(&E)', submenu: editMenu });
-        this.setEditMenuItem(editMenu);
+        const optionMenu = new Menu();
+        const optionMenuItem = new MenuItem({ label: '옵션(&O)', submenu: optionMenu });
+        this.setOptionMenuItem(optionMenu);
 
         const toolMenu = new Menu();
         const toolMenuItem = new MenuItem({ label: '도구(&T)', submenu: toolMenu });
@@ -49,7 +49,7 @@ export class AppMenu {
 
         arrays.coalesce([
             fileMenuItem,
-            editMenuItem,
+            optionMenuItem,
             toolMenuItem,
         ]).forEach(menuItem => menubar.append(menuItem));
 
@@ -71,9 +71,31 @@ export class AppMenu {
         ]).forEach(menuItem => fileMenu.append(menuItem));
     }
 
-    private setEditMenuItem(editMenu: Menu) {
+    private setOptionMenuItem(editMenu: Menu) {
+        const saveToJpg = new MenuItem({ type: 'radio', label: 'JPG', checked: false, id: 'option.saveToJPG' });
+        const saveToPng = new MenuItem({ type: 'radio', label: 'PNG', checked: true, id: 'option.saveToPng' });
+        const menuSaveExtensions = new Menu();
 
         arrays.coalesce([
+            saveToPng,
+            saveToJpg,
+        ]).forEach(menuItem => menuSaveExtensions.append(menuItem));
+
+        const defaultPngOption = new MenuItem({ type: 'radio', label: '기본', id: 'option.defaultPng', checked: true });
+        const maxCompressPngOption = new MenuItem({ type: 'radio', label: '최대 압축, 속도 느림', id: 'option.maxCompressPng' });
+        const menuPngOption = new Menu();
+
+        arrays.coalesce([
+            maxCompressPngOption,
+            defaultPngOption,
+        ]).forEach(menuItem => menuPngOption.append(menuItem));
+
+        const me5SaveOption = new MenuItem({ label: 'ME5 이미지 저장 확장자', submenu: menuSaveExtensions });
+        const pngSaveOption = new MenuItem({ label: 'PNG 저장 옵션', submenu: menuPngOption });
+
+        arrays.coalesce([
+            me5SaveOption,
+            pngSaveOption,
         ]).forEach(menuItem => editMenu.append(menuItem));
     }
 

@@ -1,4 +1,5 @@
 import * as Convert from '../../base/common/convert';
+import * as electron from 'electron';
 import { BinaryFile } from '../../platform/files/file';
 import { Me5Stat, FilterFuntion } from '../workbench/parts/files/me5Data';
 import { ImageResource } from '../workbench/common/imageResource';
@@ -107,8 +108,11 @@ export class Me5File extends BinaryFile {
         return this.readBytes(offset + itemNameLength, itemSize);
     }
 
-    public save(data: ISaveMe5Data, groupFilter?: FilterFuntion<Me5Stat>): Promise<void> {
-        return Promise.resolve().then(() => {
+    public async save(data: ISaveMe5Data, groupFilter?: FilterFuntion<Me5Stat>) {
+        return new Promise((c1, e) => {
+            this.tempData = [];
+            this.dataSize = 0;
+
             const groups = data.root.getChildren(groupFilter);
 
             const itemLengths = groups.map((group) => group.getChildren().length);
@@ -162,9 +166,13 @@ export class Me5File extends BinaryFile {
                 }));
             }
 
-            return setGroupPromises.reduce((cur, next) => {
+            setGroupPromises.reduce((cur, next) => {
                 return cur.then(next);
-            }, Promise.resolve());
+            }, Promise.resolve()).then(() => {
+                this.finish().then(() => {
+                    c1();
+                });
+            });
         });
     }
 
@@ -207,7 +215,18 @@ export class Me5File extends BinaryFile {
         this.writeInt(startItemOffset, offset);
         this.write(offset, length, Convert.strToBytes(name));
 
-        return ImageResource.convertToPng(Buffer.from(item.data.buffer)).then((data) => {
+        const remote = electron.remote;
+        const appMenu = remote.Menu.getApplicationMenu();
+        const saveToPngMenuItem = appMenu.getMenuItemById('option.saveToPng');
+        let convertPromise: Promise<Buffer>;
+        if (saveToPngMenuItem.checked) {
+            const pngCompressOption = appMenu.getMenuItemById('option.maxCompressPng');
+            convertPromise = ImageResource.convertToPng(item.data, pngCompressOption.checked);
+        } else {
+            convertPromise = ImageResource.convertToJpeg(item.data);
+        }
+
+        return convertPromise.then((data) => {
             this.writeInt(startItemOffset + 8, data.length);
             this.write(offset + length, data.length, data);
 
