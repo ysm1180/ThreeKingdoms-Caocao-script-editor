@@ -16,7 +16,7 @@ export function createMe5ResourceBufferFactoryFromStream(stream: IStringStream):
 	return new Promise<ResourceBufferFactory>((c, e) => {
 		let done = false;
 		let builder = createResourceBufferBuilder();
-
+	
 		stream.on('data', (chunk) => {
 			builder.acceptChunk(chunk);
 		});

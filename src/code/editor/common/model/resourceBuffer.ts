@@ -25,7 +25,7 @@ export abstract class ResourceBuffer {
 
     public add(buffer: Buffer): number {
         this.binaryBuffers.push(new BinaryBufferBase(buffer));
-        return this.binaryBuffers.length;
+        return this.binaryBuffers.length - 1;
     }
 
     protected abstract create(buffer: Buffer): void;

@@ -2,19 +2,26 @@ import { IInstantiationService } from '../../../../platform/instantiation/instan
 import { ResourceFileEditorModel } from '../../browser/parts/editor/resourceFileEditorModel';
 
 export class ResourceFileEditorModelManager {
-    private mapResourceModel: Map<String, ResourceFileEditorModel>;
+    private mapResourceToModel: Map<String, ResourceFileEditorModel>;
+    private mapResourceToPendingModelLoaders: Map<String, Promise<ResourceFileEditorModel>>;
 
     constructor(
         @IInstantiationService private instantiationService: IInstantiationService,
     ) {
-        this.mapResourceModel = new Map<String, ResourceFileEditorModel>();
+        this.mapResourceToModel = new Map<String, ResourceFileEditorModel>();
+        this.mapResourceToPendingModelLoaders = new Map<String, Promise<ResourceFileEditorModel>>();
     }
 
     public get(resource: string): ResourceFileEditorModel {
-        return this.mapResourceModel.get(resource);
+        return this.mapResourceToModel.get(resource);
     }
 
     public loadOrCreate(resource: string): Promise<ResourceFileEditorModel> {
+        const pendingLoad = this.mapResourceToPendingModelLoaders.get(resource);
+		if (pendingLoad) {
+			return pendingLoad;
+        }
+        
         let model = this.get(resource);
 
         let modelLoadPromise: Promise<ResourceFileEditorModel>;
@@ -25,11 +32,23 @@ export class ResourceFileEditorModelManager {
             modelLoadPromise = model.load();
         }
 
+		this.mapResourceToPendingModelLoaders.set(resource, modelLoadPromise);
 
         return modelLoadPromise.then((model) => {
-            this.mapResourceModel.set(resource, model);
+            this._add(resource, model);
+
+            this.mapResourceToPendingModelLoaders.delete(resource);
 
             return model;
         });
+    }
+
+    private _add(resource: string, model: ResourceFileEditorModel)  {
+        const knownModel = this.mapResourceToModel.get(resource);
+		if (knownModel === model) {
+			return;
+        }
+        
+        this.mapResourceToModel.set(resource, model);
     }
 }

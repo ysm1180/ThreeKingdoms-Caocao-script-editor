@@ -34,6 +34,10 @@ export class ImageResource {
             const jpg = jpeg.decode(data);
             this._width = jpg.width;
             this._height = jpg.height;
+        } else if (this._type === ImageType.Bmp) {
+            const bmpData = bmp.decode(data);
+            this._width = bmpData.width;
+            this._height = bmpData.height;
         }
 
         return true;
@@ -66,14 +70,14 @@ export class ImageResource {
         return type;
     }
 
-    public static convertToJpeg(data: Buffer): Promise<Uint8Array> {
+    public static convertToJpeg(data: Buffer): Promise<Buffer> {
         return Promise.resolve().then(() => {
             const type = ImageResource.getTypeFromBinary(data);
 
             const jpegOption = {
                 quality: 100,
-                chromaSubsampling: '4:4:4',
             };
+            
             if (type === ImageType.Jpg) {
                 return sharp(data).jpeg(jpegOption).toBuffer();
             } else if (type === ImageType.Bmp) {
@@ -103,10 +107,21 @@ export class ImageResource {
         });
     }
 
-    public static convertToPng(data: Buffer): Promise<Uint8Array> {
+    public static convertToPng(data: Buffer, compress: boolean = false): Promise<Buffer> {
         return Promise.resolve().then(() => {
-            const type = ImageResource.getTypeFromBinary(data);
+            let pngOption;
+            if (compress) {
+                pngOption = {
+                    compressionLevel: 9,
+                    adaptiveFiltering: true,
+                };
+            } else {
+                pngOption = {
+                    compressionLevel: 9,
+                };
+            }
 
+            const type = ImageResource.getTypeFromBinary(data);
             if (type === ImageType.Png) {
                 return data;
             } else if (type === ImageType.Bmp) {
@@ -127,9 +142,9 @@ export class ImageResource {
                         height: bitmap.height,
                         channels: 4,
                     },
-                }).png().toBuffer();
+                }).png(pngOption).toBuffer();
             } else if (type === ImageType.Jpg) {
-                return sharp(data).png().toBuffer();
+                return sharp(data).png(pngOption).toBuffer();
             } else {
                 return data;
             }

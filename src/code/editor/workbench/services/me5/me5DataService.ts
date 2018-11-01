@@ -25,7 +25,7 @@ export class Me5DataService {
     private _resolveImageData(file: BinaryFile): Promise<Uint8Array> {
         return Promise.resolve().then(() => {
             return file.open().then(() => {
-                return ImageResource.convertToPng(file.data);
+                return file.data;
             });
         });
     }
@@ -60,9 +60,11 @@ export class Me5DataService {
             }
 
             return Promise.all(promises);
-        }).then((imageData) => {
+        }).then((imageData: Uint8Array[]) => {
             for (const imageDataArray of imageData) {
-                const data = new Uint8Array(imageDataArray.slice(0));
+                const model = this.resourceFileSerivce.models.get(element.root.getId());
+                const index = model.resourceModel.add(Buffer.from(imageDataArray.buffer));
+                element.index = index;
             }
 
             if (imageData.length > 0) {
@@ -120,7 +122,7 @@ export class Me5DataService {
                 const resource = element.root.getId();
                 const model = this.resourceFileSerivce.models.get(resource);
                 const bufferIndex = model.resourceModel.add(Buffer.from(binary.buffer));
-                const item = this.instantiationService.create(Me5Stat, element.root.getId(), false, element.root, names[index], bufferIndex);
+                const item = this.instantiationService.create(Me5Stat, resource, false, element.root, names[index], bufferIndex);
                 item.build(parent, isSelectionAfter ? element : null);
                 selectItems.push(item);
             }
@@ -210,17 +212,18 @@ export class Me5DataService {
                 return null;
             }
 
-            const data = element.data;
+            const buffer = element.data;
             const file = new BinaryFile(req.file);
+
             let convertPromise;
             if (file.ext === ImageType.Png) {
-                convertPromise = ImageResource.convertToPng(Buffer.from(data.buffer));
+                convertPromise = ImageResource.convertToPng(buffer);
             } else {
-                convertPromise = ImageResource.convertToJpeg(Buffer.from(data.buffer));
+                convertPromise = ImageResource.convertToJpeg(buffer);
             }
 
-            return convertPromise.then((binary: Uint8Array) => {
-                file.write(0, binary.length, binary);
+            return convertPromise.then((buffer: Buffer) => {
+                file.write(0, buffer.length, buffer);
             });
         });
     }
