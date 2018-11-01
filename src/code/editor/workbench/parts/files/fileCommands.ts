@@ -9,7 +9,6 @@ import { editorInputActivatedContext } from '../../browser/parts/editor/editorPa
 export const SAVE_FILE_ID = 'SAVE_FILE';
 
 function save(path: string, me5FileService: IFileHandleService) {
-
     me5FileService.save(path);
 }
 

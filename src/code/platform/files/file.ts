@@ -12,8 +12,9 @@ export namespace Files {
 
 export class BinaryFile {
     public data: Buffer = Buffer.alloc(0);
-    private _path: string;
-    private resource: Buffer;
+    protected _path: string;
+    protected tempData: { buffer: Buffer, offset: number }[];
+    protected dataSize: number;
 
     constructor(resource: string | Buffer) {
         if (isString(resource)) {
@@ -47,17 +48,17 @@ export class BinaryFile {
     public open(): Promise<BinaryFile> {
         if (this._path) {
             return new Promise<BinaryFile>((c, e) => {
-                fs.readFile(this.resource, {}, (err, data) => {
+                fs.readFile(this._path, {}, (err, data) => {
                     if (err) {
                         e(err);
                         return null;
                     }
-    
+
                     this.data = data;
-    
+
                     c(this);
                 });
-            });    
+            });
         } else if (this.data.length > 0) {
             return Promise.resolve(this);
         } else {
@@ -82,22 +83,48 @@ export class BinaryFile {
         return new Uint8Array(this.data.buffer.slice(offset, offset + length));
     }
 
-    public write(offset: number, length: number, data: Uint8Array) {
-        if (this.data.length <= offset + length) {
-            const buffer = new Uint8Array(offset + length);
-            buffer.set(this.data, 0);
-            this.data = Buffer.from(buffer.buffer);
-        }
+    public write(offset: number, length: number, data: Buffer) {
+        this.tempData.push({
+            offset,
+            buffer: data,
+        });
+        this.dataSize += length;
+    }
 
-        for (let i = 0; i < length; i++) {
-            this.data[offset + i] = data[i];
-        }
+    public finish(): Promise<void> {
+        return new Promise((c, e) => {
+            this.data = Buffer.alloc(this.dataSize);
+            this.tempData.forEach(element => {
+                this.data.set(element.buffer, element.offset);
+            });
+            this.tempData = [];
 
-        const fd = fs.openSync(this.resource, 'w');
-        const bytes = new Uint8Array(this.data.slice(0));
-        fs.writeSync(fd, bytes, 0, bytes.length, 0);
-        fs.fdatasyncSync(fd);
-        fs.closeSync(fd);
+            fs.open(this._path, 'w', (openError, fd) => {
+                if (openError) {
+                    return e(openError);
+                }
+                fs.write(fd, this.data, writeError => {
+                    if (writeError) {
+                        return fs.close(fd, () => e(writeError));
+                    }
+
+                    fs.fdatasync(fd, syncError => {
+                        if (syncError) {
+                            console.warn('[node.js fs] fdatasync is now disabled for this session because it failed: ', syncError);
+                            return e(syncError);
+                        }
+
+                        fs.close(fd, closeError => {
+                            if (closeError) {
+                                return e(closeError);
+                            }
+                            
+                            return c();
+                        });
+                    });
+                });
+            });
+        });
     }
 
     public writeInt(offset: number, data: number) {

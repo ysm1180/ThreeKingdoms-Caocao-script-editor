@@ -57,16 +57,14 @@ export class Me5FileService implements IFileHandleService {
         }
 
         done.then((rootStat) => {
-            if (!rootStat) {
-                return Promise.resolve();
+            if (rootStat) {
+                const options: ISaveMe5Data = {
+                    root: rootStat
+                };
+
+                const file = new Me5File(rootStat.getId());
+                file.save(options, (group) => group.getChildren().length !== 0);
             }
-
-            const options: ISaveMe5Data = {
-                root: rootStat
-            };
-
-            const file = new Me5File(rootStat.getId());
-            return file.save(options, (group) => group.getChildren().length !== 0);
         });
     }
 
