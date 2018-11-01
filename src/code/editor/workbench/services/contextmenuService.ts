@@ -21,10 +21,11 @@ export class ContextMenuService {
         const menu = this.createMenu(items);
         const anchor = delegate.getAnchor();
 
-        // menu.popup(remote.getCurrentWindow(), {
-        //     x: anchor.x,
-        //     y: anchor.y
-        // });
+        menu.popup({
+            window: remote.getCurrentWindow(),
+            x: anchor.x,
+            y: anchor.y
+        });
     }
 
     private createMenu(entries: MenuItemInfo[]) {
