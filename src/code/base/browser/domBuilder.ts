@@ -132,12 +132,12 @@ export class DomBuilder {
             this.createdElements.push(element);
         }
 
-        if (isObject(attributes)) {
-            this.attr(attributes);
-        }
-
         if (this.container) {
             this.container.appendChild(element);
+        }
+
+        if (isObject(attributes)) {
+            this.attr(attributes);
         }
 
         return this;

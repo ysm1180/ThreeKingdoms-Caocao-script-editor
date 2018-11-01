@@ -1,11 +1,8 @@
-export function encodeToBase64(data: Uint8Array): string {
+export function encodeToBase64(data: Buffer): string {
     if (data && data.length > 0) {
-        let index = data.length;
-        const base64 = [];
-        while (index--) {
-            base64[index] = String.fromCharCode(data[index]);
-        }
-        return btoa(base64.join(''));
+        const base64 = data.toString('base64');
+
+        return base64;
     }
 
     return '';

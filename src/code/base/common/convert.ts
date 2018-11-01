@@ -1,5 +1,5 @@
-export function intToBytes(value: number): Uint8Array {
-    const result = new Uint8Array(4);
+export function intToBytes(value: number): Buffer {
+    const result = Buffer.alloc(4);
     let i = 0;
     do {
         result[i++] = value & 0xff;
@@ -14,9 +14,8 @@ export function getByteLength(value: string): number {
     return byteLen;
 }
 
-export function strToBytes(value: string): Uint8Array {
-    const encode = Buffer.from(value);
-    return new Uint8Array(encode);
+export function strToBytes(value: string): Buffer {
+    return Buffer.from(value);
 }
 
 export function bytesToNumber(bytes: Uint8Array, bigEndian: boolean = false): number {
