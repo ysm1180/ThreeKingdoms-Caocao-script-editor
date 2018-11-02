@@ -25,14 +25,14 @@ export class ResourceViewEditor extends BaseEditor {
         this.viewer.build(parent);
     }
 
-    public setInput(input: ResourceEditorInput): Promise<void> {
+    public setInput(input: ResourceEditorInput, refresh?: boolean): Promise<void> {
         if (!input) {
             this.viewer.hide();
             return Promise.resolve();
         }
 
         return super.setInput(input).then(() => {
-            return input.resolve().then((editorModel: ResourceFileEditorModel) => {
+            return input.resolve(refresh).then((editorModel: ResourceFileEditorModel) => {
                 if (!(editorModel instanceof ResourceFileEditorModel)) {
                     return;
                 }
@@ -45,6 +45,8 @@ export class ResourceViewEditor extends BaseEditor {
                         { resource },
                         this.viewer
                     );
+                } else {
+                    this.viewer.hide();
                 }
             });
         });

@@ -2,6 +2,7 @@ import { LinkedList } from '../../../../base/common/linkedList';
 import { IResourceFileSerivce } from '../../services/resourceFile/resourcefiles';
 import { Disposable, once, toDisposable, IDisposable } from '../../../../base/common/lifecycle';
 import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
+import { IWorkbenchEditorService, WorkbenchEditorService } from '../../services/editor/editorService';
 
 export enum ItemState {
     Normal,
@@ -13,7 +14,6 @@ export type FilterFuntion<T> = (e: T) => boolean;
 export class Me5Stat extends Disposable {
     private static INDEX = 1;
 
-    private _resource: string;
     private _state: ItemState;
     private _parent: Me5Stat;
     private _isGroup: boolean;
@@ -23,12 +23,12 @@ export class Me5Stat extends Disposable {
     private readonly id = String(Me5Stat.INDEX++);
 
     constructor(
-        resource: string,
+        name: string,
         isGroup: boolean,
         public root: Me5Stat,
-        name: string,
         index: number,
         @IResourceFileSerivce private resourceFileService: ResourceFileService,
+        @IWorkbenchEditorService private editorService: WorkbenchEditorService,
     ) {
         super();
 
@@ -38,22 +38,13 @@ export class Me5Stat extends Disposable {
             this.root = this;
         }
 
-        this._resource = resource;
         this.isGroup = isGroup;
         this._name = name;
         this._dataIndex = index;
     }
 
     public getId(): string {
-        if (this.isRoot) {
-            return this._resource;
-        } else {
-            return `${this._resource}:${this.id}`;
-        }
-    }
-
-    public set resource(value: string) {
-        this._resource = value;
+        return `${this.id}`;
     }
 
     public get name(): string {
@@ -96,7 +87,8 @@ export class Me5Stat extends Disposable {
     }
 
     public get data(): Buffer {
-        const model = this.resourceFileService.models.get(this._resource);
+        const input = this.editorService.getActiveEditorInput();
+        const model = this.resourceFileService.models.get(input.getId());
         const data = model.resourceModel.getData(this._dataIndex);
         return Buffer.from(data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength));
     }

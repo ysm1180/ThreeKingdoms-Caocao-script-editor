@@ -16,7 +16,7 @@ export class ResourceFileEditorModelManager {
         return this.mapResourceToModel.get(resource);
     }
 
-    public loadOrCreate(resource: string): Promise<ResourceFileEditorModel> {
+    public loadOrCreate(resource: string, refresh?: boolean): Promise<ResourceFileEditorModel> {
         const pendingLoad = this.mapResourceToPendingModelLoaders.get(resource);
 		if (pendingLoad) {
 			return pendingLoad;
@@ -26,7 +26,11 @@ export class ResourceFileEditorModelManager {
 
         let modelLoadPromise: Promise<ResourceFileEditorModel>;
         if (model) {
-            modelLoadPromise = Promise.resolve(model);
+            if (!refresh) {
+                modelLoadPromise = Promise.resolve(model);
+            } else {
+                modelLoadPromise = model.load();
+            }
         } else {
             model = this.instantiationService.create(ResourceFileEditorModel, resource);
             modelLoadPromise = model.load();

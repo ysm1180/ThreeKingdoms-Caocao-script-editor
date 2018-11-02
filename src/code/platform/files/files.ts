@@ -16,3 +16,9 @@ export interface IStringStream {
 export interface IStreamContent {
     value: IStringStream;
 }
+
+export enum StateChange {
+	DIRTY,
+	SAVING,
+	SAVED,
+}

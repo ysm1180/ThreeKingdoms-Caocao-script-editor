@@ -4,47 +4,38 @@ import { Me5Stat } from '../../parts/files/me5Data';
 import { IDialogService, DialogService } from '../electron-browser/dialogService';
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
-import { IFileHandleService } from '../files/files';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { ResourceFileService } from '../resourceFile/resourceFileService';
+import { IRawResourceContent } from '../textfile/textfiles';
+import { createMe5ResourceBufferFactoryFromStream } from '../../../common/resourceModel';
+import { IFileService } from '../files/files';
 
 export const IMe5FileService: ServiceIdentifier<Me5FileService> = decorator<Me5FileService>('me5FileService');
 
-export class Me5FileService implements IFileHandleService {
+export class Me5FileService extends ResourceFileService {
     constructor(
+        @IFileService private fileService: IFileService,
         @IDialogService private dialogService: DialogService,
         @ITreeService private treeService: TreeService,
-        @IInstantiationService private instantiationService: IInstantiationService,
+        @IInstantiationService instantiationService: IInstantiationService,
     ) {
-
+        super(instantiationService);
     }
 
-    public resolve(filePath: string, resource?: Buffer): Promise<Me5Stat> {
-        let done: Promise<Me5Stat>;
-        const me5File = new Me5File(resource ? resource : filePath);
-        done = me5File.open().then((file) => {
-            if (!file) {
-                throw new Error();
-            }
-
-            let baseItemIndex = 1;
-            const stat = this.instantiationService.create(Me5Stat, filePath, true, null, null, null);
-            for (let i = 0, groupCount = me5File.getGroupCount(); i < groupCount; i++) {
-                const group = this.instantiationService.create(Me5Stat, filePath, true, stat, me5File.getGroupName(i), null);
-                group.build(stat);
-                for (let j = 0, itemCount = me5File.getGroupItemCount(i); j < itemCount; ++j) {
-                    const item = this.instantiationService.create(Me5Stat, filePath, false, stat, me5File.getItemName(i, j), baseItemIndex);
-                    item.build(group);
-                    baseItemIndex++;
-                }
-            }
-
-            return stat;
-        }).catch(() => {
-            return null;
+    public resolveRawContent(resource: string): Promise<IRawResourceContent> {
+        return this.fileService.resolveStreamContent(resource).then((streamContent) => {
+            return createMe5ResourceBufferFactoryFromStream(streamContent.value).then(res => {
+                const r: IRawResourceContent = {
+                    value: res
+                };
+                return r;
+            }, (err) => {
+                console.error(err);
+                return null;
+            });
         });
-
-        return done;
     }
+
 
     public save(path: string) {
         const stat = this.treeService.LastFocusedTree.getRoot() as Me5Stat;
@@ -62,7 +53,8 @@ export class Me5FileService implements IFileHandleService {
                     root: rootStat
                 };
 
-                const file = new Me5File(rootStat.getId());
+
+                const file = new Me5File(path);
                 file.save(options, (group) => group.getChildren().length !== 0);
             }
         });
@@ -83,18 +75,6 @@ export class Me5FileService implements IFileHandleService {
             }
 
             const stat = this.treeService.LastFocusedTree.getRoot() as Me5Stat;
-            const groups = stat.getChildren((group) => group.getChildren().length !== 0);
-
-            stat.resource = data.file;
-            for (const group of groups) {
-                group.resource = data.file;
-
-                const items = group.getChildren();
-                for (const item of items) {
-                    item.resource = data.file;
-                }
-            }
-
             return stat;
         });
     }

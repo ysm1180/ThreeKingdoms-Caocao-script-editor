@@ -51,14 +51,19 @@ export class EditorGroup {
     }
 
     public openEditor(editor: IEditorInput) {
+        let isNew = false;
+
         const index = this.indexOf(editor);
         if (index === -1) {
+            isNew = true;
             this.editors.push(editor);
             
             this.fireEvent(this.onEditorOpened, editor, true);
         } 
 
         this.setActive(editor);
+        
+        return isNew;
     }
 
     public closeEditor(editor: IEditorInput, openNext = true) {

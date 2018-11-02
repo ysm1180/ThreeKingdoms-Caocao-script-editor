@@ -9,17 +9,52 @@ import { IInstantiationService } from '../../../../platform/instantiation/instan
 import { ImageResource, ImageType } from '../../common/imageResource';
 import { ResourceFileService } from '../resourceFile/resourceFileService';
 import { IResourceFileSerivce } from '../resourceFile/resourcefiles';
+import { Me5File } from '../../../common/me5File';
+import { IWorkbenchEditorService, WorkbenchEditorService } from '../editor/editorService';
 
 export const IMe5DataService: ServiceIdentifier<Me5DataService> = decorator<Me5DataService>('me5DataService');
 
 export class Me5DataService {
     constructor(
         @ITreeService private treeService: TreeService,
+        @IWorkbenchEditorService private editorService: WorkbenchEditorService,
         @IDialogService private dialogService: DialogService,
         @IResourceFileSerivce private resourceFileSerivce: ResourceFileService,
         @IInstantiationService private instantiationService: IInstantiationService,
     ) {
 
+    }
+
+    public resolveFile(resource: string) {
+        return this.resolve(resource);
+    }
+
+    private resolve(resource: string): Promise<Me5Stat> {
+        const model = this.resourceFileSerivce.models.get(resource);
+        model.setDataIndex(0);
+        const me5File = new Me5File(model.getCurrentData());
+
+        return me5File.open().then((file) => {
+            if (!file) {
+                throw new Error();
+            }
+
+            let baseItemIndex = 1;
+            const stat = this.instantiationService.create(Me5Stat, null, true, null, null);
+            for (let i = 0, groupCount = me5File.getGroupCount(); i < groupCount; i++) {
+                const group = this.instantiationService.create(Me5Stat, me5File.getGroupName(i), true, stat, null);
+                group.build(stat);
+                for (let j = 0, itemCount = me5File.getGroupItemCount(i); j < itemCount; ++j) {
+                    const item = this.instantiationService.create(Me5Stat, me5File.getItemName(i, j), false, stat, baseItemIndex);
+                    item.build(group);
+                    baseItemIndex++;
+                }
+            }
+
+            return stat;
+        }).catch(() => {
+            return null;
+        });
     }
 
     private _resolveImageData(file: BinaryFile): Promise<Uint8Array> {
@@ -61,8 +96,9 @@ export class Me5DataService {
 
             return Promise.all(promises);
         }).then((imageData: Uint8Array[]) => {
+            const activeInput = this.editorService.getActiveEditorInput();
             for (const imageDataArray of imageData) {
-                const model = this.resourceFileSerivce.models.get(element.root.getId());
+                const model = this.resourceFileSerivce.models.get(activeInput.getId());
                 const index = model.resourceModel.add(Buffer.from(imageDataArray.buffer));
                 element.index = index;
             }
@@ -118,11 +154,11 @@ export class Me5DataService {
             return Promise.all(promises);
         }).then((binaries: Uint8Array[]) => {
             const selectItems = [];
+            const activeInput = this.editorService.getActiveEditorInput();
             for (const [index, binary] of binaries.entries()) {
-                const resource = element.root.getId();
-                const model = this.resourceFileSerivce.models.get(resource);
+                const model = this.resourceFileSerivce.models.get(activeInput.getId());
                 const bufferIndex = model.resourceModel.add(Buffer.from(binary.buffer));
-                const item = this.instantiationService.create(Me5Stat, resource, false, element.root, names[index], bufferIndex);
+                const item = this.instantiationService.create(Me5Stat, names[index], false, element.root, bufferIndex);
                 item.build(parent, isSelectionAfter ? element : null);
                 selectItems.push(item);
             }
@@ -154,7 +190,7 @@ export class Me5DataService {
             itemAfter = element;
         }
 
-        const newGroup = this.instantiationService.create(Me5Stat, root.getId(), true, root, 'NEW GROUP', null);
+        const newGroup = this.instantiationService.create(Me5Stat, 'NEW GROUP', true, root, null);
         newGroup.build(root, itemAfter);
 
         lastTree.refresh(root);

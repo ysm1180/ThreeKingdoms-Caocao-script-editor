@@ -4,9 +4,12 @@ import { IRawResourceContent } from '../../../services/textfile/textfiles';
 import { ResourceBufferFactory } from '../../../../common/model/resourceBufferBuilder';
 import { IResourceFileSerivce } from '../../../services/resourceFile/resourcefiles';
 import { IEditorModel } from '../../../services/files/files';
+import { StateChange } from '../../../../../platform/files/files';
+import { Event } from '../../../../../base/common/event';
 
 export class ResourceFileEditorModel implements IEditorModel {
     private _resourceModel: ResourceModel;
+    private onDidStateChanged = new Event<StateChange>();
 
     constructor(
         private resource: string,
@@ -24,10 +27,6 @@ export class ResourceFileEditorModel implements IEditorModel {
     }
 
     public load(): Promise<ResourceFileEditorModel> {
-        if (this._resourceModel) {
-            return Promise.resolve(this);
-        }
-
         return this.loadFromFile();
     }
 

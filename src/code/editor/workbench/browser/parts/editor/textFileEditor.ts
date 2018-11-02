@@ -28,13 +28,13 @@ export class TextFileEditor extends BaseEditor {
         this.editorControl = this.instantiationService.create(CodeEditor, parent.getHTMLElement());
     }
 
-    public setInput(input: IEditorInput): Promise<void> {
+    public setInput(input: IEditorInput, refresh?: boolean): Promise<void> {
         if (!input) {
             return Promise.resolve();
         }
         
         return super.setInput(input).then(() => {
-            return input.resolve().then((model: TextFileEditorModel) => {
+            return input.resolve(refresh).then((model: TextFileEditorModel) => {
                 const modelPromise = model.load();
     
                 return modelPromise.then((model: TextFileEditorModel) => {

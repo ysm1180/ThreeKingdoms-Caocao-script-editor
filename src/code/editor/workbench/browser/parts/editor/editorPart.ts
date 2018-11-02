@@ -42,7 +42,7 @@ export class EditorPart extends Part {
 
     private _createGroup(): EditorGroup {
         const group: EditorGroup = this.instantiationService.create(EditorGroup);
-        
+
         this.registerDispose(group.onEditorStructureChanged.add(e => this.onEditorChanged.fire()));
         this.registerDispose(group.onEditorStateChanged.add(e => this.onEditorChanged.fire()));
 
@@ -54,7 +54,7 @@ export class EditorPart extends Part {
     }
 
     public getActiveEditorInput(): IEditorInput {
-		return this.editorGroup.activeEditorInput;
+        return this.editorGroup.activeEditorInput;
     }
 
     public create(parent: DomBuilder) {
@@ -83,7 +83,7 @@ export class EditorPart extends Part {
             return Promise.resolve(null);
         }
 
-        this.editorGroup.openEditor(input);
+        const isNewOpen = this.editorGroup.openEditor(input);
 
         const editor = this.doShowEditor(input);
         if (!editor) {
@@ -92,14 +92,14 @@ export class EditorPart extends Part {
 
         this.editorActivatedContext.set(true);
 
-        return this.setInput(input, editor, true);
+        return this.setInput(input, editor, isNewOpen);
     }
 
     public setInput(input: IEditorInput, editor: BaseEditor, forceOpen: boolean = false): Promise<void> {
         const previousInput = editor.getInput();
         const inputChanged = (!previousInput || !previousInput.matches(input) || forceOpen);
 
-        return editor.setInput(input).then(() => {
+        return editor.setInput(input, forceOpen).then(() => {
             if (inputChanged) {
                 this.onEditorInputChanged.fire(input);
             }
@@ -117,7 +117,7 @@ export class EditorPart extends Part {
         }
 
         const editor = this.doCreateViewEditor(desc);
-        
+
         editor.getContainer().build(this.getContentArea());
         editor.getContainer().show();
         editor.layout();
@@ -169,7 +169,7 @@ export class EditorPart extends Part {
         }
 
         this.editorActivatedContext.set(false);
-        
+
         this.currentEditor = null;
     }
 

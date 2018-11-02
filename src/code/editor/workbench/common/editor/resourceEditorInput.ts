@@ -34,9 +34,9 @@ export class ResourceEditorInput extends EditorInput {
         return this.resource === other.getId();
     }
 
-    public resolve(): Promise<ResourceFileEditorModel> {
+    public resolve(refresh?: boolean): Promise<ResourceFileEditorModel> {
         return Promise.resolve().then(() => {
-            return this.resourceFileService.models.loadOrCreate(this.resource);
+            return this.resourceFileService.models.loadOrCreate(this.resource, refresh);
         });
     }
 }

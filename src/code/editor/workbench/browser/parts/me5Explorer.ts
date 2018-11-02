@@ -1,6 +1,6 @@
 import { DomBuilder } from '../../../../base/browser/domBuilder';
 import { Tree, ITreeOptions, ITreeConfiguration } from '../../../../base/parts/tree/browser/tree';
-import {  IEditorInput } from '../../../../platform/editor/editor';
+import { IEditorInput } from '../../../../platform/editor/editor';
 import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
 import { RawContextKey, ContextKeyExpr, ContextKeyNotExpr } from '../../../../platform/contexts/contextKey';
 import { ContextKey, IContextKeyService, ContextKeyService } from '../../../../platform/contexts/contextKeyService';
@@ -10,12 +10,10 @@ import { IEditorGroupService, EditorPart } from './editor/editorPart';
 import { Me5Stat } from '../../parts/files/me5Data';
 import { ICompositeViewService, CompositeViewService } from '../../services/view/compositeViewService';
 import { Me5DataSource, Me5DataRenderer, Me5DataController } from '../../parts/me5ExplorerViewer';
-import { IMe5FileService, Me5FileService } from '../../services/me5/me5FileService';
 import { EditorGroup } from './editor/editorGroup';
 import { IDisposable, dispose } from '../../../../base/common/lifecycle';
 import { ResourceEditorInput } from '../../common/editor/resourceEditorInput';
-import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
-import { IResourceFileSerivce } from '../../services/resourceFile/resourcefiles';
+import { IMe5DataService, Me5DataService } from '../../services/me5/me5DataService';
 
 export const me5ExplorerItemIsMe5GroupId = 'explorerItemIsMe5Group';
 export const me5ExplorerItemIsMe5StatId = 'explorerItemIsMe5Stat';
@@ -26,7 +24,7 @@ export const me5ExplorerRootContext = new RawContextKey<boolean>(me5ExplorerItem
 export const me5ExplorerItemContext: ContextKeyNotExpr = ContextKeyExpr.not(ContextKeyExpr.or(me5ExplorerGroupContext, me5ExplorerRootContext));
 
 export class Me5Tree extends Tree {
-    private _cache = new Map<IEditorInput, Me5Stat>();
+    private _cache = new Map<String, Me5Stat>();
 
     constructor(
         container: HTMLElement,
@@ -49,7 +47,7 @@ export class Me5Tree extends Tree {
         treeService.register(this);
     }
 
-    public cache(key: IEditorInput): Me5Stat {
+    public cache(key: String): Me5Stat {
         if (this._cache.has(key)) {
             return this._cache.get(key);
         }
@@ -57,7 +55,7 @@ export class Me5Tree extends Tree {
         return null;
     }
 
-    public setCache(key: IEditorInput, value: Me5Stat): void {
+    public setCache(key: String, value: Me5Stat): void {
         if (key) {
             this._cache.set(key, value);
         }
@@ -73,6 +71,7 @@ export class Me5ExplorerView extends CompositeView {
     private controller: Me5DataController;
 
     private toExpandElements = {};
+    private toSelectElements = {};
 
     private groupContext: ContextKey<boolean>;
     private rootContext: ContextKey<boolean>;
@@ -83,12 +82,13 @@ export class Me5ExplorerView extends CompositeView {
 
     private onceEvents: IDisposable[];
 
+    private pendingPromise: Promise<any>;
+
     constructor(
-        @IMe5FileService private me5FileService: Me5FileService,
+        @IMe5DataService private me5DataService: Me5DataService,
         @IContextKeyService private contextKeyService: ContextKeyService,
         @IEditorGroupService private editorService: EditorPart,
         @ICompositeViewService private compositeViewService: CompositeViewService,
-        @IResourceFileSerivce private resourceFileService: ResourceFileService,
         @IInstantiationService private instantiationService: IInstantiationService,
     ) {
         super(EXPLORER_VIEW_ID);
@@ -101,6 +101,7 @@ export class Me5ExplorerView extends CompositeView {
         this.rootContext = me5ExplorerRootContext.bindTo(this.contextKeyService);
 
         this.prevInput = null;
+        this.pendingPromise = null;
 
         this.onceEvents = [];
     }
@@ -123,13 +124,13 @@ export class Me5ExplorerView extends CompositeView {
                 this.rootContext.set(focused.isRoot);
             }
         }));
-        
+
         this.group = this.editorService.getEditorGroup();
 
         this.registerDispose(this.compositeViewService.onDidCompositeOpen.add((composit) => this._onCompositeOpen(composit)));
         this.registerDispose(this.compositeViewService.onDidCompositeClose.add((composit) => this._onCompositClose(composit)));
-        this.registerDispose(this.group.onEditorClosed.add((editor) => {
-            this.explorerViewer.setCache(editor, null);
+        this.registerDispose(this.group.onEditorStructureChanged.add((editor) => {
+            this.explorerViewer.setCache(editor.getId(), null);
         }));
     }
 
@@ -155,7 +156,7 @@ export class Me5ExplorerView extends CompositeView {
     private _onOpenInput() {
         const previousRoot = this.explorerViewer.getRoot() as Me5Stat;
         if (previousRoot) {
-            this.setExpandedElements(previousRoot.getId());
+            this.setElementStates(previousRoot.getId());
         }
 
         const activeEditorInput = <ResourceEditorInput>this.group.activeEditorInput;
@@ -163,37 +164,48 @@ export class Me5ExplorerView extends CompositeView {
             return;
         }
 
-        if (this.group.matches(activeEditorInput, this.prevInput)) {
+        if (this.pendingPromise) {
             return;
         }
 
-        this.prevInput = activeEditorInput;
-
         let done: Promise<Me5Stat>;
         const filePath = activeEditorInput.getId();
-        const cacheData = this.explorerViewer.cache(activeEditorInput);
+        const cacheData = this.explorerViewer.cache(activeEditorInput.getId());
         if (cacheData) {
             done = Promise.resolve(cacheData);
         } else {
-            const model = this.resourceFileService.models.get(filePath);
-            model.setDataIndex(0);
-            done = this.me5FileService.resolve(filePath, model.getCurrentData());
+            done = this.me5DataService.resolveFile(filePath);
         }
 
+        this.pendingPromise = done;
         done.then((stat) => {
-            this.explorerViewer.setCache(activeEditorInput, stat);
+            this.explorerViewer.setCache(activeEditorInput.getId(), stat);
             this.explorerViewer.setRoot(stat).then(() => {
+                let expandPromise: Promise<any>;
                 const toExpand = this.toExpandElements[stat.getId()];
                 if (toExpand) {
-                    this.explorerViewer.expandAll(toExpand);
+                    expandPromise = this.explorerViewer.expandAll(toExpand);
+                } else {
+                    expandPromise = Promise.resolve();
                 }
+
+                const toSelect = this.toSelectElements[stat.getId()];
+                if (toSelect) {
+                    expandPromise.then(() => {
+                        this.explorerViewer.setSelection(toSelect);
+                    });
+                }
+
+                this.pendingPromise = null;
             });
         });
     }
 
-    private setExpandedElements(key: string) {
+    private setElementStates(key: string) {
         const expandedElements = this.explorerViewer.getExpandedElements();
+        const selectedElements = this.explorerViewer.getSelection();
         this.toExpandElements[key] = expandedElements;
+        this.toSelectElements[key] = selectedElements;
     }
 
     public layout(): void {

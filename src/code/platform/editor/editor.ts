@@ -5,7 +5,7 @@ export interface IEditorInput {
 
     matches(other: any): boolean;
 
-    resolve(): Promise<any>;
+    resolve(refresh?: boolean): Promise<any>;
 
     getPreferredEditorId(): string;
 }

@@ -48,21 +48,37 @@ export class BinaryFile {
     public open(): Promise<BinaryFile> {
         if (this._path) {
             return new Promise<BinaryFile>((c, e) => {
-                fs.readFile(this._path, {}, (err, data) => {
-                    if (err) {
-                        e(err);
-                        return null;
+                fs.open(this._path, 'r', (openError, fd) => {
+                    if (openError) {
+                        return e(openError);
                     }
 
-                    this.data = data;
+                    fs.readFile(fd, (readError, data) => {
+                        if (readError) {
+                            return e(readError);
+                        }
+    
+                        this.data = data;
+                        
+                        fs.close(fd, (closeError) => {
+                            if (closeError) {
+                                return e(closeError);
+                            }
 
-                    c(this);
+                            c(this);
+                        });
+                    });
                 });
+            }).then((result) => {
+                return result;
+            }, (err) => {
+                console.error(err);
+                return null;
             });
         } else if (this.data.length > 0) {
             return Promise.resolve(this);
         } else {
-            return Promise.reject(new Error('Fail to open file'));
+            return Promise.reject(new Error('the path or data is empty'));
         }
     }
 

@@ -199,6 +199,7 @@ export class TreeView {
         const item = this.getItemAround(mouseEvent.target);
 
         if (!item || item === this.root) {
+            this.model.setFocus();
             return;
         }
 

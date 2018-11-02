@@ -32,7 +32,7 @@ export abstract class BaseEditor extends Disposable {
         return this.parent;
     }
 
-    public setInput(input: IEditorInput): Promise<void> {
+    public setInput(input: IEditorInput, refresh?: boolean): Promise<void> {
         this.input = input;
 
         return Promise.resolve();

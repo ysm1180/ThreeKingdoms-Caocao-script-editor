@@ -81,7 +81,7 @@ export class Workbench implements IPartService {
 
         this.serviceStorage.set(IFileService, new ClassDescriptor(FileService));
         this.serviceStorage.set(ITextFileService, new ClassDescriptor(TextFileService));
-        this.serviceStorage.set(IResourceFileSerivce, new ClassDescriptor(ResourceFileService));
+        this.serviceStorage.set(IResourceFileSerivce, new ClassDescriptor(Me5FileService));
         
         this.serviceStorage.set(IMe5DataService, new ClassDescriptor(Me5DataService));
         this.serviceStorage.set(IMe5FileService, new ClassDescriptor(Me5FileService));
