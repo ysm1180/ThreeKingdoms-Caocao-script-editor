@@ -26,14 +26,19 @@ export class ResourceViewEditor extends BaseEditor {
     }
 
     public setInput(input: ResourceEditorInput, refresh?: boolean): Promise<void> {
-        if (!input) {
-            this.viewer.hide();
-            return Promise.resolve();
-        }
-
         return super.setInput(input).then(() => {
+            if (!input) {
+                this.viewer.hide();
+                return Promise.resolve();
+            }
+
             return input.resolve(refresh).then((editorModel: ResourceFileEditorModel) => {
                 if (!(editorModel instanceof ResourceFileEditorModel)) {
+                    return;
+                }
+                
+                const hasInput = !!this.input;
+                if (hasInput && editorModel.getResource() !== this.input.getResource()) {
                     return;
                 }
 

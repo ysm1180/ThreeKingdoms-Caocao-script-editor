@@ -102,7 +102,6 @@ export class TabControl {
 
         return tabContainer;
     }
-
     private update() {
         const editors = this.context;
         const editorInputs = this.context.getEditors();
@@ -114,6 +113,7 @@ export class TabControl {
             }
 
             const isTabActive = editors.isActive(editor);
+            const isLoading = editor.isSaving() || !editor.isLoaded();
 
             const name = editor.getName();
             this.labels[index].innerHTML = name;
@@ -122,6 +122,12 @@ export class TabControl {
                 Dom.addClass(tabContainer, 'active');
             } else {
                 Dom.removeClass(tabContainer, 'active');
+            }
+
+            if (isLoading) {
+                Dom.addClass(tabContainer, 'loading');
+            } else {
+                Dom.removeClass(tabContainer, 'loading');
             }
         });
 

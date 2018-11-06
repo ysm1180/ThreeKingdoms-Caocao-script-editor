@@ -1,16 +1,19 @@
-import { IEditorInput } from '../../../../../platform/editor/editor';
 import { Event } from '../../../../../base/common/event';
+import { EditorInput } from '../../../common/editor';
+import { IDisposable, dispose } from '../../../../../base/common/lifecycle';
 
 export class EditorGroup {
-    private editors: IEditorInput[];
+    private editors: EditorInput[];
 
-    private active: IEditorInput;
+    private active: EditorInput;
 
-    public onEditorStructureChanged = new Event<IEditorInput>();
-    public onEditorStateChanged = new Event<IEditorInput>();
-    public onEditorOpened = new Event<IEditorInput>();
-    public onEditorClosed = new Event<IEditorInput>();
-    public onEditorActivated = new Event<IEditorInput>();
+    public onEditorStructureChanged = new Event<EditorInput>();
+    public onEditorStateChanged = new Event<EditorInput>();
+    public onEditorOpened = new Event<EditorInput>();
+    public onEditorClosed = new Event<EditorInput>();
+    public onEditorActivated = new Event<EditorInput>();
+    public onEditorSaving = new Event<EditorInput>();
+    public onEditorSaved = new Event<EditorInput>();
 
     constructor() {
         this.editors = [];
@@ -24,7 +27,7 @@ export class EditorGroup {
         return this.editors.length;
     }
 
-    public getEditor(index: number): IEditorInput {
+    public getEditor(index: number): EditorInput {
         if (index >= this.editors.length) {
             return null;
         }
@@ -32,11 +35,11 @@ export class EditorGroup {
         return this.editors[index];
     }
 
-    public getEditors(): IEditorInput[] {
+    public getEditors(): EditorInput[] {
         return this.editors.slice(0);
     }
 
-    public indexOf(editor: IEditorInput): number {
+    public indexOf(editor: EditorInput): number {
         if (!editor) {
             return -1;
         }
@@ -50,23 +53,39 @@ export class EditorGroup {
         return -1;
     }
 
-    public openEditor(editor: IEditorInput) {
+    public openEditor(editor: EditorInput) {
         let isNew = false;
 
         const index = this.indexOf(editor);
         if (index === -1) {
             isNew = true;
             this.editors.push(editor);
-            
+
+            this._hookEditorListeners(editor);
+
             this.fireEvent(this.onEditorOpened, editor, true);
-        } 
+        }
 
         this.setActive(editor);
-        
+
         return isNew;
     }
 
-    public closeEditor(editor: IEditorInput, openNext = true) {
+    private _hookEditorListeners(editor: EditorInput): void {
+        const unbind: IDisposable[] = [];
+
+        unbind.push(editor.onChangedState.add(() => {
+            this.fireEvent(this.onEditorStateChanged, editor, false);
+        }));
+
+        unbind.push(this.onEditorClosed.add(e => {
+            if (e.matches(editor)) {
+                dispose(unbind);
+            }
+        }));
+    }
+
+    public closeEditor(editor: EditorInput, openNext = true) {
         const index = this.indexOf(editor);
         if (index === -1) {
             return;
@@ -89,7 +108,7 @@ export class EditorGroup {
         this.fireEvent(this.onEditorClosed, editor, true);
     }
 
-    private setActive(editor: IEditorInput) {
+    private setActive(editor: EditorInput) {
         const index = this.indexOf(editor);
         if (index === -1) {
             return;
@@ -104,7 +123,7 @@ export class EditorGroup {
         this.fireEvent(this.onEditorActivated, editor, false);
     }
 
-    private fireEvent(event: Event<IEditorInput>, editor: IEditorInput, isStructure: boolean) {
+    private fireEvent(event: Event<EditorInput>, editor: EditorInput, isStructure: boolean) {
         event.fire(editor);
         if (isStructure) {
             this.onEditorStructureChanged.fire(editor);
@@ -113,11 +132,11 @@ export class EditorGroup {
         }
     }
 
-    public isActive(editor: IEditorInput): boolean {
+    public isActive(editor: EditorInput): boolean {
         return this.active && this.matches(this.active, editor);
     }
 
-    public matches(editorA: IEditorInput, editorB: IEditorInput): boolean {
+    public matches(editorA: EditorInput, editorB: EditorInput): boolean {
         return !!editorA && !!editorB && editorA.matches(editorB);
     }
 }

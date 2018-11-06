@@ -4,9 +4,8 @@ import { ContextKeyExpr } from '../../../../../platform/contexts/contextKey';
 import { IDisposable, combinedDisposable } from '../../../../../base/common/lifecycle';
 import { IEditorInput } from '../../../../../platform/editor/editor';
 import { ResourceEditorInput } from '../../../common/editor/resourceEditorInput';
-import { decodeFromBase64 } from '../../../../../base/common/encode';
 import { ImageResource } from '../../../common/imageResource';
-import { IResourceFileSerivce } from '../../../services/resourceFile/resourcefiles';
+import { IResourceFileService } from '../../../services/resourceFile/resourcefiles';
 import { ResourceFileService } from '../../../services/resourceFile/resourceFileService';
 
 export class ImageViewStatusItem implements IStatusbarItem {
@@ -17,7 +16,7 @@ export class ImageViewStatusItem implements IStatusbarItem {
     constructor(
         private entry: IStatusbarEntry,
         @IEditorGroupService private editorService: EditorPart,
-        @IResourceFileSerivce private resourceFileService: ResourceFileService,
+        @IResourceFileService private resourceFileService: ResourceFileService,
     ) {
     }
 
@@ -46,7 +45,7 @@ export class ImageViewStatusItem implements IStatusbarItem {
             return;
         }
 
-        const dataModel = this.resourceFileService.models.get(input.getId());
+        const dataModel = this.resourceFileService.models.get(input.getResource());
         const image = new ImageResource();
         const dataArray = new Uint8Array(dataModel.getCurrentData());
         if (image.build(dataArray)) {

@@ -1,6 +1,7 @@
 import { IRawResourceContent } from '../textfile/textfiles';
 import { ResourceFileEditorModelManager } from './resourceFileEditorModelManager';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { IResourceStat } from './resourceDataService';
 
 
 export abstract class ResourceFileService {
@@ -17,4 +18,6 @@ export abstract class ResourceFileService {
     }
 
     public abstract resolveRawContent(resource: string): Promise<IRawResourceContent>;
+    public abstract save(resource: string): void;
+    public abstract updateContents(resource: string, stat: IResourceStat);
 }

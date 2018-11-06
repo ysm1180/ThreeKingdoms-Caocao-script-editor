@@ -9,10 +9,6 @@ export interface IFileService {
     resolveStreamContent(resource: string, encoding?: string): Promise<IStreamContent>;
 }
 
-export interface IFileHandleService {
-    save(resource: string): any;
-}
-
 export interface IEditorModel {
     load(): Promise<IEditorModel>;
 

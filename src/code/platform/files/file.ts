@@ -57,9 +57,9 @@ export class BinaryFile {
                         if (readError) {
                             return e(readError);
                         }
-    
+
                         this.data = data;
-                        
+
                         fs.close(fd, (closeError) => {
                             if (closeError) {
                                 return e(closeError);
@@ -107,7 +107,7 @@ export class BinaryFile {
         this.dataSize += length;
     }
 
-    public finish(): Promise<void> {
+    public finish(fd: number): Promise<void> {
         return new Promise((c, e) => {
             this.data = Buffer.alloc(this.dataSize);
             this.tempData.forEach(element => {
@@ -115,28 +115,23 @@ export class BinaryFile {
             });
             this.tempData = [];
 
-            fs.open(this._path, 'w', (openError, fd) => {
-                if (openError) {
-                    return e(openError);
+            fs.write(fd, this.data, writeError => {
+                if (writeError) {
+                    return fs.close(fd, () => e(writeError));
                 }
-                fs.write(fd, this.data, writeError => {
-                    if (writeError) {
-                        return fs.close(fd, () => e(writeError));
+
+                fs.fdatasync(fd, syncError => {
+                    if (syncError) {
+                        console.warn('[node.js fs] fdatasync is now disabled for this session because it failed: ', syncError);
+                        return e(syncError);
                     }
 
-                    fs.fdatasync(fd, syncError => {
-                        if (syncError) {
-                            console.warn('[node.js fs] fdatasync is now disabled for this session because it failed: ', syncError);
-                            return e(syncError);
+                    fs.close(fd, closeError => {
+                        if (closeError) {
+                            return e(closeError);
                         }
 
-                        fs.close(fd, closeError => {
-                            if (closeError) {
-                                return e(closeError);
-                            }
-                            
-                            return c();
-                        });
+                        return c();
                     });
                 });
             });

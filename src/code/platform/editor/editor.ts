@@ -1,5 +1,5 @@
 export interface IEditorInput {
-    getId(): any;
+    getResource(): any;
 
     getName(): string;
 

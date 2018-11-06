@@ -9,14 +9,14 @@ import { WorkbenchLayout } from './layout';
 import { EditorPart, IEditorGroupService } from './parts/editor/editorPart';
 import { TitlePart, ITitlePartService } from './parts/titlePart';
 import { IContextMenuService, ContextMenuService } from '../services/contextmenuService';
-import { IMe5DataService, Me5DataService } from '../services/me5/me5DataService';
+import { Me5DataService } from '../services/me5/me5DataService';
 import { WindowClientService } from '../../../platform/windows/windowsIpc';
 import { IDialogService, DialogService } from '../services/electron-browser/dialogService';
 import { StatusbarPart, IStatusbarService } from './parts/statusbarPart';
 import { IContextKeyService, ContextKeyService } from '../../../platform/contexts/contextKeyService';
 import { ICompositeViewService, CompositeViewService } from '../services/view/compositeViewService';
 import { FileService } from '../services/files/node/fileService';
-import { IMe5FileService, Me5FileService } from '../services/me5/me5FileService';
+import { Me5FileService } from '../services/me5/me5FileService';
 import { IWorkbenchEditorService, WorkbenchEditorService } from '../services/editor/editorService';
 import { IPartService } from '../services/part/partService';
 import { ITextFileService } from '../services/textfile/textfiles';
@@ -24,8 +24,8 @@ import { TextFileService } from '../services/textfile/textFileService';
 import { IFileService } from '../services/files/files';
 import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
 import { IWindowService } from '../../../platform/windows/windows';
-import { ResourceFileService } from '../services/resourceFile/resourceFileService';
-import { IResourceFileSerivce } from '../services/resourceFile/resourcefiles';
+import { IResourceFileService } from '../services/resourceFile/resourcefiles';
+import { IResourceDataService } from '../services/resourceFile/resourceDataService';
 
 export class Workbench implements IPartService {
     private container: HTMLElement;
@@ -81,11 +81,9 @@ export class Workbench implements IPartService {
 
         this.serviceStorage.set(IFileService, new ClassDescriptor(FileService));
         this.serviceStorage.set(ITextFileService, new ClassDescriptor(TextFileService));
-        this.serviceStorage.set(IResourceFileSerivce, new ClassDescriptor(Me5FileService));
+        this.serviceStorage.set(IResourceFileService, new ClassDescriptor(Me5FileService));
+        this.serviceStorage.set(IResourceDataService, new ClassDescriptor(Me5DataService));
         
-        this.serviceStorage.set(IMe5DataService, new ClassDescriptor(Me5DataService));
-        this.serviceStorage.set(IMe5FileService, new ClassDescriptor(Me5FileService));
-
         this.editorPart = this.instantiationService.create(EditorPart);
         this.serviceStorage.set(IEditorGroupService, this.editorPart);
         this.serviceStorage.set(IWorkbenchEditorService, new ClassDescriptor(WorkbenchEditorService, this.editorPart));

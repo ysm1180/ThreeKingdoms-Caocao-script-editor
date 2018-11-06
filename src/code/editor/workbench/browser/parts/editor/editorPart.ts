@@ -1,6 +1,5 @@
 import { DomBuilder, $ } from '../../../../../base/browser/domBuilder';
 import { Event } from '../../../../../base/common/event';
-import { IEditorInput } from '../../../../../platform/editor/editor';
 import { Part } from '../../part';
 import { EditorGroup } from './editorGroup';
 import { BaseEditor } from './baseEditor';
@@ -10,6 +9,7 @@ import { EditorRegistry, EditorDescriptor } from '../../editor';
 import { IDimension } from '../../../../common/editorCommon';
 import { RawContextKey } from '../../../../../platform/contexts/contextKey';
 import { IContextKeyService, ContextKeyService, ContextKey } from '../../../../../platform/contexts/contextKeyService';
+import { EditorInput } from '../../../common/editor';
 
 export const editorInputIsActivatedId = 'editorInputIsactivatedId';
 export const editorInputActivatedContext = new RawContextKey<boolean>(editorInputIsActivatedId, false);
@@ -24,7 +24,7 @@ export class EditorPart extends Part {
 
     private editorActivatedContext: ContextKey<boolean>;
 
-    public onEditorInputChanged = new Event<IEditorInput>();
+    public onEditorInputChanged = new Event<EditorInput>();
     public onEditorChanged = new Event<void>();
 
     constructor(
@@ -53,7 +53,7 @@ export class EditorPart extends Part {
         return this.editorGroup;
     }
 
-    public getActiveEditorInput(): IEditorInput {
+    public getActiveEditorInput(): EditorInput {
         return this.editorGroup.activeEditorInput;
     }
 
@@ -69,7 +69,7 @@ export class EditorPart extends Part {
         }
     }
 
-    public openEditors(inputs: IEditorInput[]) {
+    public openEditors(inputs: EditorInput[]) {
         const promises = [];
         for (let i = 0; i < inputs.length; i++) {
             promises.push(this.openEditor(inputs[i]));
@@ -78,7 +78,7 @@ export class EditorPart extends Part {
         return Promise.all(promises);
     }
 
-    public openEditor(input: IEditorInput): Promise<void> {
+    public openEditor(input: EditorInput): Promise<void> {
         if (!input) {
             return Promise.resolve(null);
         }
@@ -95,8 +95,8 @@ export class EditorPart extends Part {
         return this.setInput(input, editor, isNewOpen);
     }
 
-    public setInput(input: IEditorInput, editor: BaseEditor, forceOpen: boolean = false): Promise<void> {
-        const previousInput = editor.getInput();
+    public setInput(input: EditorInput, editor: BaseEditor, forceOpen: boolean = false): Promise<void> {
+        const previousInput = editor.input;
         const inputChanged = (!previousInput || !previousInput.matches(input) || forceOpen);
 
         return editor.setInput(input, forceOpen).then(() => {
@@ -106,7 +106,7 @@ export class EditorPart extends Part {
         });
     }
 
-    private doShowEditor(input: IEditorInput): BaseEditor {
+    private doShowEditor(input: EditorInput): BaseEditor {
         const desc = EditorRegistry.getEditor(input);
         if (!desc) {
             return null;
@@ -173,7 +173,7 @@ export class EditorPart extends Part {
         this.currentEditor = null;
     }
 
-    public closeEditor(input: IEditorInput) {
+    public closeEditor(input: EditorInput) {
         if (this.editorGroup.isActive(input)) {
             this.doCloseActiveEditor();
         } else {
@@ -191,7 +191,7 @@ export class EditorPart extends Part {
         }
     }
 
-    private doCloseInactiveEditor(input: IEditorInput) {
+    private doCloseInactiveEditor(input: EditorInput) {
         this.editorGroup.closeEditor(input, false);
     }
 

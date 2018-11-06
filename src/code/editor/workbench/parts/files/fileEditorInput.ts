@@ -26,7 +26,7 @@ export class FileEditorInput extends EditorInput {
         return this.name;
     }
 
-    public getId(): string {
+    public getResource(): string {
         return this.resource;
     }
 
@@ -35,7 +35,7 @@ export class FileEditorInput extends EditorInput {
             return true;
         }
 
-        return this.getId() === other.getId();
+        return this.getResource() === other.getResource();
     }
 
     public resolve(): Promise<TextFileEditorModel> {

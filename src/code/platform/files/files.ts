@@ -21,4 +21,5 @@ export enum StateChange {
 	DIRTY,
 	SAVING,
 	SAVED,
+	SAVE_ERROR,
 }

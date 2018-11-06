@@ -3,18 +3,50 @@ import { ResourceViewEditor } from '../../browser/parts/editor/resourceViewEdito
 import { ResourceFileEditorModel } from '../../browser/parts/editor/resourceFileEditorModel';
 import { EditorInput } from '../editor';
 import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
-import { IResourceFileSerivce } from '../../services/resourceFile/resourcefiles';
+import { IResourceFileService } from '../../services/resourceFile/resourcefiles';
+import { IDisposable } from '../../../../base/common/lifecycle';
 
 export class ResourceEditorInput extends EditorInput {
+    private toUnbind: IDisposable[];
+
     constructor(
         private resource: string,
         private name: string,
-        @IResourceFileSerivce private resourceFileService: ResourceFileService,
+        @IResourceFileService private resourceFileService: ResourceFileService,
     ) {
         super();
+
+        this.toUnbind = [];
+
+        this._registerListeners();
     }
 
-    public getId(): string {
+    private _registerListeners(): void {
+        this.toUnbind.push(this.resourceFileService.models.onModelLoading.add(() => this._onModelLoading()));
+        this.toUnbind.push(this.resourceFileService.models.onModelLoaded.add(() => this._onModelLoaded()));
+        this.toUnbind.push(this.resourceFileService.models.onModelSaving.add(() => this._onModelSaving()));
+        this.toUnbind.push(this.resourceFileService.models.onModelSaved.add(() => this._onModelSaved()));
+    }
+
+    private _onModelLoading() {
+        this.onChangedState.fire();
+    }
+
+    private _onModelLoaded() {
+        this.onChangedState.fire();
+    }
+
+    private _onModelSaving() {
+        this.onChangedState.fire();
+        this.onSaving.fire();
+    }
+
+    private _onModelSaved() {
+        this.onChangedState.fire();
+        this.onSaved.fire();
+    }
+
+    public getResource(): string {
         return this.resource;
     }
 
@@ -26,12 +58,25 @@ export class ResourceEditorInput extends EditorInput {
         return ResourceViewEditor.ID;
     }
 
+    public isSaving(): boolean {
+        const model = this.resourceFileService.models.get(this.resource);
+        if (model) {
+            return model.isSaving();
+        }
+
+        return false;
+    }
+
+    public isLoaded(): boolean {
+        return !this.resourceFileService.models.isLoading(this.resource);
+    }
+
     public matches(other: IEditorInput): boolean {
         if (this === other) {
             return true;
         }
 
-        return this.resource === other.getId();
+        return this.resource === other.getResource();
     }
 
     public resolve(refresh?: boolean): Promise<ResourceFileEditorModel> {

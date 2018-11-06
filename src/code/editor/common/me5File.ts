@@ -1,13 +1,11 @@
+import * as fs from 'fs';
 import * as Convert from '../../base/common/convert';
 import * as electron from 'electron';
 import { BinaryFile } from '../../platform/files/file';
-import { Me5Stat, FilterFuntion } from '../workbench/parts/files/me5Data';
+import { Me5Stat } from '../workbench/parts/files/me5Data';
 import { ImageResource } from '../workbench/common/imageResource';
 import { isBuffer } from 'util';
-
-export interface ISaveMe5Data {
-    root: Me5Stat;
-}
+import { IResourceStat, FilterFuntion } from '../workbench/services/resourceFile/resourceDataService';
 
 export class Me5File extends BinaryFile {
     public static readonly ALL_ITEM_COUNT_OFFSET = 1;
@@ -108,69 +106,75 @@ export class Me5File extends BinaryFile {
         return this.readBytes(offset + itemNameLength, itemSize);
     }
 
-    public async save(data: ISaveMe5Data, groupFilter?: FilterFuntion<Me5Stat>) {
-        return new Promise((c1, e) => {
-            this.tempData = [];
-            this.dataSize = 0;
-
-            const groups = data.root.getChildren(groupFilter);
-
-            const itemLengths = groups.map((group) => group.getChildren().length);
-            this._setAllItemCount(itemLengths.reduce((pre, cur) => pre + cur, 0));
-            this._setGroupCount(groups.length);
-
-            this.itemInfoStartOffset = groups.length * Me5File.GROUP_HEADER_SIZE + Me5File.GROUP_INFO_START_OFFSET;
-
-            let baseItemIndex = 0;
-            for (const group of groups) {
-                this._setGroupInfo(group, baseItemIndex, groupFilter);
-
-                const items = group.getChildren();
-                for (const item of items) {
-                    this._setItemInfo(item, baseItemIndex);
+    public async save(stat: IResourceStat, groupFilter?: FilterFuntion<IResourceStat>) {
+        return new Promise<void>((c1, e) => {
+            fs.open(this._path, 'w', (openError, fd) => {
+                if (openError) {
+                    return e(openError);
                 }
-                baseItemIndex += items.length;
-            }
+                
+                this.tempData = [];
+                this.dataSize = 0;
 
-            const setGroupPromises = [];
+                const groups = stat.getChildren(groupFilter);
 
-            let offset = this.itemInfoStartOffset + baseItemIndex * Me5File.ITEM_HEADER_SIZE;
-            baseItemIndex = 0;
+                const itemLengths = groups.map((group) => group.getChildren().length);
+                this._setAllItemCount(itemLengths.reduce((pre, cur) => pre + cur, 0));
+                this._setGroupCount(groups.length);
 
-            for (const group of groups) {
-                setGroupPromises.push(() => new Promise((c, e) => {
-                    const setItemPromises = [];
+                this.itemInfoStartOffset = groups.length * Me5File.GROUP_HEADER_SIZE + Me5File.GROUP_INFO_START_OFFSET;
 
-                    offset += this._setGroup(offset, group);
+                let baseItemIndex = 0;
+                for (const group of groups) {
+                    this._setGroupInfo(group, baseItemIndex, groupFilter);
 
                     const items = group.getChildren();
                     for (const item of items) {
-                        setItemPromises.push((offset) => {
-                            return this._setItem(offset, item, baseItemIndex).then((length) => {
-                                return offset + length;
-                            });
-                        });
+                        this._setItemInfo(item, baseItemIndex);
                     }
+                    baseItemIndex += items.length;
+                }
 
-                    setItemPromises.reduce((cur, next) => {
-                        return cur.then((offset) => {
-                            return next(offset);
-                        }).then((changedOffset) => {
-                            offset = changedOffset;
-                            return offset;
+                const setGroupPromises = [];
+
+                let offset = this.itemInfoStartOffset + baseItemIndex * Me5File.ITEM_HEADER_SIZE;
+                baseItemIndex = 0;
+
+                for (const group of groups) {
+                    setGroupPromises.push(() => new Promise((c, e) => {
+                        const setItemPromises = [];
+
+                        offset += this._setGroup(offset, group);
+
+                        const items = group.getChildren();
+                        for (const item of items) {
+                            setItemPromises.push((offset) => {
+                                return this._setItem(offset, item, baseItemIndex).then((length) => {
+                                    return offset + length;
+                                });
+                            });
+                        }
+
+                        setItemPromises.reduce((cur, next) => {
+                            return cur.then((offset) => {
+                                return next(offset);
+                            }).then((changedOffset) => {
+                                offset = changedOffset;
+                                return offset;
+                            });
+                        }, Promise.resolve(offset)).then(() => {
+                            baseItemIndex += items.length;
+                            c();
                         });
-                    }, Promise.resolve(offset)).then(() => {
-                        baseItemIndex += items.length;
-                        c();
-                    });
-                }));
-            }
+                    }));
+                }
 
-            setGroupPromises.reduce((cur, next) => {
-                return cur.then(next);
-            }, Promise.resolve()).then(() => {
-                this.finish().then(() => {
-                    c1();
+                setGroupPromises.reduce((cur, next) => {
+                    return cur.then(next);
+                }, Promise.resolve()).then(() => {
+                    this.finish(fd).then(() => {
+                        c1();
+                    });
                 });
             });
         });
@@ -184,21 +188,21 @@ export class Me5File extends BinaryFile {
         this.writeInt(Me5File.GROUP_COUNT_OFFSET, count);
     }
 
-    private _setGroupInfo(group: Me5Stat, baseItemIndex: number, filter?: FilterFuntion<Me5Stat>) {
+    private _setGroupInfo(group: IResourceStat, baseItemIndex: number, filter?: FilterFuntion<Me5Stat>) {
         const offset = Me5File.GROUP_INFO_START_OFFSET + group.getIndex(filter) * Me5File.GROUP_HEADER_SIZE;
         this.writeInt(offset + 4, baseItemIndex); // Item Begin Index
         this.writeInt(offset + 8, baseItemIndex + group.getChildren().length - 1); // Item End Index
         this.writeInt(offset, Convert.getByteLength(group.name));
     }
 
-    private _setItemInfo(item: Me5Stat, baseItemIndex: number, filter?: FilterFuntion<Me5Stat>) {
+    private _setItemInfo(item: IResourceStat, baseItemIndex: number, filter?: FilterFuntion<Me5Stat>) {
         const offset = this.itemInfoStartOffset + (baseItemIndex + item.getIndex(filter)) * Me5File.ITEM_HEADER_SIZE;
         this.writeInt(offset, 0); // item offset
         this.writeInt(offset + 4, Convert.getByteLength(item.name));
         this.writeInt(offset + 8, 0); // item size
     }
 
-    private _setGroup(offset: number, group: Me5Stat): number {
+    private _setGroup(offset: number, group: IResourceStat): number {
         const name = group.name;
         const length = Convert.getByteLength(name);
 
@@ -207,7 +211,7 @@ export class Me5File extends BinaryFile {
         return length;
     }
 
-    private _setItem(offset: number, item: Me5Stat, baseItemIndex: number, filter?: FilterFuntion<Me5Stat>): Promise<number> {
+    private _setItem(offset: number, item: IResourceStat, baseItemIndex: number, filter?: FilterFuntion<Me5Stat>): Promise<number> {
         const name = item.name;
         const length = Convert.getByteLength(name);
 

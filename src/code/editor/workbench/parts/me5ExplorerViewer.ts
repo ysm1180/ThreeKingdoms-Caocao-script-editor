@@ -13,7 +13,7 @@ import { ContextKey, IContextKeyService, ContextKeyService } from '../../../plat
 import { Me5Stat, ItemState } from './files/me5Data';
 import { IWorkbenchEditorService, WorkbenchEditorService } from '../services/editor/editorService';
 import { ResourceFileService } from '../services/resourceFile/resourceFileService';
-import { IResourceFileSerivce } from '../services/resourceFile/resourcefiles';
+import { IResourceFileService } from '../services/resourceFile/resourcefiles';
 
 
 export const explorerEditableItemId = 'explorerRename';
@@ -125,7 +125,7 @@ export class Me5DataController implements IDataController {
     constructor(
         @IWorkbenchEditorService private editorService: WorkbenchEditorService,
         @IContextMenuService private contextMenuService: ContextMenuService,
-        @IResourceFileSerivce private resourceFileService: ResourceFileService,
+        @IResourceFileService private resourceFileService: ResourceFileService,
     ) {
 
     }
@@ -134,7 +134,7 @@ export class Me5DataController implements IDataController {
         tree.focus();
 
         const input = this.editorService.getActiveEditorInput();
-        const model = this.resourceFileService.models.get(input.getId());
+        const model = this.resourceFileService.models.get(input.getResource());
         model.setDataIndex(element.index);
         this.editorService.refresh();
     }

@@ -1,5 +1,5 @@
 import './parts/files/fileCommands';
-import './parts/electron-browser/menu.registry';
+import './parts/electron-browser/me5ResourceMenu.registry';
 import './parts/electron-browser/sidebar.registry';
 import './parts/electron-browser/statusbar.registry';
 import './parts/electron-browser/file.registry';

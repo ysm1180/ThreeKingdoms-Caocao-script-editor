@@ -1,11 +1,16 @@
 import { IEditorInput } from '../../../platform/editor/editor';
+import { Event } from '../../../base/common/event';
 
 export abstract class EditorInput implements IEditorInput {
+    public onSaving = new Event<void>();
+    public onSaved = new Event<void>();
+    public onChangedState = new Event<void>();
+
     constructor() {
 
     }
 
-    public getId(): string {
+    public getResource(): string {
         return null;
     }
 
@@ -17,9 +22,21 @@ export abstract class EditorInput implements IEditorInput {
         return this === other;
     }
 
+    public isSaving(): boolean {
+        return false;
+    }
+
+    public isLoaded(): boolean {
+        return true;
+    }
+
     public abstract resolve(): Promise<any>;
 
     public getPreferredEditorId(): string {
         return null;
+    }
+
+    public dispose(): void {
+
     }
 }
