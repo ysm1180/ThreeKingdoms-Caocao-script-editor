@@ -5,7 +5,6 @@ export class ResourceBufferFactory {
         private readonly buffer: Buffer,
         private createBufferFn: (source) => ResourceBuffer
     ) {
-
     }
 
     public create() {

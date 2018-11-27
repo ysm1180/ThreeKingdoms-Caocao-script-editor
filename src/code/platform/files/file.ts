@@ -83,12 +83,15 @@ export class BinaryFile {
     }
 
     public readNumber(offset: number): number {
-        const bytes: ArrayBuffer = this.data.buffer.slice(offset, offset + 4);
-        return new Uint32Array(bytes)[0];
+        const buffer = Buffer.from(this.data.buffer.slice(this.data.byteOffset, this.data.byteOffset + this.data.byteLength));
+        const bytes = buffer.buffer.slice(offset, offset + 4);
+        const number = new Uint32Array(bytes);
+        return number[0];
     }
 
     public readByte(offset: number): number {
-        return this.data.buffer[offset];
+        const buffer = Buffer.from(this.data.buffer.slice(this.data.byteOffset, this.data.byteOffset + this.data.byteLength));
+        return buffer[offset];
     }
 
     public readString(offset: number, length: number) {
@@ -96,7 +99,8 @@ export class BinaryFile {
     }
 
     public readBytes(offset: number, length: number): Uint8Array {
-        return new Uint8Array(this.data.buffer.slice(offset, offset + length));
+        const buffer = Buffer.from(this.data.buffer.slice(this.data.byteOffset, this.data.byteOffset + this.data.byteLength));
+        return new Uint8Array(buffer.buffer.slice(offset, offset + length));
     }
 
     public write(offset: number, length: number, data: Buffer) {

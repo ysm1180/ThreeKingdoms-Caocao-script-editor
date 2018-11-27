@@ -42,8 +42,6 @@ export class ResourceFileEditorModel implements IEditorModel {
     }
 
     public load(): Promise<ResourceFileEditorModel> {
-        this.onDidStateChanged.fire(StateChange.LOADING);
-        
         return this._loadFromFile();
     }
 
@@ -60,7 +58,6 @@ export class ResourceFileEditorModel implements IEditorModel {
 
     private _createResourceEditorModel(value: ResourceBufferFactory): Promise<ResourceFileEditorModel> {
         this._createResourceModel(value);
-
         return this._createResourceStat().then((result) => {
             this._resourceStat = result;
             return this;

@@ -59,7 +59,7 @@ export class ResourceFileEditorModelManager {
         this.mapResourceToPendingModelLoaders.set(resource, modelLoadPromise);
 
         this.onModelLoading.fire();
-
+        
         return modelLoadPromise.then((model) => {
             this._add(resource, model);
 

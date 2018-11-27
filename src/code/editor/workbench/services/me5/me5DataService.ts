@@ -21,7 +21,6 @@ export class Me5DataService extends ResourceDataService {
             if (!file) {
                 throw new Error();
             }
-
             let baseItemIndex = 1;
             const stat = this.instantiationService.create(Me5Stat, null, true, null, null);
             for (let i = 0, groupCount = me5File.getGroupCount(); i < groupCount; i++) {

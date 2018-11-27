@@ -163,7 +163,6 @@ export class Me5ExplorerView extends CompositeView {
         }
 
         const resource = activeEditorInput.getResource();
-        console.log(resource);  
         if (this.pendingPromise[resource]) {
             return;
         }
