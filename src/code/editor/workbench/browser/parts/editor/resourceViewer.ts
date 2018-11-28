@@ -60,7 +60,7 @@ export class BinaryAudioPlayer {
         });
         const audio = new AudioPlayer(audioContainer.getHTMLElement());
 
-        const base64 = descriptor.resource;
+        const base64 = encodeToBase64(descriptor.resource);
         audio.src = `data:audio/${type};base64,${base64}`;
     }
 }

@@ -3,6 +3,7 @@ npm-debug.log
 Thumbs.db
 node_modules/
 .build/
+build/
 dist/
 build/node_modules
 yarn-error.log

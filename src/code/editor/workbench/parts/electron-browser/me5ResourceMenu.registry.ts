@@ -124,10 +124,10 @@ function doInsertItem(
 
         return Promise.all(promises);
     }).then((binaries: Uint8Array[]) => {
-        const selectItems = [];
+        const selectItems : Me5Stat[] = [];
         const activeInput = editorService.getActiveEditorInput();
+        const model = resourceFileService.models.get(activeInput.getResource());
         for (const [index, binary] of binaries.entries()) {
-            const model = resourceFileService.models.get(activeInput.getResource());
             const bufferIndex = model.resourceModel.add(Buffer.from(binary.buffer));
             const item = instantiationService.create(Me5Stat, names[index], false, element.root, bufferIndex);
             item.build(parent, isSelectionAfter ? element : null);
@@ -139,6 +139,8 @@ function doInsertItem(
                 return lastTree.expand(parent);
             }).then(() => {
                 lastTree.setSelection(selectItems);
+
+                model.setDataIndex(selectItems[0].index);
                 editorService.refresh();
             });
         }

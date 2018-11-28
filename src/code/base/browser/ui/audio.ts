@@ -127,7 +127,7 @@ export class AudioPlayer extends Disposable {
 
         this.elapsedLabel.textContent = this.toTime(this._audio.currentTime);
 
-        if (Math.floor(this._audio.currentTime) === Math.floor(this._audio.duration)) {
+        if (this._audio.currentTime === this._audio.duration) {
             this.stop();
         }
     }
