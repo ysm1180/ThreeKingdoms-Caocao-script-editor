@@ -1,28 +1,26 @@
-# newjojogame-script-editor
-
-## New Jojo Game Editor
-NewJojoGame : https://github.com/ysm1180/newjojogame
+# Three Kingdoms - Caocao Game Editor
+ThreeKingdoms-Caocao : https://github.com/ysm1180/ThreeKingdoms-Caocao
 
 ## Start
 ```
 npm install gulpjs/gulp-cli -g
-npm install 
-npm run rebuild
+yarn install 
+yarn rebuild
 ```
 
 ## For development (Build & Watch)
 ```
-npm run dev
+yarn dev
 ```
 
 ## Build source
 ```
-npm run build
+yarn build
 ```
 
 ## Package build for win64
 ```
-npm run build:win
+yarn build:win
 ```
 
 ## Reference

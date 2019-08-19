@@ -100,7 +100,7 @@ export class AppMenu {
     }
 
     private setToolMenuItem(toolMenu: Menu) {
-        const toggleDebug = new MenuItem({ label: '개발자 도구', role: 'toggledevtools' });
+        const toggleDebug = new MenuItem({ label: '개발자 도구', role: 'toggleDevTools' });
 
         arrays.coalesce([
             toggleDebug,

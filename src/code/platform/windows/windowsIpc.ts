@@ -1,5 +1,5 @@
-import { ipcRenderer, ipcMain, IpcMessageEvent  } from 'electron';
-import { MessageBoxOptions, IMessageBoxResult, OpenDialogOptions, IOpenFileRequest, ISaveFileRequest, SaveDialogOptions, IWindowService } from './windows';
+import { ipcMain, IpcMainEvent, ipcRenderer } from 'electron';
+import { IMessageBoxResult, IOpenFileRequest, ISaveFileRequest, IWindowService, MessageBoxOptions, OpenDialogOptions, SaveDialogOptions } from './windows';
 
 export class WindowChannel {
     constructor(
@@ -9,19 +9,19 @@ export class WindowChannel {
     }
 
     public registerListeners() {
-        ipcMain.on('showMessageBox', (event: IpcMessageEvent, opts: MessageBoxOptions) => {
+        ipcMain.on('showMessageBox', (event: IpcMainEvent, opts: MessageBoxOptions) => {
             this.windowMainService.showMessageBox(opts).then(result => {
                 event.returnValue = result;
             });
         });
 
-        ipcMain.on('showOpenDialog', (event: IpcMessageEvent, opts: OpenDialogOptions) => {
+        ipcMain.on('showOpenDialog', (event: IpcMainEvent, opts: OpenDialogOptions) => {
             this.windowMainService.showOpenDialog(opts).then(result => {
                 event.returnValue = result;
             });
         });
 
-        ipcMain.on('showSaveDialog', (event: IpcMessageEvent, opts: SaveDialogOptions) => {
+        ipcMain.on('showSaveDialog', (event: IpcMainEvent, opts: SaveDialogOptions) => {
             this.windowMainService.showSaveDialog(opts).then(result => {
                 event.returnValue = result;
             });

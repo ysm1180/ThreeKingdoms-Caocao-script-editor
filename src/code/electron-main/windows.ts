@@ -107,15 +107,15 @@ export class Dialog {
 
     public showOpenDialog(options: Electron.OpenDialogOptions, window?: BrowserWindow): Promise<IOpenFileRequest> {
         return new Promise((c, e) => {
-            dialog.showOpenDialog(window ? window : void 0, options, paths => {
-                c({ files: paths });
+            dialog.showOpenDialog(window ? window : void 0, options).then(({filePaths}) => {
+                c({ files: filePaths });
             });
         });
     }
 
     public showMessageBox(options: Electron.MessageBoxOptions, window?: BrowserWindow): Promise<IMessageBoxResult> {
         return new Promise((c, e) => {
-            dialog.showMessageBox(window ? window : void 0, options, (response: number, checkboxChecked: boolean) => {
+            dialog.showMessageBox(window ? window : void 0, options).then(({response, checkboxChecked}) => {
                 c({ button: response, checkboxChecked });
             });
         });
@@ -123,8 +123,8 @@ export class Dialog {
 
     public showSaveDialog(options: Electron.SaveDialogOptions, window?: BrowserWindow): Promise<ISaveFileRequest> {
         return new Promise((c, e) => {
-            dialog.showSaveDialog(window ? window : void 0, options, path => {
-                c({ file: path });
+            dialog.showSaveDialog(window ? window : void 0, options).then(({filePath}) => {
+                c({ file: filePath });
             });
         });
     }
