@@ -64,7 +64,8 @@
     "build:linux64": "build --linux --x64",
     "build:win": "npm run build && npm run build:win64",
     "build:win64": "build --win --x64",
-    "rebuild": "electron-rebuild -f -w sharp"
+    "rebuild": "electron-rebuild -f -w sharp  && cd node_modules/sharp && node install/dll-copy",
+    "postinstall": "yarn rebuild"
   },
   "repository": "git+ssh://git@github.com/ysm1180/newjojogame-script-editor.git",
   "author": "Seongmin Yeon",
@@ -79,7 +80,7 @@
     "electron": ">=1.8.8",
     "electron-builder": "^20.28.4",
     "electron-connect": "^0.6.3",
-    "electron-rebuild": "^1.8.2",
+    "electron-rebuild": "^1.8.6",
     "eslint": "^4.19.0",
     "gulp": "^4.0.0",
     "gulp-clean-css": "^3.9.3",
@@ -98,7 +99,7 @@
     "jpeg-js": "^0.3.4",
     "pngjs": "^3.3.3",
     "requirejs": "^2.3.5",
-    "sharp": "^0.21.0"
+    "sharp": "^0.23.0"
   },
   "postinstall": "electron-builder install-app-deps"
 }
