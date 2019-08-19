@@ -31,6 +31,9 @@ export class CodeWindow {
         const options: Electron.BrowserWindowConstructorOptions = {
             width: option.state.width,
             height: option.state.height,
+            webPreferences: {
+                nodeIntegration: true,
+            },
         };
 
         this.window = new BrowserWindow(options);
