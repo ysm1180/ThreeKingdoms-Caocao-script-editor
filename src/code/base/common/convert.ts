@@ -2,7 +2,7 @@ export function intToBytes(value: number): Buffer {
     const result = Buffer.alloc(4);
     let i = 0;
     do {
-        result[i++] = value & 0xff;
+        result[i++] = value & 0xFF;
         value = value >> 8;
     } while (i < 4);
 

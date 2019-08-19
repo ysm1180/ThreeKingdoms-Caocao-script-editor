@@ -2,7 +2,6 @@
     "rules": {
         "class-name": true,
         "curly": [true, "ignore-same-line"],
-        "debug-assert": true,
         "no-arg": true,
         "no-construct": true,
         "no-debugger": true,

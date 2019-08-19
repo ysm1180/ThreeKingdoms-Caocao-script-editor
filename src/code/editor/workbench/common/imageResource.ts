@@ -63,7 +63,7 @@ export class ImageResource {
                 data[1] === 'M'.charCodeAt(0)
             ) {
                 type = ImageType.Bmp;
-            } else if (data[0] === 0xff && data[1] === 0xd8) {
+            } else if (data[0] === 0xFF && data[1] === 0xD8) {
                 type = ImageType.Jpg;
             } else if (data[0] === 0x89 && data[1] === 0x50) {
                 type = ImageType.Png;
@@ -90,7 +90,7 @@ export class ImageResource {
                 for (let i = 0; i < bitmap.data.length / 4; i++) {
                     let temp = bitmap.data[i * 4];
                     bitmap.data[i * 4] = bitmap.data[i * 4 + 3];
-                    bitmap.data[i * 4 + 3] = 0xff;
+                    bitmap.data[i * 4 + 3] = 0xFF;
 
                     temp = bitmap.data[i * 4 + 1];
                     bitmap.data[i * 4 + 1] = bitmap.data[i * 4 + 2];
@@ -141,7 +141,7 @@ export class ImageResource {
                 for (let i = 0; i < bitmap.data.length / 4; i++) {
                     let temp = bitmap.data[i * 4];
                     bitmap.data[i * 4] = bitmap.data[i * 4 + 3];
-                    bitmap.data[i * 4 + 3] = 0xff;
+                    bitmap.data[i * 4 + 3] = 0xFF;
 
                     temp = bitmap.data[i * 4 + 1];
                     bitmap.data[i * 4 + 1] = bitmap.data[i * 4 + 2];

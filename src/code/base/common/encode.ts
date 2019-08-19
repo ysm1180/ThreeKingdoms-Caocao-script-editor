@@ -9,10 +9,10 @@ export function encodeToBase64(data: Buffer): string {
 }
 
 export function decodeFromBase64(base64: string): Uint8Array {
-    var str = window.atob(base64);
-    var len = str.length;
-    var bytes = new Uint8Array(len);
-    for (var i = 0; i < len; i++) {
+    let str = window.atob(base64);
+    let len = str.length;
+    let bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
         bytes[i] = str.charCodeAt(i);
     }
     return bytes;

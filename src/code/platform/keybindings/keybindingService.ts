@@ -55,7 +55,7 @@ export class KeybindingService {
         const ctrlKey = keybinding & KeyMode.Ctrl ? true : false;
         const shiftKey = keybinding & KeyMode.Shift ? true : false;
         const altKey = keybinding & KeyMode.Alt ? true : false;
-        const keyCode = keybinding & 0xff;
+        const keyCode = keybinding & 0xFF;
 
         return new Keybinding(ctrlKey, shiftKey, altKey, keyCode);
     }

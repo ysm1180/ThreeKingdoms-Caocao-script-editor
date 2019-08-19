@@ -570,7 +570,7 @@ export class TreeView {
     }
 
     public getContentHeight(): number {
-        var last = this.itemMap[this.itemMap.length - 1];
+        const last = this.itemMap[this.itemMap.length - 1];
         return !last ? 0 : last.top + last.height;
     }
 }
