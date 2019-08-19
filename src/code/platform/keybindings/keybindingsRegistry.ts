@@ -1,6 +1,6 @@
 import { KeyCode } from '../../base/common/keyCodes';
+import { CommandsRegistry, ICommandHandler } from '../commands/commands';
 import { ContextKeyExpr } from '../contexts/contextKey';
-import { ICommandHandler, CommandsRegistry } from '../commands/commands';
 
 export interface IKeybindingRule {
     id: string;
@@ -16,7 +16,7 @@ export interface IKeybindingItem {
     when: ContextKeyExpr;
 }
 
-export const KeybindingsRegistry = new class {
+export const KeybindingsRegistry = new (class {
     _keybindings: IKeybindingItem[];
 
     constructor() {
@@ -39,4 +39,4 @@ export const KeybindingsRegistry = new class {
     public getKeybindings(): IKeybindingItem[] {
         return this._keybindings.slice(0);
     }
-};
+})();

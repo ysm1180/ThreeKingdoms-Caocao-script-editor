@@ -2,13 +2,9 @@ import { IInstantiationService } from '../../../../platform/instantiation/instan
 
 export class UntitleEditorService {
     constructor(
-        @IInstantiationService private instantiationService: IInstantiationService,
-    ) {
+        @IInstantiationService
+        private instantiationService: IInstantiationService
+    ) {}
 
-    }
-
-    public create(resource: string) {
-    }
-
-    
+    public create(resource: string) {}
 }

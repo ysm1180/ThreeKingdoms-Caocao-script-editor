@@ -1,9 +1,12 @@
 'use strict';
 
 import { app } from 'electron';
-import { EditorApplication } from './app';
-import { IInstantiationService, InstantiationService } from '../platform/instantiation/instantiationService';
+
+import {
+    IInstantiationService, InstantiationService
+} from '../platform/instantiation/instantiationService';
 import { ServiceStorage } from '../platform/instantiation/serviceStorage';
+import { EditorApplication } from './app';
 
 function createService(): IInstantiationService {
     const services = new ServiceStorage();

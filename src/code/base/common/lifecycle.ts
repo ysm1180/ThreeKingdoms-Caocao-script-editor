@@ -3,7 +3,7 @@ export function once<T extends Function>(this: any, fn: T): T {
     let didCall = false;
     let result: any;
 
-    return function () {
+    return (function() {
         if (didCall) {
             return result;
         }
@@ -12,7 +12,7 @@ export function once<T extends Function>(this: any, fn: T): T {
         result = fn.apply(_this, arguments);
 
         return result;
-    } as any as T;
+    } as any) as T;
 }
 
 export interface IDisposable {
@@ -22,7 +22,10 @@ export interface IDisposable {
 export function dispose<T extends IDisposable>(disposable: T): T;
 export function dispose<T extends IDisposable>(...disposables: T[]): T[];
 export function dispose<T extends IDisposable>(disposables: T[]): T[];
-export function dispose<T extends IDisposable>(first: T | T[], ...rest: T[]): T | T[] {
+export function dispose<T extends IDisposable>(
+    first: T | T[],
+    ...rest: T[]
+): T | T[] {
     if (Array.isArray(first)) {
         first.forEach(item => item && item.dispose());
         return [];
@@ -49,10 +52,9 @@ export function toDisposable(...fns: (() => void)[]): IDisposable {
             for (const fn of fns) {
                 fn();
             }
-        }
+        },
     };
 }
-
 
 export class Disposable implements IDisposable {
     private toDispose: IDisposable[];

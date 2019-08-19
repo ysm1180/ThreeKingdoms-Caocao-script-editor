@@ -1,15 +1,17 @@
-import { IConfirmation, IConfirmationResult, IOpenningFile, getFileFilters, ISavingFile } from '../../../../platform/dialogs/dialogs';
+import {
+    getFileFilters, IConfirmation, IConfirmationResult, IOpenningFile, ISavingFile
+} from '../../../../platform/dialogs/dialogs';
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
-import { IOpenFileRequest, ISaveFileRequest, IWindowService } from '../../../../platform/windows/windows';
+import {
+    IOpenFileRequest, ISaveFileRequest, IWindowService
+} from '../../../../platform/windows/windows';
 
-export const IDialogService: ServiceIdentifier<DialogService> = decorator<DialogService>('dialogService');
+export const IDialogService: ServiceIdentifier<DialogService> = decorator<
+    DialogService
+>('dialogService');
 
 export class DialogService {
-    constructor(
-        @IWindowService private windowService: IWindowService,
-    ) {
-
-    }
+    constructor(@IWindowService private windowService: IWindowService) {}
 
     public openFile(openning: IOpenningFile): Promise<IOpenFileRequest> {
         const options = this.getOpenFileOptions(openning);
@@ -17,7 +19,9 @@ export class DialogService {
         return this.windowService.showOpenDialog(options);
     }
 
-    private getOpenFileOptions(openning: IOpenningFile): Electron.OpenDialogOptions {
+    private getOpenFileOptions(
+        openning: IOpenningFile
+    ): Electron.OpenDialogOptions {
         if (!openning.extensions) {
             openning.extensions = [
                 {
@@ -43,15 +47,19 @@ export class DialogService {
     public confirm(confirmation: IConfirmation): Promise<IConfirmationResult> {
         const options = this.getConfirmationOptions(confirmation);
 
-        return this.windowService.showMessageBox(options).then(({ button, checkboxChecked }) => {
-            return {
-                confirmed: button === 0,
-                checkboxChecked
-            };
-        });
+        return this.windowService
+            .showMessageBox(options)
+            .then(({ button, checkboxChecked }) => {
+                return {
+                    confirmed: button === 0,
+                    checkboxChecked,
+                };
+            });
     }
 
-    private getConfirmationOptions(confirmation: IConfirmation): Electron.MessageBoxOptions {
+    private getConfirmationOptions(
+        confirmation: IConfirmation
+    ): Electron.MessageBoxOptions {
         const buttons: string[] = [];
         if (confirmation.primaryButton) {
             buttons.push(confirmation.primaryButton);
@@ -69,7 +77,7 @@ export class DialogService {
             title: confirmation.title,
             message: confirmation.message,
             buttons,
-            cancelId: 1
+            cancelId: 1,
         };
 
         if (confirmation.detail) {
@@ -94,7 +102,9 @@ export class DialogService {
         return this.windowService.showSaveDialog(options);
     }
 
-    private getSavingFileOptions(saving: ISavingFile): Electron.SaveDialogOptions {
+    private getSavingFileOptions(
+        saving: ISavingFile
+    ): Electron.SaveDialogOptions {
         if (!saving.extensions) {
             saving.extensions = [
                 {

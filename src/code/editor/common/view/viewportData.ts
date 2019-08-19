@@ -9,7 +9,7 @@ export class ViewportData {
     constructor(
         startLineNumber: number,
         endLineNumber: number,
-        model: ViewModel,
+        model: ViewModel
     ) {
         this.model = model;
         this.startLineNumber = startLineNumber;

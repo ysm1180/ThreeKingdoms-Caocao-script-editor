@@ -20,10 +20,12 @@ export class Input extends Disposable {
 
         this.input.type = this.options.type || 'text';
 
-        this.registerDispose(addDisposableEventListener(this.input, 'click', (e: MouseEvent) => {
-            e.preventDefault();
-            e.stopPropagation();
-        }));
+        this.registerDispose(
+            addDisposableEventListener(this.input, 'click', (e: MouseEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+            })
+        );
 
         container.appendChild(this.input);
     }

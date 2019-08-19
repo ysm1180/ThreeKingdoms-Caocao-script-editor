@@ -1,20 +1,19 @@
 import { KeyCode } from '../common/keyCodes';
 
-
 export interface IKeyboardEvent {
-	readonly event: KeyboardEvent;
-	readonly target: HTMLElement;
+    readonly event: KeyboardEvent;
+    readonly target: HTMLElement;
 
-	readonly ctrlKey: boolean;
-	readonly shiftKey: boolean;
-	readonly altKey: boolean;
-	readonly keyCode: KeyCode;
+    readonly ctrlKey: boolean;
+    readonly shiftKey: boolean;
+    readonly altKey: boolean;
+    readonly keyCode: KeyCode;
 
-	preventDefault(): void;
-	stopPropagation(): void;
+    preventDefault(): void;
+    stopPropagation(): void;
 }
 
-export class StandardKeyboardEvent  implements IKeyboardEvent {
+export class StandardKeyboardEvent implements IKeyboardEvent {
     public readonly event: KeyboardEvent;
 
     public readonly target: HTMLElement;

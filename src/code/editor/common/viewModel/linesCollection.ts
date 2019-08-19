@@ -6,7 +6,7 @@ export class LinesCollection {
     private model: TextModel;
 
     constructor(model: TextModel) {
-        this.model = model;    
+        this.model = model;
     }
 
     public getViewLineCount(): number {
@@ -19,8 +19,6 @@ export class LinesCollection {
 
     public getViewLineData(lineNumber: number): ViewLineData {
         const lineContent = this.model.getLineContent(lineNumber);
-        return new ViewLineData(
-            lineContent
-        );
+        return new ViewLineData(lineContent);
     }
 }

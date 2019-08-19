@@ -1,20 +1,22 @@
-import { TreeContext } from './tree';
-import { Event, ChainEventStorage } from '../../../common/event';
+import { ChainEventStorage, Event } from '../../../common/event';
 import { IIterator } from '../../../common/iterator';
-import { IDisposable, dispose } from '../../../common/lifecycle';
+import { dispose, IDisposable } from '../../../common/lifecycle';
+import { TreeContext } from './tree';
 
-interface IMap<T> { [id: string]: T; }
-interface IItemMap extends IMap<Item> { }
+interface IMap<T> {
+    [id: string]: T;
+}
+interface IItemMap extends IMap<Item> {}
 
 export interface IBaseItemEvent {
     item: Item;
 }
-export interface IItemRefreshEvent extends IBaseItemEvent { }
+export interface IItemRefreshEvent extends IBaseItemEvent {}
 export interface IItemChildrenRefreshEvent extends IBaseItemEvent {
     skip: boolean;
 }
-export interface IItemExpandEvent extends IBaseItemEvent { }
-export interface IItemCollapseEvent extends IBaseItemEvent { }
+export interface IItemExpandEvent extends IBaseItemEvent {}
+export interface IItemCollapseEvent extends IBaseItemEvent {}
 export interface IItemTraitEvent extends IBaseItemEvent {
     trait: string;
 }
@@ -24,15 +26,27 @@ export interface IFocusEvent {
 }
 
 export class ItemRegistry {
-    private items: IMap<{ item: Item, toDispose: IDisposable[] }>;
+    private items: IMap<{ item: Item; toDispose: IDisposable[] }>;
 
-    public readonly onDidRefreshItem = new ChainEventStorage<IItemRefreshEvent>();
-    public readonly onRefreshItemChildren = new ChainEventStorage<IItemChildrenRefreshEvent>();
-    public readonly onDidRefreshItemChildren = new ChainEventStorage<IItemChildrenRefreshEvent>();
+    public readonly onDidRefreshItem = new ChainEventStorage<
+        IItemRefreshEvent
+    >();
+    public readonly onRefreshItemChildren = new ChainEventStorage<
+        IItemChildrenRefreshEvent
+    >();
+    public readonly onDidRefreshItemChildren = new ChainEventStorage<
+        IItemChildrenRefreshEvent
+    >();
     public readonly onDidExpandItem = new ChainEventStorage<IItemExpandEvent>();
-    public readonly onDidCollapseItem = new ChainEventStorage<IItemCollapseEvent>();
-    public readonly onDidAddTraitItem = new ChainEventStorage<IItemTraitEvent>();
-    public readonly onDidRemoveTraitItem = new ChainEventStorage<IItemTraitEvent>();
+    public readonly onDidCollapseItem = new ChainEventStorage<
+        IItemCollapseEvent
+    >();
+    public readonly onDidAddTraitItem = new ChainEventStorage<
+        IItemTraitEvent
+    >();
+    public readonly onDidRemoveTraitItem = new ChainEventStorage<
+        IItemTraitEvent
+    >();
     public readonly onDidDisposeItem = new ChainEventStorage<Item>();
 
     constructor() {
@@ -40,7 +54,6 @@ export class ItemRegistry {
     }
 
     public register(item: Item): void {
-
         const toDispose = [
             this.onDidRefreshItem.add(item.onDidRefresh),
             this.onRefreshItemChildren.add(item.onRefreshChildren),
@@ -104,14 +117,21 @@ export class Item {
 
     public readonly onDidRefresh = new Event<IItemRefreshEvent>();
     public readonly onRefreshChildren = new Event<IItemChildrenRefreshEvent>();
-    public readonly onDidRefreshChildren = new Event<IItemChildrenRefreshEvent>();
+    public readonly onDidRefreshChildren = new Event<
+        IItemChildrenRefreshEvent
+    >();
     public readonly onDidExpand = new Event<IItemExpandEvent>();
     public readonly onDidCollapse = new Event<IItemCollapseEvent>();
     public readonly onDidAddTrait = new Event<IItemTraitEvent>();
     public readonly onDidRemoveTrait = new Event<IItemTraitEvent>();
     public readonly onDidDispose = new Event<Item>();
 
-    constructor(id: string, registry: ItemRegistry, context: TreeContext, element: any) {
+    constructor(
+        id: string,
+        registry: ItemRegistry,
+        context: TreeContext,
+        element: any
+    ) {
         this.id = id;
         this.registry = registry;
         this.element = element;
@@ -282,13 +302,16 @@ export class Item {
 
     public mapEachChild<T>(fn: (child: Item) => T): T[] {
         const result: T[] = [];
-        this.forEachChild((child) => {
+        this.forEachChild(child => {
             result.push(fn(child));
         });
         return result;
     }
 
-    private refreshChildren(skipRenderChildren: boolean = false, force: boolean = false) {
+    private refreshChildren(
+        skipRenderChildren: boolean = false,
+        force: boolean = false
+    ) {
         if (!force && !this.isExpanded()) {
             this.isRefreshChildren = true;
             return Promise.resolve(null);
@@ -297,7 +320,10 @@ export class Item {
         this.isRefreshChildren = false;
 
         const doRefresh = () => {
-            const event: IItemChildrenRefreshEvent = { item: this, skip: skipRenderChildren };
+            const event: IItemChildrenRefreshEvent = {
+                item: this,
+                skip: skipRenderChildren,
+            };
             this.onRefreshChildren.fire(event);
 
             if (this.isDisposed) {
@@ -305,34 +331,40 @@ export class Item {
             }
 
             const children = this.context.dataSource.getChildren(this.element);
-            return Promise.resolve(children).then((children) => {
-                const staleItems: IItemMap = {};
-                while (this.firstChild !== null) {
-                    staleItems[this.firstChild.id] = this.firstChild;
-                    this.removeChild(this.firstChild);
-                }
-
-                for (let i = 0, len = children.length; i < len; i++) {
-                    const child = children[i];
-                    const id = this.context.dataSource.getId(child);
-                    const item = staleItems[id] || new Item(id, this.registry, this.context, child);
-                    item.element = child;
-                    delete staleItems[id];
-                    this.addChild(item);
-                }
-
-                for (const staleItemId in staleItems) {
-                    if (staleItems.hasOwnProperty(staleItemId)) {
-                        staleItems[staleItemId].dispose();
+            return Promise.resolve(children)
+                .then(children => {
+                    const staleItems: IItemMap = {};
+                    while (this.firstChild !== null) {
+                        staleItems[this.firstChild.id] = this.firstChild;
+                        this.removeChild(this.firstChild);
                     }
-                }
 
-                return Promise.all(this.mapEachChild((child) => {
-                    return child.refresh(skipRenderChildren);
-                }));
-            }).then(() => {
-                this.onDidRefreshChildren.fire(event);
-            });
+                    for (let i = 0, len = children.length; i < len; i++) {
+                        const child = children[i];
+                        const id = this.context.dataSource.getId(child);
+                        const item =
+                            staleItems[id] ||
+                            new Item(id, this.registry, this.context, child);
+                        item.element = child;
+                        delete staleItems[id];
+                        this.addChild(item);
+                    }
+
+                    for (const staleItemId in staleItems) {
+                        if (staleItems.hasOwnProperty(staleItemId)) {
+                            staleItems[staleItemId].dispose();
+                        }
+                    }
+
+                    return Promise.all(
+                        this.mapEachChild(child => {
+                            return child.refresh(skipRenderChildren);
+                        })
+                    );
+                })
+                .then(() => {
+                    this.onDidRefreshChildren.fire(event);
+                });
         };
 
         return doRefresh();
@@ -340,7 +372,9 @@ export class Item {
 
     public refresh(skipRenderChildren: boolean = false): Promise<any> {
         const event: IItemRefreshEvent = { item: this };
-        this.doesHaveChildren = this.context.dataSource.hasChildren(this.element);        
+        this.doesHaveChildren = this.context.dataSource.hasChildren(
+            this.element
+        );
         this.onDidRefresh.fire(event);
 
         return this.refreshChildren(skipRenderChildren);
@@ -353,7 +387,7 @@ export class Item {
     public addTrait(trait: string) {
         const eventData: IItemTraitEvent = {
             trait,
-            item: this
+            item: this,
         };
         this.traits[trait] = true;
         this.onDidAddTrait.fire(eventData);
@@ -362,7 +396,7 @@ export class Item {
     public removeTrait(trait: string) {
         const eventData: IItemTraitEvent = {
             trait,
-            item: this
+            item: this,
         };
         delete this.traits[trait];
         this.onDidRemoveTrait.fire(eventData);
@@ -373,7 +407,7 @@ export class Item {
     }
 
     public dispose(): void {
-        this.forEachChild((child) => child.dispose());
+        this.forEachChild(child => child.dispose());
 
         this.parent = null;
         this.previous = null;
@@ -420,12 +454,21 @@ export class ItemNavigator implements IIterator<Item> {
     public next(): Item {
         if (this.item) {
             do {
-                if (this.item instanceof RootItem || (this.item.isVisible() && this.item.isExpanded()) && this.item.firstChild) {
+                if (
+                    this.item instanceof RootItem ||
+                    (this.item.isVisible() &&
+                        this.item.isExpanded() &&
+                        this.item.firstChild)
+                ) {
                     this.item = this.item.firstChild;
                 } else if (this.item === this.start) {
                     this.item = null;
                 } else {
-                    while (this.item && this.item !== this.start && !this.item.next) {
+                    while (
+                        this.item &&
+                        this.item !== this.start &&
+                        !this.item.next
+                    ) {
                         this.item = this.item.parent;
                     }
                     if (this.item === this.start) {
@@ -441,10 +484,16 @@ export class ItemNavigator implements IIterator<Item> {
     public previous(): Item {
         if (this.item) {
             do {
-                const previous = ItemNavigator.lastDescendantOf(this.item.previous);
+                const previous = ItemNavigator.lastDescendantOf(
+                    this.item.previous
+                );
                 if (previous) {
                     this.item = previous;
-                } else if (this.item.parent && this.item.parent !== this.start && this.item.parent.isVisible()) {
+                } else if (
+                    this.item.parent &&
+                    this.item.parent !== this.start &&
+                    this.item.parent.isVisible()
+                ) {
                     this.item = this.item.parent;
                 } else {
                     this.item = null;
@@ -475,11 +524,15 @@ export class ItemNavigator implements IIterator<Item> {
     public last(): Item {
         return ItemNavigator.lastDescendantOf(this.start);
     }
-
 }
 
 export class RootItem extends Item {
-    constructor(id: string, registry: ItemRegistry, context: TreeContext, element: any) {
+    constructor(
+        id: string,
+        registry: ItemRegistry,
+        context: TreeContext,
+        element: any
+    ) {
         super(id, registry, context, element);
     }
 
@@ -503,8 +556,12 @@ export class TreeModel {
     public readonly onDidFocus = new Event<IFocusEvent>();
 
     public readonly onDidRefreshItem = new Event<IItemRefreshEvent>();
-    public readonly onRefreshItemChildren = new Event<IItemChildrenRefreshEvent>();
-    public readonly onDidRefreshItemChildren = new Event<IItemChildrenRefreshEvent>();
+    public readonly onRefreshItemChildren = new Event<
+        IItemChildrenRefreshEvent
+    >();
+    public readonly onDidRefreshItemChildren = new Event<
+        IItemChildrenRefreshEvent
+    >();
     public readonly onDidExpandItem = new Event<IItemExpandEvent>();
     public readonly onDidCollapseItem = new Event<IItemCollapseEvent>();
     public readonly onDidAddTraitItem = new Event<IItemTraitEvent>();
@@ -538,16 +595,18 @@ export class TreeModel {
 
         this.registry.onDidRefreshItem.set(this.onDidRefreshItem);
         this.registry.onRefreshItemChildren.set(this.onRefreshItemChildren);
-        this.registry.onDidRefreshItemChildren.set(this.onDidRefreshItemChildren);
+        this.registry.onDidRefreshItemChildren.set(
+            this.onDidRefreshItemChildren
+        );
         this.registry.onDidExpandItem.set(this.onDidExpandItem);
         this.registry.onDidCollapseItem.set(this.onDidCollapseItem);
         this.registry.onDidAddTraitItem.set(this.onDidAddTraitItem);
         this.registry.onDidRemoveTraitItem.set(this.onDidRemoveTraitItem);
 
         const removeTraits = new Event<Item>();
-        removeTraits.add((item) => {
+        removeTraits.add(item => {
             const traits = item.getAllTraits();
-            traits.forEach((trait) => {
+            traits.forEach(trait => {
                 delete this.traitsToItems[trait][item.id];
             });
         });
@@ -582,7 +641,9 @@ export class TreeModel {
         } else if (typeof element === 'string') {
             return this.registry.getItem(element);
         } else {
-            return this.registry.getItem(this.context.dataSource.getId(element));
+            return this.registry.getItem(
+                this.context.dataSource.getId(element)
+            );
         }
     }
 
@@ -637,9 +698,9 @@ export class TreeModel {
     public getExpandedElements(): any[] {
         const result = [];
         const iter = this.getItem().getNavigator();
-        
+
         let item;
-        while (item = iter.next()) {
+        while ((item = iter.next())) {
             if (item.isExpanded()) {
                 result.push(item.getElement());
             }
@@ -727,5 +788,3 @@ export class TreeModel {
         return result.length === 0 ? null : result[0];
     }
 }
-
-

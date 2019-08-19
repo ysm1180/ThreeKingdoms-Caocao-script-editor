@@ -76,7 +76,7 @@ export const enum KeyCode {
 
 class KeyCodeStringMap {
     private _keyCodeToString: string[];
-    private _stringToKeyCode: { [str: string]: KeyCode; };
+    private _stringToKeyCode: { [str: string]: KeyCode };
 
     constructor() {
         this._keyCodeToString = [];
@@ -99,7 +99,7 @@ class KeyCodeStringMap {
 
 const generalMap = new KeyCodeStringMap();
 
-(function () {
+(function() {
     generalMap.define(KeyCode.Backspace, 'Backspace');
     generalMap.define(KeyCode.Tab, 'Tab');
     generalMap.define(KeyCode.Enter, 'Enter');
@@ -173,13 +173,12 @@ const generalMap = new KeyCodeStringMap();
     generalMap.define(KeyCode.F10, 'F10');
     generalMap.define(KeyCode.F11, 'F11');
     generalMap.define(KeyCode.F12, 'F12');
-
 })();
 
 export const enum KeyMode {
-    Ctrl = (1 << 8),
-    Alt = (1 << 9),
-    Shift = (1 << 10),
+    Ctrl = 1 << 8,
+    Alt = 1 << 9,
+    Shift = 1 << 10,
 }
 
 export namespace KeyCodeUtils {
@@ -194,7 +193,12 @@ export class Keybinding {
     public readonly altKey: boolean;
     public readonly keyCode: KeyCode;
 
-    constructor(ctrlKey: boolean, shiftKey: boolean, altKey: boolean, keyCode: KeyCode) {
+    constructor(
+        ctrlKey: boolean,
+        shiftKey: boolean,
+        altKey: boolean,
+        keyCode: KeyCode
+    ) {
         this.ctrlKey = ctrlKey;
         this.shiftKey = shiftKey;
         this.altKey = altKey;
@@ -203,10 +207,10 @@ export class Keybinding {
 
     public equals(other: Keybinding): boolean {
         return (
-            this.ctrlKey === other.ctrlKey
-            && this.shiftKey === other.shiftKey
-            && this.altKey === other.altKey
-            && this.keyCode === other.keyCode
+            this.ctrlKey === other.ctrlKey &&
+            this.shiftKey === other.shiftKey &&
+            this.altKey === other.altKey &&
+            this.keyCode === other.keyCode
         );
     }
 

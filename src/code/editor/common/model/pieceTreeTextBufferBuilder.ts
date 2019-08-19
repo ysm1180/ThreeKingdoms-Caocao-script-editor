@@ -1,13 +1,9 @@
-import { StringBuffer, createLineStartsFast } from './pieceTreeBase';
-import { PieceTreeTextBuffer } from './pieceTreeTextBuffer';
 import { ITextBufferFactory } from '../models';
+import { createLineStartsFast, StringBuffer } from './pieceTreeBase';
+import { PieceTreeTextBuffer } from './pieceTreeTextBuffer';
 
 export class PieceTreeTextBufferFactory implements ITextBufferFactory {
-    constructor(
-        private readonly chunks: StringBuffer[],
-    ) {
-
-    }
+    constructor(private readonly chunks: StringBuffer[]) {}
 
     public create() {
         return new PieceTreeTextBuffer(this.chunks);

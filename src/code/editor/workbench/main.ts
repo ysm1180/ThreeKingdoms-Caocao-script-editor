@@ -6,7 +6,6 @@ import './parts/electron-browser/file.registry';
 
 import { WorkbenchShell } from './browser/shell';
 
-
 export function startup() {
     const shell = new WorkbenchShell(document.body);
     shell.open();

@@ -1,5 +1,5 @@
-import { BaseEditor } from './baseEditor';
 import { IEditorInput } from '../../../../../platform/editor/editor';
+import { BaseEditor } from './baseEditor';
 
 export class ControlEditor extends BaseEditor {
     static ID = 'editor.controleditor';
@@ -13,12 +13,8 @@ export class ControlEditor extends BaseEditor {
             return Promise.resolve();
         }
 
-        return input.resolve().then(() => {
-
-        });
+        return input.resolve().then(() => {});
     }
 
-    public layout(): void {
-
-    }
+    public layout(): void {}
 }

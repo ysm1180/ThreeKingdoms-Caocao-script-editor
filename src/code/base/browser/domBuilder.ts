@@ -1,6 +1,8 @@
-import { IDisposable, dispose } from '../common/lifecycle';
-import { isString, isObject, isNullOrUndefined, isArray } from '../common/types';
-import { isHtmlElement, createStyleSheetTag, addDisposableEventListener, addClass, removeClass, hasClass } from './dom';
+import { dispose, IDisposable } from '../common/lifecycle';
+import { isArray, isNullOrUndefined, isObject, isString } from '../common/types';
+import {
+    addClass, addDisposableEventListener, createStyleSheetTag, hasClass, isHtmlElement, removeClass
+} from './dom';
 
 export interface QuickDomBuilder {
     (): DomBuilder;
@@ -37,9 +39,13 @@ export class DomBuilder {
     }
 
     public on(type: string, fn: (e) => void): DomBuilder {
-        const unbind: IDisposable = addDisposableEventListener(this.currentElement, type, (e) => {
-            fn(e);
-        });
+        const unbind: IDisposable = addDisposableEventListener(
+            this.currentElement,
+            type,
+            e => {
+                fn(e);
+            }
+        );
 
         if (!this.toUnbind[type]) {
             this.toUnbind[type] = [];
@@ -50,10 +56,14 @@ export class DomBuilder {
     }
 
     public once(type: string, fn: (e) => void): DomBuilder {
-        const unbind: IDisposable = addDisposableEventListener(this.currentElement, type, (e) => {
-            fn(e);
-            unbind.dispose();
-        });
+        const unbind: IDisposable = addDisposableEventListener(
+            this.currentElement,
+            type,
+            e => {
+                fn(e);
+                unbind.dispose();
+            }
+        );
 
         return this;
     }
@@ -82,8 +92,8 @@ export class DomBuilder {
         return this;
     }
 
-    public append(child: HTMLElement) : DomBuilder;
-    public append(child: DomBuilder) : DomBuilder;
+    public append(child: HTMLElement): DomBuilder;
+    public append(child: DomBuilder): DomBuilder;
     public append(child: any): DomBuilder {
         if (!isNullOrUndefined(child) && !isHtmlElement(child)) {
             child = (<DomBuilder>child).getHTMLElement();
@@ -114,7 +124,6 @@ export class DomBuilder {
 
         return this;
     }
-
 
     public getConatainer(): HTMLElement {
         return this.container;
@@ -191,7 +200,9 @@ export class DomBuilder {
         }
 
         if (isString(firstArg) && secondArg === null) {
-            return this.currentElement.style[this.cssKeyToJavascriptProperty(firstArg)];
+            return this.currentElement.style[
+                this.cssKeyToJavascriptProperty(firstArg)
+            ];
         }
 
         if (isString(firstArg)) {
@@ -223,8 +234,8 @@ export class DomBuilder {
 
     public attr(name: string): string;
     public attr(name: string, value: string): DomBuilder;
-    public attr(name: string, value: number) : DomBuilder;
-    public attr(name: string, value: boolean) : DomBuilder;
+    public attr(name: string, value: number): DomBuilder;
+    public attr(name: string, value: boolean): DomBuilder;
     public attr(firstArg: any, secondArg?: any): any {
         if (isObject(firstArg)) {
             for (const prop in firstArg) {
@@ -266,7 +277,7 @@ export class DomBuilder {
     public hasClass(className: string): boolean {
         return hasClass(this.currentElement, className);
     }
-    
+
     public addClass(...classes: string[]): DomBuilder {
         classes.forEach((className: string) => {
             const names = className.split(' ');
@@ -295,27 +306,62 @@ export class DomBuilder {
 
     public getClientArea(): Size {
         if (this.currentElement !== document.body) {
-            return new Size(this.currentElement.clientWidth, this.currentElement.clientHeight);
+            return new Size(
+                this.currentElement.clientWidth,
+                this.currentElement.clientHeight
+            );
         }
 
         if (window.innerWidth && window.innerHeight) {
             return new Size(window.innerWidth, window.innerHeight);
         }
 
-        if (document.body && document.body.clientWidth && document.body.clientWidth) {
-            return new Size(document.body.clientWidth, document.body.clientHeight);
+        if (
+            document.body &&
+            document.body.clientWidth &&
+            document.body.clientWidth
+        ) {
+            return new Size(
+                document.body.clientWidth,
+                document.body.clientHeight
+            );
         }
 
-        if (document.documentElement && document.documentElement.clientWidth && document.documentElement.clientHeight) {
-            return new Size(document.documentElement.clientWidth, document.documentElement.clientHeight);
+        if (
+            document.documentElement &&
+            document.documentElement.clientWidth &&
+            document.documentElement.clientHeight
+        ) {
+            return new Size(
+                document.documentElement.clientWidth,
+                document.documentElement.clientHeight
+            );
         }
 
         return null;
     }
 
-    public position(top: string, left?: string, bottom?: string, right?: string, position?: string): DomBuilder;
-    public position(top: number, left?: number, bottom?: number, right?: number, position?: string): DomBuilder;
-    public position(top: any, left?: any, bottom?: any, right?: any, position?: string): DomBuilder {
+    public position(
+        top: string,
+        left?: string,
+        bottom?: string,
+        right?: string,
+        position?: string
+    ): DomBuilder;
+    public position(
+        top: number,
+        left?: number,
+        bottom?: number,
+        right?: number,
+        position?: string
+    ): DomBuilder;
+    public position(
+        top: any,
+        left?: any,
+        bottom?: any,
+        right?: any,
+        position?: string
+    ): DomBuilder {
         if (!isNullOrUndefined(top)) {
             this.currentElement.style.top = this.toPixel(top);
         }
@@ -334,7 +380,6 @@ export class DomBuilder {
         }
 
         this.currentElement.style.position = position;
-
 
         return this;
     }
@@ -373,7 +418,10 @@ export class DomBuilder {
         }
 
         for (const type in this.toUnbind) {
-            if (this.toUnbind.hasOwnProperty(type) && isArray(this.toUnbind[type])) {
+            if (
+                this.toUnbind.hasOwnProperty(type) &&
+                isArray(this.toUnbind[type])
+            ) {
                 this.toUnbind[type] = dispose(this.toUnbind[type]);
             }
         }
@@ -390,38 +438,38 @@ export class DomBuilder {
                 this.currentElement.parentNode.removeChild(this.currentElement);
             }
         }
-        
+
         return this;
     }
 
     public show(): DomBuilder {
         if (this.hasClass('hidden')) {
-			this.removeClass('hidden');
-		}
+            this.removeClass('hidden');
+        }
         this.attr('aria-hidden', 'false');
-        
+
         return this;
     }
 
     public hide(): DomBuilder {
         if (!this.hasClass('hidden')) {
-			this.addClass('hidden');
-		}
+            this.addClass('hidden');
+        }
         this.attr('aria-hidden', 'true');
-        
+
         return this;
     }
 
     public empty(): DomBuilder {
-		this.clearChildren();
+        this.clearChildren();
 
-		if (!this.container) {
-			this.createdElements = [];
-		}
+        if (!this.container) {
+            this.createdElements = [];
+        }
 
-		return this;
+        return this;
     }
-    
+
     public clearChildren(): DomBuilder {
         while (this.currentElement.firstChild) {
             this.currentElement.removeChild(this.currentElement.firstChild);
@@ -433,7 +481,7 @@ export class DomBuilder {
 
 const SELECTOR_REGEX = /([\w\-]+)?(#([\w\-]+))?((.([\w\-]+))*)/;
 
-export const $: QuickDomBuilder = function (arg?: any): DomBuilder {
+export const $: QuickDomBuilder = function(arg?: any): DomBuilder {
     if (arg === undefined) {
         return new DomBuilder(null);
     }
@@ -486,7 +534,6 @@ export const $: QuickDomBuilder = function (arg?: any): DomBuilder {
 
             return new DomBuilder(null).createElement(tag, props);
         }
-
     } else {
         throw new Error('Bad use of $');
     }

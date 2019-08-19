@@ -5,7 +5,7 @@ export interface IMenuItem {
     command: {
         id: string;
         handler?: ICommandHandler;
-        role?: boolean,
+        role?: boolean;
     };
     label?: string;
     group?: string;
@@ -21,7 +21,7 @@ export class MenuId {
     public readonly id = String(MenuId.INDEX++);
 }
 
-export const MenuRegistry = new class {
+export const MenuRegistry = new (class {
     _menuItems: { [loc: string]: IMenuItem[] } = Object.create(null);
 
     public appendMenuItem({ id }: MenuId, item: IMenuItem) {
@@ -37,4 +37,4 @@ export const MenuRegistry = new class {
         const result = this._menuItems[id] || [];
         return result;
     }
-};
+})();

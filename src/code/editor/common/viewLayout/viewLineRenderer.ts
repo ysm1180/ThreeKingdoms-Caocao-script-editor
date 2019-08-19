@@ -4,10 +4,7 @@ export class RenderLineInput {
     public readonly lineContent: string;
     public readonly tabSize: number;
 
-    constructor(
-        lineContent: string,
-        tabSize: number,
-    ) {
+    constructor(lineContent: string, tabSize: number) {
         this.lineContent = lineContent;
         this.tabSize = tabSize;
     }

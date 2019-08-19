@@ -1,5 +1,5 @@
-import { ResourceBuffer } from '../../../common/model/resourceBuffer';
 import { Me5File } from '../../../common/me5File';
+import { ResourceBuffer } from '../../../common/model/resourceBuffer';
 
 export class Me5ResourceBuffer extends ResourceBuffer {
     constructor(buffer: Buffer) {
@@ -19,7 +19,10 @@ export class Me5ResourceBuffer extends ResourceBuffer {
 
             const subItemCount = file.getGroupItemCount(groupIndex);
             for (let itemIndex = 0; itemIndex < subItemCount; itemIndex++) {
-                const itemNameLength = file.getItemNameLength(groupIndex, itemIndex);
+                const itemNameLength = file.getItemNameLength(
+                    groupIndex,
+                    itemIndex
+                );
                 curOffset += itemNameLength;
 
                 const itemSize = file.getItemSize(groupIndex, itemIndex);

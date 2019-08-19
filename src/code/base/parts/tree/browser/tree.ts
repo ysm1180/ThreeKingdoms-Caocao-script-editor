@@ -1,7 +1,7 @@
-import { RelayEvent } from '../../../common/event';
-import { TreeModel, IFocusEvent } from './treeModel';
-import { TreeView } from './treeView';
 import { ContextMenuEvent } from '../../../../platform/events/contextMenuEvent';
+import { RelayEvent } from '../../../common/event';
+import { IFocusEvent, TreeModel } from './treeModel';
+import { TreeView } from './treeView';
 
 export interface IDataSource {
     getId(element: any): string;
@@ -37,7 +37,11 @@ export class TreeContext {
     public readonly controller: IDataController;
     public readonly options: ITreeOptions;
 
-    constructor(tree: Tree, configuration: ITreeConfiguration, options: ITreeOptions) {
+    constructor(
+        tree: Tree,
+        configuration: ITreeConfiguration,
+        options: ITreeOptions
+    ) {
         this.tree = tree;
         this.dataSource = configuration.dataSource;
         this.renderer = configuration.renderer;
@@ -58,7 +62,7 @@ export class Tree {
     constructor(
         container: HTMLElement,
         configuration: ITreeConfiguration,
-        options: ITreeOptions,
+        options: ITreeOptions
     ) {
         this.container = container;
 
@@ -93,7 +97,10 @@ export class Tree {
         return this.model.getFocus();
     }
 
-    public refresh(element: any, skipRenderChildren: boolean = false): Promise<any> {
+    public refresh(
+        element: any,
+        skipRenderChildren: boolean = false
+    ): Promise<any> {
         return this.model.refresh(element, skipRenderChildren);
     }
 

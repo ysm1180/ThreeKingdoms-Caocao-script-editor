@@ -8,7 +8,13 @@ export class StatusbarItemDescriptor {
     public readonly when: ContextKeyExpr;
     public readonly priority: number;
 
-    constructor(ctor: new (...args: any[]) => IStatusbarItem, id: string, alignment?: StatusbarItemAlignment, when?: ContextKeyExpr, priority?: number) {
+    constructor(
+        ctor: new (...args: any[]) => IStatusbarItem,
+        id: string,
+        alignment?: StatusbarItemAlignment,
+        when?: ContextKeyExpr,
+        priority?: number
+    ) {
         this.ctor = new ClassDescriptor(ctor);
         this.id = id;
         this.alignment = alignment;
@@ -35,7 +41,7 @@ export interface IStatusbarEntry {
     when?: ContextKeyExpr;
 }
 
-export const StatusbarRegistry = new class {
+export const StatusbarRegistry = new (class {
     _items: StatusbarItemDescriptor[];
 
     constructor() {
@@ -46,7 +52,7 @@ export const StatusbarRegistry = new class {
         this._items.push(item);
     }
 
-    public getAllStatusbarItem() : StatusbarItemDescriptor[] {
+    public getAllStatusbarItem(): StatusbarItemDescriptor[] {
         return this._items.slice(0);
     }
-};
+})();

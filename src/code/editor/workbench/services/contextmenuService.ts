@@ -1,20 +1,26 @@
 import { remote } from 'electron';
-import { IContextMenuDelegate } from '../../../base/browser/contextmenu';
-import { decorator, ServiceIdentifier } from '../../../platform/instantiation/instantiation';
-import { MenuItemInfo, Separator } from '../../../platform/actions/menu';
-import { ICommandService, CommandService } from '../../../platform/commands/commandService';
-import { IKeybindingService, KeybindingService } from '../../../platform/keybindings/keybindingService';
-import { IContextKeyService, ContextKeyService } from '../../../platform/contexts/contextKeyService';
 
-export const IContextMenuService: ServiceIdentifier<ContextMenuService> = decorator<ContextMenuService>('contextmenuService');
+import { IContextMenuDelegate } from '../../../base/browser/contextmenu';
+import { MenuItemInfo, Separator } from '../../../platform/actions/menu';
+import { CommandService, ICommandService } from '../../../platform/commands/commandService';
+import {
+    ContextKeyService, IContextKeyService
+} from '../../../platform/contexts/contextKeyService';
+import { decorator, ServiceIdentifier } from '../../../platform/instantiation/instantiation';
+import {
+    IKeybindingService, KeybindingService
+} from '../../../platform/keybindings/keybindingService';
+
+export const IContextMenuService: ServiceIdentifier<
+    ContextMenuService
+> = decorator<ContextMenuService>('contextmenuService');
 
 export class ContextMenuService {
     constructor(
         @IContextKeyService private contextKeyService: ContextKeyService,
         @ICommandService private commandService: CommandService,
-        @IKeybindingService private keybindingService: KeybindingService,
-    ) {
-    }
+        @IKeybindingService private keybindingService: KeybindingService
+    ) {}
 
     public showContextMenu(delegate: IContextMenuDelegate) {
         const items = delegate.getItems();
@@ -24,7 +30,7 @@ export class ContextMenuService {
         menu.popup({
             window: remote.getCurrentWindow(),
             x: anchor.x,
-            y: anchor.y
+            y: anchor.y,
         });
     }
 
@@ -39,22 +45,69 @@ export class ContextMenuService {
                     menuItems.push(new remote.MenuItem({ type: 'separator' }));
                 }
                 isDuplicatedSeparator = true;
-
             } else {
-                if (entry.context && !entry.context.evaluate(this.contextKeyService.getContext())) {
+                if (
+                    entry.context &&
+                    !entry.context.evaluate(this.contextKeyService.getContext())
+                ) {
                     return;
                 }
 
                 let options: Electron.MenuItemConstructorOptions;
                 options = {
                     label: entry.label,
-                    role: entry.role as ('undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'pasteAndMatchStyle' | 'delete' | 'selectAll' | 'reload' | 'forceReload' | 'toggleDevTools' | 'resetZoom' | 'zoomIn' | 'zoomOut' | 'togglefullscreen' | 'window' | 'minimize' | 'close' | 'help' | 'about' | 'services' | 'hide' | 'hideOthers' | 'unhide' | 'quit' | 'startSpeaking' | 'stopSpeaking' | 'close' | 'minimize' | 'zoom' | 'front' | 'appMenu' | 'fileMenu' | 'editMenu' | 'viewMenu' | 'recentDocuments' | 'toggleTabBar' | 'selectNextTab' | 'selectPreviousTab' | 'mergeAllWindows' | 'clearRecentDocuments' | 'moveTabToNewWindow' | 'windowMenu'),
+                    role: entry.role as (
+                        | 'undo'
+                        | 'redo'
+                        | 'cut'
+                        | 'copy'
+                        | 'paste'
+                        | 'pasteAndMatchStyle'
+                        | 'delete'
+                        | 'selectAll'
+                        | 'reload'
+                        | 'forceReload'
+                        | 'toggleDevTools'
+                        | 'resetZoom'
+                        | 'zoomIn'
+                        | 'zoomOut'
+                        | 'togglefullscreen'
+                        | 'window'
+                        | 'minimize'
+                        | 'close'
+                        | 'help'
+                        | 'about'
+                        | 'services'
+                        | 'hide'
+                        | 'hideOthers'
+                        | 'unhide'
+                        | 'quit'
+                        | 'startSpeaking'
+                        | 'stopSpeaking'
+                        | 'close'
+                        | 'minimize'
+                        | 'zoom'
+                        | 'front'
+                        | 'appMenu'
+                        | 'fileMenu'
+                        | 'editMenu'
+                        | 'viewMenu'
+                        | 'recentDocuments'
+                        | 'toggleTabBar'
+                        | 'selectNextTab'
+                        | 'selectPreviousTab'
+                        | 'mergeAllWindows'
+                        | 'clearRecentDocuments'
+                        | 'moveTabToNewWindow'
+                        | 'windowMenu'),
                     click: (item, window, event) => {
                         this.runCommand(entry.command);
                     },
                 };
 
-                const keybinding = this.keybindingService.lookupKeybinding(entry.command);
+                const keybinding = this.keybindingService.lookupKeybinding(
+                    entry.command
+                );
                 if (keybinding) {
                     options.accelerator = keybinding.electronShortKey();
                 }

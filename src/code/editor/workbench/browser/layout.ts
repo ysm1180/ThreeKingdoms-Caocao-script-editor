@@ -1,11 +1,11 @@
-import { SidebarPart } from './parts/sidebarPart';
 import { DomBuilder, Size } from '../../../base/browser/domBuilder';
-import { Sash, ISashLayoutProvider } from '../../../base/browser/ui/sash';
-import { EditorPart, IEditorGroupService } from './parts/editor/editorPart';
-import { TitlePart } from './parts/titlePart';
-import { StatusbarPart } from './parts/statusbarPart';
-import { IPartService } from '../services/part/partService';
+import { ISashLayoutProvider, Sash } from '../../../base/browser/ui/sash';
 import { Disposable } from '../../../base/common/lifecycle';
+import { IPartService } from '../services/part/partService';
+import { EditorPart, IEditorGroupService } from './parts/editor/editorPart';
+import { SidebarPart } from './parts/sidebarPart';
+import { StatusbarPart } from './parts/statusbarPart';
+import { TitlePart } from './parts/titlePart';
 
 const TITLE_HEIGHT = 35;
 const SIDEBAR_HEIGHT = 22;
@@ -34,13 +34,13 @@ export class WorkbenchLayout extends Disposable implements ISashLayoutProvider {
         parent: DomBuilder,
         workbench: DomBuilder,
         parts: {
-            title: TitlePart,
-            sidebar: SidebarPart,
-            editor: EditorPart,
-            statusbar: StatusbarPart,
+            title: TitlePart;
+            sidebar: SidebarPart;
+            editor: EditorPart;
+            statusbar: StatusbarPart;
         },
         @IPartService private partService: IPartService,
-        @IEditorGroupService private editorService: EditorPart,
+        @IEditorGroupService private editorService: EditorPart
     ) {
         super();
 
@@ -54,7 +54,7 @@ export class WorkbenchLayout extends Disposable implements ISashLayoutProvider {
         this.sidebarWidth = -1;
 
         this.sashX = new Sash(this.workbench.getHTMLElement(), this);
-        this.sashX.onDidChange.add((e) => {
+        this.sashX.onDidChange.add(e => {
             this.sidebarWidth = e.mouseX;
             this.layout();
         }, this);
@@ -75,14 +75,17 @@ export class WorkbenchLayout extends Disposable implements ISashLayoutProvider {
         if (this.sidebarWidth === -1) {
             this.sidebarWidth = this.workbenchSize.width / 4;
         }
-        this.sidebarHeight = this.workbenchSize.height - this.titleHeight - this.statusbarHeight;
+        this.sidebarHeight =
+            this.workbenchSize.height - this.titleHeight - this.statusbarHeight;
         const sidebarSize = new Size(this.sidebarWidth, this.sidebarHeight);
 
         if (!isSidebarVisible) {
             sidebarSize.width = 0;
         }
         const titleWidth = this.workbenchSize.width;
-        this.title.getContainer().position(0, 0)
+        this.title
+            .getContainer()
+            .position(0, 0)
             .size(titleWidth, this.titleHeight);
         this.title.layout(new Size(titleWidth, this.titleHeight));
 
@@ -90,13 +93,22 @@ export class WorkbenchLayout extends Disposable implements ISashLayoutProvider {
         this.sidebar.getContainer().size(this.sidebarWidth, this.sidebarHeight);
         this.sidebar.layout(new Size(this.sidebarWidth, this.sidebarHeight));
 
-        const editorSize = new Size(this.workbenchSize.width - sidebarSize.width, this.sidebarHeight);
-        this.editor.getContainer().position(this.titleHeight, sidebarSize.width);
+        const editorSize = new Size(
+            this.workbenchSize.width - sidebarSize.width,
+            this.sidebarHeight
+        );
+        this.editor
+            .getContainer()
+            .position(this.titleHeight, sidebarSize.width);
         this.editor.getContainer().size(editorSize.width, editorSize.height);
         this.editor.layout(new Size(editorSize.width, editorSize.height));
 
-        this.statusbar.getContainer().position(this.titleHeight + this.sidebarHeight, 0);
-        this.statusbar.layout(new Size(this.workbenchSize.width, this.statusbarHeight));
+        this.statusbar
+            .getContainer()
+            .position(this.titleHeight + this.sidebarHeight, 0);
+        this.statusbar.layout(
+            new Size(this.workbenchSize.width, this.statusbarHeight)
+        );
 
         if (isSidebarVisible) {
             this.sashX.show();

@@ -1,5 +1,5 @@
 import * as Dom from '../../../../base/browser/dom';
-import { IDisposable, combinedDisposable } from '../../../../base/common/lifecycle';
+import { combinedDisposable, IDisposable } from '../../../../base/common/lifecycle';
 import { EditorGroup } from './editor/editorGroup';
 import { EditorPart, IEditorGroupService } from './editor/editorPart';
 
@@ -12,11 +12,9 @@ export class TabControl {
 
     private toDispose: IDisposable[];
 
-    constructor(
-        @IEditorGroupService private editorService: EditorPart
-    ) {
+    constructor(@IEditorGroupService private editorService: EditorPart) {
         this.labels = [];
-        
+
         this.toDispose = [];
     }
 
@@ -64,12 +62,14 @@ export class TabControl {
         const tabContainer = document.createElement('div');
         tabContainer.className = 'tab';
 
-        toDispose.push(Dom.addDisposableEventListener(tabContainer, 'mousedown', (e) => {
-            if (e.button === 0) {
-                const editor = this.context.getEditor(index);
-                this.editorService.openEditor(editor);
-            }
-        }));
+        toDispose.push(
+            Dom.addDisposableEventListener(tabContainer, 'mousedown', e => {
+                if (e.button === 0) {
+                    const editor = this.context.getEditor(index);
+                    this.editorService.openEditor(editor);
+                }
+            })
+        );
 
         const label = document.createElement('div');
         label.className = 'tab-label';
@@ -87,15 +87,17 @@ export class TabControl {
         const closeIcon = document.createElement('a');
         closeIcon.className = 'close-icon';
         closeIcon.setAttribute('title', '닫기');
-        toDispose.push(Dom.addDisposableEventListener(closeIcon, 'mousedown', (e) => {
-            if (e.button === 0) {
-                e.preventDefault();
-                e.stopPropagation();
+        toDispose.push(
+            Dom.addDisposableEventListener(closeIcon, 'mousedown', e => {
+                if (e.button === 0) {
+                    e.preventDefault();
+                    e.stopPropagation();
 
-                const editor = this.context.getEditor(index);
-                this.editorService.closeEditor(editor);
-            }
-        }));
+                    const editor = this.context.getEditor(index);
+                    this.editorService.closeEditor(editor);
+                }
+            })
+        );
         iconContainer.appendChild(closeIcon);
 
         this.toDispose.push(combinedDisposable(toDispose));
@@ -130,6 +132,5 @@ export class TabControl {
                 Dom.removeClass(tabContainer, 'loading');
             }
         });
-
     }
 }

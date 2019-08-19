@@ -6,10 +6,11 @@
 'use strict';
 
 import { Disposable } from '../../../base/common/lifecycle';
-import { ViewConfigurationChangedEvent, ViewEvent, ViewScrollChangedEvent, ViewEventType } from './viewEvents';
+import {
+    ViewConfigurationChangedEvent, ViewEvent, ViewEventType, ViewScrollChangedEvent
+} from './viewEvents';
 
 export class ViewEventHandler extends Disposable {
-
     private _shouldRender: boolean;
 
     constructor() {
@@ -51,7 +52,6 @@ export class ViewEventHandler extends Disposable {
             let e = events[i];
 
             switch (e.type) {
-
                 case ViewEventType.ConfigurtionChanged:
                     if (this.onConfigurationChanged(e)) {
                         shouldRender = true;

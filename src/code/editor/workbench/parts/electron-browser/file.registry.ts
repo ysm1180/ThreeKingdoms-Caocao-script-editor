@@ -1,11 +1,11 @@
-import { EditorRegistry, EditorDescriptor } from '../../browser/editor';
-import { ResourceViewEditor } from '../../browser/parts/editor/resourceViewEditor';
-import { ClassDescriptor } from '../../../../platform/instantiation/descriptor';
-import { FileEditorInput } from '../files/fileEditorInput';
 import { IEditorInput } from '../../../../platform/editor/editor';
-import { TextFileEditor } from '../../browser/parts/editor/textFileEditor';
+import { ClassDescriptor } from '../../../../platform/instantiation/descriptor';
+import { EditorDescriptor, EditorRegistry } from '../../browser/editor';
 import { ControlEditor } from '../../browser/parts/editor/controlEditor';
+import { ResourceViewEditor } from '../../browser/parts/editor/resourceViewEditor';
+import { TextFileEditor } from '../../browser/parts/editor/textFileEditor';
 import { ResourceEditorInput } from '../../common/editor/resourceEditorInput';
+import { FileEditorInput } from '../files/fileEditorInput';
 
 EditorRegistry.registerEditor(
     new EditorDescriptor(ResourceViewEditor, ResourceViewEditor.ID),

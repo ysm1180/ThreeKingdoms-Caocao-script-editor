@@ -1,8 +1,8 @@
 import { KeyCode, KeyMode } from '../../../../base/common/keyCodes';
 import { ServicesAccessor } from '../../../../platform/instantiation/instantiation';
 import { KeybindingsRegistry } from '../../../../platform/keybindings/keybindingsRegistry';
-import { IWorkbenchEditorService } from '../../services/editor/editorService';
 import { editorInputActivatedContext } from '../../browser/parts/editor/editorPart';
+import { IWorkbenchEditorService } from '../../services/editor/editorService';
 import { IResourceFileService } from '../../services/resourceFile/resourcefiles';
 import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
 

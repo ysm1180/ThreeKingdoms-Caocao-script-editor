@@ -10,7 +10,11 @@ export function isArray(array: any): array is any[] {
         return Array.isArray(array);
     }
 
-    if (array && typeof (array.length) === _typeof.number && array.constructor === Array) {
+    if (
+        array &&
+        typeof array.length === _typeof.number &&
+        array.constructor === Array
+    ) {
         return true;
     }
 
@@ -38,15 +42,15 @@ export function isNullOrUndefined(o: any): boolean {
 }
 
 export function isEmptyObject(obj: any): obj is any {
-	if (!isObject(obj)) {
-		return false;
-	}
+    if (!isObject(obj)) {
+        return false;
+    }
 
-	for (let key in obj) {
-		if (Object.prototype.hasOwnProperty.call(obj, key)) {
-			return false;
-		}
-	}
+    for (let key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            return false;
+        }
+    }
 
-	return true;
+    return true;
 }

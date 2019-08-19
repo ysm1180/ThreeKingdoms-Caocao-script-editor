@@ -1,10 +1,12 @@
-import { decorator, ServiceIdentifier } from '../instantiation/instantiation';
 import { isUndefined } from '../../base/common/types';
+import { decorator, ServiceIdentifier } from '../instantiation/instantiation';
 
-export const IContextKeyService: ServiceIdentifier<ContextKeyService> = decorator<ContextKeyService>('contextKeyService');
+export const IContextKeyService: ServiceIdentifier<
+    ContextKeyService
+> = decorator<ContextKeyService>('contextKeyService');
 
 export class Context {
-    private value: { [key: string]: any; };
+    private value: { [key: string]: any };
 
     constructor() {
         this.value = {};

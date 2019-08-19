@@ -1,10 +1,10 @@
-import { IEditorInput } from '../../../../platform/editor/editor';
-import { ResourceViewEditor } from '../../browser/parts/editor/resourceViewEditor';
-import { ResourceFileEditorModel } from '../../browser/parts/editor/resourceFileEditorModel';
-import { EditorInput } from '../editor';
-import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
-import { IResourceFileService } from '../../services/resourceFile/resourcefiles';
 import { IDisposable } from '../../../../base/common/lifecycle';
+import { IEditorInput } from '../../../../platform/editor/editor';
+import { ResourceFileEditorModel } from '../../browser/parts/editor/resourceFileEditorModel';
+import { ResourceViewEditor } from '../../browser/parts/editor/resourceViewEditor';
+import { IResourceFileService } from '../../services/resourceFile/resourcefiles';
+import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
+import { EditorInput } from '../editor';
 
 export class ResourceEditorInput extends EditorInput {
     private toUnbind: IDisposable[];
@@ -12,7 +12,7 @@ export class ResourceEditorInput extends EditorInput {
     constructor(
         private resource: string,
         private name: string,
-        @IResourceFileService private resourceFileService: ResourceFileService,
+        @IResourceFileService private resourceFileService: ResourceFileService
     ) {
         super();
 
@@ -22,10 +22,26 @@ export class ResourceEditorInput extends EditorInput {
     }
 
     private _registerListeners(): void {
-        this.toUnbind.push(this.resourceFileService.models.onModelLoading.add(() => this._onModelLoading()));
-        this.toUnbind.push(this.resourceFileService.models.onModelLoaded.add(() => this._onModelLoaded()));
-        this.toUnbind.push(this.resourceFileService.models.onModelSaving.add(() => this._onModelSaving()));
-        this.toUnbind.push(this.resourceFileService.models.onModelSaved.add(() => this._onModelSaved()));
+        this.toUnbind.push(
+            this.resourceFileService.models.onModelLoading.add(() =>
+                this._onModelLoading()
+            )
+        );
+        this.toUnbind.push(
+            this.resourceFileService.models.onModelLoaded.add(() =>
+                this._onModelLoaded()
+            )
+        );
+        this.toUnbind.push(
+            this.resourceFileService.models.onModelSaving.add(() =>
+                this._onModelSaving()
+            )
+        );
+        this.toUnbind.push(
+            this.resourceFileService.models.onModelSaved.add(() =>
+                this._onModelSaved()
+            )
+        );
     }
 
     private _onModelLoading() {
@@ -81,7 +97,10 @@ export class ResourceEditorInput extends EditorInput {
 
     public resolve(refresh?: boolean): Promise<ResourceFileEditorModel> {
         return Promise.resolve().then(() => {
-            return this.resourceFileService.models.loadOrCreate(this.resource, refresh);
+            return this.resourceFileService.models.loadOrCreate(
+                this.resource,
+                refresh
+            );
         });
     }
 }

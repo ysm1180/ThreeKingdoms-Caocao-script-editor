@@ -3,7 +3,7 @@ export interface IIterator<T> {
 }
 
 export interface IDoneIterator<T> {
-    next(): { readonly done: boolean, readonly value: T, readonly node: any };
+    next(): { readonly done: boolean; readonly value: T; readonly node: any };
 }
 
 export class ArrayIterator<T> implements IIterator<T> {
@@ -25,7 +25,10 @@ export class ArrayIterator<T> implements IIterator<T> {
     }
 
     protected current() {
-        if (this.currentIndex === this.start - 1 || this.currentIndex === this.end) {
+        if (
+            this.currentIndex === this.start - 1 ||
+            this.currentIndex === this.end
+        ) {
             return null;
         }
 

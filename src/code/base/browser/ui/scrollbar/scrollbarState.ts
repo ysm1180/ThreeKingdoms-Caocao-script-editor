@@ -28,13 +28,16 @@ export class ScrollbarState {
     }
 
     public clone(): ScrollbarState {
-		let r = new ScrollbarState(this.scrollbarSize, this.oppositeScrollbarSize);
-		r.setVisibleSize(this.visibleSize);
-		r.setScrollSize(this.scrollSize);
-		r.setScrollPosition(this.scrollPosition);
-		return r;
+        let r = new ScrollbarState(
+            this.scrollbarSize,
+            this.oppositeScrollbarSize
+        );
+        r.setVisibleSize(this.visibleSize);
+        r.setScrollSize(this.scrollSize);
+        r.setScrollPosition(this.scrollPosition);
+        return r;
     }
-    
+
     public setVisibleSize(visibleSize: number): boolean {
         const iVisibleSize = Math.round(visibleSize);
         if (this.visibleSize !== iVisibleSize) {
@@ -82,8 +85,11 @@ export class ScrollbarState {
     }
 
     private _recomputedValues(): void {
-        this.computedAvailableSize = Math.round(Math.max(0, this.visibleSize - this.oppositeScrollbarSize));
-        const computedIsNeeded = (this.scrollSize > 0 && this.scrollSize > this.visibleSize);
+        this.computedAvailableSize = Math.round(
+            Math.max(0, this.visibleSize - this.oppositeScrollbarSize)
+        );
+        const computedIsNeeded =
+            this.scrollSize > 0 && this.scrollSize > this.visibleSize;
 
         if (!computedIsNeeded) {
             this.computedSliderSize = 0;
@@ -91,20 +97,30 @@ export class ScrollbarState {
             return;
         }
 
-        const sliderSize = Math.max(MINIMUM_SLIDER_SIZE, Math.floor(this.visibleSize * this.computedAvailableSize / this.scrollSize));
+        const sliderSize = Math.max(
+            MINIMUM_SLIDER_SIZE,
+            Math.floor(
+                (this.visibleSize * this.computedAvailableSize) /
+                    this.scrollSize
+            )
+        );
         this.computedSliderSize = Math.round(sliderSize);
 
-        this.computedSliderRatio = (this.computedAvailableSize - this.computedSliderSize) / (this.scrollSize - this.visibleSize);
-        this.computedSliderPosition = Math.round(this.scrollPosition * this.computedSliderRatio);
+        this.computedSliderRatio =
+            (this.computedAvailableSize - this.computedSliderSize) /
+            (this.scrollSize - this.visibleSize);
+        this.computedSliderPosition = Math.round(
+            this.scrollPosition * this.computedSliderRatio
+        );
     }
 
     public getDesiredScrollPositionFromOffset(offset: number): number {
         let desiredSliderPosition = offset - this.computedSliderSize / 2;
-		return Math.round(desiredSliderPosition / this.computedSliderRatio);
+        return Math.round(desiredSliderPosition / this.computedSliderRatio);
     }
 
     public getDesiredScrollPositionFromDelta(delta: number): number {
-		let desiredSliderPosition = this.computedSliderPosition + delta;
-		return Math.round(desiredSliderPosition / this.computedSliderRatio);
-	}
+        let desiredSliderPosition = this.computedSliderPosition + delta;
+        return Math.round(desiredSliderPosition / this.computedSliderRatio);
+    }
 }

@@ -1,31 +1,35 @@
-import { DomBuilder, $ } from '../../../base/browser/domBuilder';
+import { $, DomBuilder } from '../../../base/browser/domBuilder';
+import { CommandService, ICommandService } from '../../../platform/commands/commandService';
+import {
+    ContextKeyService, IContextKeyService
+} from '../../../platform/contexts/contextKeyService';
+import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
 import { IInstantiationService } from '../../../platform/instantiation/instantiationService';
 import { ServiceStorage } from '../../../platform/instantiation/serviceStorage';
+import {
+    IKeybindingService, KeybindingService
+} from '../../../platform/keybindings/keybindingService';
 import { ITreeService, TreeService } from '../../../platform/tree/treeService';
-import { ICommandService, CommandService } from '../../../platform/commands/commandService';
-import { IKeybindingService, KeybindingService } from '../../../platform/keybindings/keybindingService';
-import { SidebarPart } from './parts/sidebarPart';
-import { WorkbenchLayout } from './layout';
-import { EditorPart, IEditorGroupService } from './parts/editor/editorPart';
-import { TitlePart, ITitlePartService } from './parts/titlePart';
-import { IContextMenuService, ContextMenuService } from '../services/contextmenuService';
-import { Me5DataService } from '../services/me5/me5DataService';
+import { IWindowService } from '../../../platform/windows/windows';
 import { WindowClientService } from '../../../platform/windows/windowsIpc';
-import { IDialogService, DialogService } from '../services/electron-browser/dialogService';
-import { StatusbarPart, IStatusbarService } from './parts/statusbarPart';
-import { IContextKeyService, ContextKeyService } from '../../../platform/contexts/contextKeyService';
-import { ICompositeViewService, CompositeViewService } from '../services/view/compositeViewService';
-import { FileService } from '../services/files/node/fileService';
-import { Me5FileService } from '../services/me5/me5FileService';
+import { ContextMenuService, IContextMenuService } from '../services/contextmenuService';
 import { IWorkbenchEditorService, WorkbenchEditorService } from '../services/editor/editorService';
+import { DialogService, IDialogService } from '../services/electron-browser/dialogService';
+import { IFileService } from '../services/files/files';
+import { FileService } from '../services/files/node/fileService';
+import { Me5DataService } from '../services/me5/me5DataService';
+import { Me5FileService } from '../services/me5/me5FileService';
 import { IPartService } from '../services/part/partService';
+import { IResourceDataService } from '../services/resourceFile/resourceDataService';
+import { IResourceFileService } from '../services/resourceFile/resourcefiles';
 import { ITextFileService } from '../services/textfile/textfiles';
 import { TextFileService } from '../services/textfile/textFileService';
-import { IFileService } from '../services/files/files';
-import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
-import { IWindowService } from '../../../platform/windows/windows';
-import { IResourceFileService } from '../services/resourceFile/resourcefiles';
-import { IResourceDataService } from '../services/resourceFile/resourceDataService';
+import { CompositeViewService, ICompositeViewService } from '../services/view/compositeViewService';
+import { WorkbenchLayout } from './layout';
+import { EditorPart, IEditorGroupService } from './parts/editor/editorPart';
+import { SidebarPart } from './parts/sidebarPart';
+import { IStatusbarService, StatusbarPart } from './parts/statusbarPart';
+import { ITitlePartService, TitlePart } from './parts/titlePart';
 
 export class Workbench implements IPartService {
     private container: HTMLElement;
@@ -45,7 +49,8 @@ export class Workbench implements IPartService {
     constructor(
         container: HTMLElement,
         serviceStorage: ServiceStorage,
-        @IInstantiationService private instantiationService: IInstantiationService
+        @IInstantiationService
+        private instantiationService: IInstantiationService
     ) {
         this.container = container;
         this.serviceStorage = serviceStorage;
@@ -68,29 +73,62 @@ export class Workbench implements IPartService {
     private initService() {
         this.serviceStorage.set(IPartService, this);
 
-        this.serviceStorage.set(IContextKeyService, new ClassDescriptor(ContextKeyService));
+        this.serviceStorage.set(
+            IContextKeyService,
+            new ClassDescriptor(ContextKeyService)
+        );
 
         this.serviceStorage.set(ITreeService, new ClassDescriptor(TreeService));
 
-        this.serviceStorage.set(IWindowService, new ClassDescriptor(WindowClientService));
-        this.serviceStorage.set(IDialogService, new ClassDescriptor(DialogService));
+        this.serviceStorage.set(
+            IWindowService,
+            new ClassDescriptor(WindowClientService)
+        );
+        this.serviceStorage.set(
+            IDialogService,
+            new ClassDescriptor(DialogService)
+        );
 
-        this.serviceStorage.set(ICommandService, new ClassDescriptor(CommandService));
-        this.serviceStorage.set(IKeybindingService, new ClassDescriptor(KeybindingService, window));
-        this.serviceStorage.set(IContextMenuService, new ClassDescriptor(ContextMenuService));
+        this.serviceStorage.set(
+            ICommandService,
+            new ClassDescriptor(CommandService)
+        );
+        this.serviceStorage.set(
+            IKeybindingService,
+            new ClassDescriptor(KeybindingService, window)
+        );
+        this.serviceStorage.set(
+            IContextMenuService,
+            new ClassDescriptor(ContextMenuService)
+        );
 
         this.serviceStorage.set(IFileService, new ClassDescriptor(FileService));
-        this.serviceStorage.set(ITextFileService, new ClassDescriptor(TextFileService));
-        this.serviceStorage.set(IResourceFileService, new ClassDescriptor(Me5FileService));
-        this.serviceStorage.set(IResourceDataService, new ClassDescriptor(Me5DataService));
-        
+        this.serviceStorage.set(
+            ITextFileService,
+            new ClassDescriptor(TextFileService)
+        );
+        this.serviceStorage.set(
+            IResourceFileService,
+            new ClassDescriptor(Me5FileService)
+        );
+        this.serviceStorage.set(
+            IResourceDataService,
+            new ClassDescriptor(Me5DataService)
+        );
+
         this.editorPart = this.instantiationService.create(EditorPart);
         this.serviceStorage.set(IEditorGroupService, this.editorPart);
-        this.serviceStorage.set(IWorkbenchEditorService, new ClassDescriptor(WorkbenchEditorService, this.editorPart));
-        
+        this.serviceStorage.set(
+            IWorkbenchEditorService,
+            new ClassDescriptor(WorkbenchEditorService, this.editorPart)
+        );
+
         this.sidebarPart = this.instantiationService.create(SidebarPart);
 
-        this.serviceStorage.set(ICompositeViewService, new ClassDescriptor(CompositeViewService, this.sidebarPart));
+        this.serviceStorage.set(
+            ICompositeViewService,
+            new ClassDescriptor(CompositeViewService, this.sidebarPart)
+        );
 
         this.titlePart = this.instantiationService.create(TitlePart);
         this.serviceStorage.set(ITitlePartService, this.titlePart);
@@ -101,9 +139,11 @@ export class Workbench implements IPartService {
 
     private createWorkbench() {
         this.workbenchContainer = $('.workbench-container');
-        this.workbench = $().div({
-            class: 'workbench nosidebar'
-        }).appendTo(this.workbenchContainer);
+        this.workbench = $()
+            .div({
+                class: 'workbench nosidebar',
+            })
+            .appendTo(this.workbenchContainer);
     }
 
     private render() {
@@ -117,14 +157,14 @@ export class Workbench implements IPartService {
 
     private createTitle(): void {
         const titleContainer = $(this.workbench).div({
-            class: 'title'
+            class: 'title',
         });
         this.titlePart.create(titleContainer);
     }
 
     private createSidebar(): void {
         const sidebarContainer = $(this.workbench).div({
-            class: 'sidebar'
+            class: 'sidebar',
         });
 
         this.sidebarPart.create(sidebarContainer);
@@ -132,7 +172,7 @@ export class Workbench implements IPartService {
 
     private createEditor(): void {
         const editorContainer = $(this.workbench).div({
-            class: 'editor'
+            class: 'editor',
         });
 
         this.editorPart.create(editorContainer);
@@ -140,14 +180,15 @@ export class Workbench implements IPartService {
 
     private createStatusbar(): void {
         const statusbarContainer = $(this.workbench).div({
-            class: 'statusbar'
+            class: 'statusbar',
         });
 
         this.statusbarPart.create(statusbarContainer);
     }
 
     private createLayout(): void {
-        this.workbenchLayout = this.instantiationService.create(WorkbenchLayout,
+        this.workbenchLayout = this.instantiationService.create(
+            WorkbenchLayout,
             $(this.container),
             this.workbench,
             {
@@ -155,7 +196,8 @@ export class Workbench implements IPartService {
                 sidebar: this.sidebarPart,
                 editor: this.editorPart,
                 statusbar: this.statusbarPart,
-            });
+            }
+        );
     }
 
     public isSidebarVisible(): boolean {
@@ -165,15 +207,14 @@ export class Workbench implements IPartService {
     public setSideBarHidden(hidden: boolean): void {
         this.sideBarHidden = hidden;
         if (hidden) {
-			this.workbench.addClass('nosidebar');
-		} else {
-			this.workbench.removeClass('nosidebar');
+            this.workbench.addClass('nosidebar');
+        } else {
+            this.workbench.removeClass('nosidebar');
         }
 
         if (hidden) {
-            
         }
-        
+
         this.layout();
     }
 

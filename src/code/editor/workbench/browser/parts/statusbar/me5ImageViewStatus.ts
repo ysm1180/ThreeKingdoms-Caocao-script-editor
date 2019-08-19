@@ -1,12 +1,14 @@
-import { IStatusbarItem, IStatusbarEntry, StatusbarItemAlignment } from '../../../../../platform/statusbar/statusbar';
-import { EditorPart, IEditorGroupService } from '../editor/editorPart';
+import { combinedDisposable, IDisposable } from '../../../../../base/common/lifecycle';
 import { ContextKeyExpr } from '../../../../../platform/contexts/contextKey';
-import { IDisposable, combinedDisposable } from '../../../../../base/common/lifecycle';
 import { IEditorInput } from '../../../../../platform/editor/editor';
+import {
+    IStatusbarEntry, IStatusbarItem, StatusbarItemAlignment
+} from '../../../../../platform/statusbar/statusbar';
 import { ResourceEditorInput } from '../../../common/editor/resourceEditorInput';
 import { ImageResource } from '../../../common/imageResource';
 import { IResourceFileService } from '../../../services/resourceFile/resourcefiles';
 import { ResourceFileService } from '../../../services/resourceFile/resourceFileService';
+import { EditorPart, IEditorGroupService } from '../editor/editorPart';
 
 export class ImageViewStatusItem implements IStatusbarItem {
     private imageSize: HTMLElement;
@@ -16,9 +18,8 @@ export class ImageViewStatusItem implements IStatusbarItem {
     constructor(
         private entry: IStatusbarEntry,
         @IEditorGroupService private editorService: EditorPart,
-        @IResourceFileService private resourceFileService: ResourceFileService,
-    ) {
-    }
+        @IResourceFileService private resourceFileService: ResourceFileService
+    ) {}
 
     public get alignment(): StatusbarItemAlignment {
         return StatusbarItemAlignment.LEFT;
@@ -34,7 +35,11 @@ export class ImageViewStatusItem implements IStatusbarItem {
         this.imageSize = document.createElement('span');
         element.appendChild(this.imageSize);
 
-        dispose.push(this.editorService.onEditorInputChanged.add((e) => this._onInputChanged(e)));
+        dispose.push(
+            this.editorService.onEditorInputChanged.add(e =>
+                this._onInputChanged(e)
+            )
+        );
 
         return combinedDisposable(dispose);
     }
@@ -45,7 +50,9 @@ export class ImageViewStatusItem implements IStatusbarItem {
             return;
         }
 
-        const dataModel = this.resourceFileService.models.get(input.getResource());
+        const dataModel = this.resourceFileService.models.get(
+            input.getResource()
+        );
         const image = new ImageResource();
         const dataArray = new Uint8Array(dataModel.getCurrentData());
         if (image.build(dataArray)) {

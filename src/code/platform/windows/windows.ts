@@ -1,13 +1,21 @@
-import { ServiceIdentifier, decorator } from '../instantiation/instantiation';
+import { decorator, ServiceIdentifier } from '../instantiation/instantiation';
 
-export const IWindowService: ServiceIdentifier<IWindowService> = decorator<IWindowService>('windowService');
+export const IWindowService: ServiceIdentifier<IWindowService> = decorator<
+    IWindowService
+>('windowService');
 
 export interface IWindowService {
-    showOpenDialog(options: Electron.OpenDialogOptions): Promise<IOpenFileRequest>;
+    showOpenDialog(
+        options: Electron.OpenDialogOptions
+    ): Promise<IOpenFileRequest>;
 
-    showMessageBox(options: Electron.MessageBoxOptions): Promise<IMessageBoxResult>;
+    showMessageBox(
+        options: Electron.MessageBoxOptions
+    ): Promise<IMessageBoxResult>;
 
-    showSaveDialog(options: Electron.SaveDialogOptions): Promise<ISaveFileRequest>;
+    showSaveDialog(
+        options: Electron.SaveDialogOptions
+    ): Promise<ISaveFileRequest>;
 }
 
 export interface IOpenFileRequest {
@@ -23,7 +31,16 @@ export interface OpenDialogOptions {
     defaultPath?: string;
     buttonLabel?: string;
     filters?: FileFilter[];
-    properties?: Array<'openFile' | 'openDirectory' | 'multiSelections' | 'showHiddenFiles' | 'createDirectory' | 'promptToCreate' | 'noResolveAliases' | 'treatPackageAsDirectory'>;
+    properties?: Array<
+        | 'openFile'
+        | 'openDirectory'
+        | 'multiSelections'
+        | 'showHiddenFiles'
+        | 'createDirectory'
+        | 'promptToCreate'
+        | 'noResolveAliases'
+        | 'treatPackageAsDirectory'
+    >;
     message?: string;
 }
 

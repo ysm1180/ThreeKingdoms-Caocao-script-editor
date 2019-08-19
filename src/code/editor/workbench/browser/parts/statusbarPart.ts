@@ -1,19 +1,26 @@
 import { addClass } from '../../../../base/browser/dom';
-import { DomBuilder, $ } from '../../../../base/browser/domBuilder';
+import { $, DomBuilder } from '../../../../base/browser/domBuilder';
+import {
+    ContextKeyService, IContextKeyService
+} from '../../../../platform/contexts/contextKeyService';
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
-import { IContextKeyService, ContextKeyService } from '../../../../platform/contexts/contextKeyService';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
-import { StatusbarRegistry, StatusbarItemAlignment } from '../../../../platform/statusbar/statusbar';
+import {
+    StatusbarItemAlignment, StatusbarRegistry
+} from '../../../../platform/statusbar/statusbar';
 import { Part } from '../part';
 
-export const IStatusbarService: ServiceIdentifier<StatusbarPart> = decorator<StatusbarPart>('statusbarPart');
+export const IStatusbarService: ServiceIdentifier<StatusbarPart> = decorator<
+    StatusbarPart
+>('statusbarPart');
 
 export class StatusbarPart extends Part {
     private statusItemContainer: DomBuilder;
 
     constructor(
         @IContextKeyService private contextKeyService: ContextKeyService,
-        @IInstantiationService private instantiationService: IInstantiationService
+        @IInstantiationService
+        private instantiationService: IInstantiationService
     ) {
         super();
     }
@@ -22,10 +29,18 @@ export class StatusbarPart extends Part {
         this.statusItemContainer = $(parent);
 
         let items = StatusbarRegistry.getAllStatusbarItem();
-        const left = items.filter(d => d.alignment === StatusbarItemAlignment.LEFT).sort((a, b) => b.priority - a.priority);
-        const right = items.filter(d => d.alignment === StatusbarItemAlignment.RIGHT).sort((a, b) => a.priority - b.priority);
+        const left = items
+            .filter(d => d.alignment === StatusbarItemAlignment.LEFT)
+            .sort((a, b) => b.priority - a.priority);
+        const right = items
+            .filter(d => d.alignment === StatusbarItemAlignment.RIGHT)
+            .sort((a, b) => a.priority - b.priority);
         right.concat(left).forEach(d => {
-            const item = this.instantiationService.create(d.ctor, { alignment: d.alignment, when: d.when, priority: d.priority });
+            const item = this.instantiationService.create(d.ctor, {
+                alignment: d.alignment,
+                when: d.when,
+                priority: d.priority,
+            });
             const el = this.createStatusElement(d.id, d.alignment);
 
             this.registerDispose(item.render(el));
@@ -51,10 +66,16 @@ export class StatusbarPart extends Part {
 
     public update() {
         let items = StatusbarRegistry.getAllStatusbarItem();
-        const idArray = items.filter(d => d.when ? d.when.evaluate(this.contextKeyService.getContext()) : true).map(d => d.id);
+        const idArray = items
+            .filter(d =>
+                d.when
+                    ? d.when.evaluate(this.contextKeyService.getContext())
+                    : true
+            )
+            .map(d => d.id);
 
         const elements = this.getItemElements();
-        elements.forEach((element) => {
+        elements.forEach(element => {
             if (idArray.indexOf(element.id) === -1) {
                 element.style.display = 'none';
             } else {

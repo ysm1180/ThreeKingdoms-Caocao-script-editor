@@ -1,5 +1,5 @@
-import { ServicesAccessor } from '../instantiation/instantiation';
 import { IDisposable } from '../../base/common/lifecycle';
+import { ServicesAccessor } from '../instantiation/instantiation';
 
 export interface ICommandHandler {
     (accecsor: ServicesAccessor, ...args: any[]): any;
@@ -10,11 +10,10 @@ export interface ICommand {
     handler: ICommandHandler;
 }
 
-export const CommandsRegistry = new class {
+export const CommandsRegistry = new (class {
     _commands = new Map<string, ICommand>();
 
-    constructor() {
-    }
+    constructor() {}
 
     public register(command: ICommand): IDisposable {
         const { id } = command;
@@ -26,7 +25,7 @@ export const CommandsRegistry = new class {
         return {
             dispose: () => {
                 this._commands.delete(id);
-            }
+            },
         };
     }
 
@@ -41,4 +40,4 @@ export const CommandsRegistry = new class {
     public getCommands(): Map<string, ICommand> {
         return this._commands;
     }
-};
+})();

@@ -1,6 +1,6 @@
 import { decorator } from '../../../../platform/instantiation/instantiation';
-import { ITextBufferFactory } from '../../../common/models';
 import { ResourceBufferFactory } from '../../../common/model/resourceBufferBuilder';
+import { ITextBufferFactory } from '../../../common/models';
 
 export const ITextFileService = decorator<ITextFileService>('textFileService');
 
@@ -12,5 +12,5 @@ export interface IRawResourceContent {
     value: ResourceBufferFactory;
 }
 export interface IRawTextContent {
-	value: ITextBufferFactory;
+    value: ITextBufferFactory;
 }

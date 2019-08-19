@@ -1,19 +1,22 @@
 import { ipcRenderer } from 'electron';
-import { IResourceInput } from '../../platform/editor/editor';
-import { IOpenFileRequest } from '../../platform/windows/windows';
-import { IInstantiationService } from '../../platform/instantiation/instantiationService';
-import { IWorkbenchEditorService, WorkbenchEditorService } from './services/editor/editorService';
-import { ICommandService, CommandService } from '../../platform/commands/commandService';
+
 import * as array from '../../base/common/array';
-import { IKeybindingService, KeybindingService } from '../../platform/keybindings/keybindingService';
+import { CommandService, ICommandService } from '../../platform/commands/commandService';
+import { IResourceInput } from '../../platform/editor/editor';
+import { IInstantiationService } from '../../platform/instantiation/instantiationService';
+import {
+    IKeybindingService, KeybindingService
+} from '../../platform/keybindings/keybindingService';
+import { IOpenFileRequest } from '../../platform/windows/windows';
+import { IWorkbenchEditorService, WorkbenchEditorService } from './services/editor/editorService';
 
 export class ElectronWindow {
     constructor(
         @IWorkbenchEditorService private editorService: WorkbenchEditorService,
         @ICommandService private commandService: CommandService,
         @IKeybindingService private keybindingService: KeybindingService,
-        @IInstantiationService private instantiationService: IInstantiationService,
-
+        @IInstantiationService
+        private instantiationService: IInstantiationService
     ) {
         this.registerListeners();
     }
@@ -25,20 +28,25 @@ export class ElectronWindow {
 
         ipcRenderer.on('app:resolveKeybindings', (e, rawActionIds: string) => {
             let actionIds: string[] = [];
-			try {
-				actionIds = JSON.parse(rawActionIds);
-			} catch (error) {
-				// should not happen
+            try {
+                actionIds = JSON.parse(rawActionIds);
+            } catch (error) {
+                // should not happen
             }
-            
+
             this.resolveKeybindings(actionIds).then(keybindings => {
-				if (keybindings.length) {
-					ipcRenderer.send('app:keybindingsResolved', JSON.stringify(keybindings));
-				}
-			});
+                if (keybindings.length) {
+                    ipcRenderer.send(
+                        'app:keybindingsResolved',
+                        JSON.stringify(keybindings)
+                    );
+                }
+            });
         });
 
-        ipcRenderer.on('editor:openFiles', (e, data: IOpenFileRequest) => this.onOpenFiles(data));
+        ipcRenderer.on('editor:openFiles', (e, data: IOpenFileRequest) =>
+            this.onOpenFiles(data)
+        );
     }
 
     private onOpenFiles(data: IOpenFileRequest): void {
@@ -54,7 +62,7 @@ export class ElectronWindow {
     }
 
     private toInputs(paths: string[]) {
-        return paths.map((path) => {
+        return paths.map(path => {
             let input: IResourceInput = {
                 resource: path,
             };
@@ -71,21 +79,29 @@ export class ElectronWindow {
         return this.editorService.openEditors(resources);
     }
 
-    private resolveKeybindings(actionIds: string[]): Promise<{ id: string; label: string, isNative: boolean; }[]> {
+    private resolveKeybindings(
+        actionIds: string[]
+    ): Promise<{ id: string; label: string; isNative: boolean }[]> {
         return Promise.resolve().then(() => {
-            return array.coalesce(actionIds.map(id => {
-                const binding = this.keybindingService.lookupKeybinding(id);
-                if (!binding) {
+            return array.coalesce(
+                actionIds.map(id => {
+                    const binding = this.keybindingService.lookupKeybinding(id);
+                    if (!binding) {
+                        return null;
+                    }
+
+                    const electronAccelerator = binding.electronShortKey();
+                    if (electronAccelerator) {
+                        return {
+                            id,
+                            label: electronAccelerator,
+                            isNative: true,
+                        };
+                    }
+
                     return null;
-                }
-
-                const electronAccelerator = binding.electronShortKey();
-                if (electronAccelerator) {
-                    return { id, label: electronAccelerator, isNative: true };
-                }
-
-                return null;
-            }));
+                })
+            );
         });
     }
 }

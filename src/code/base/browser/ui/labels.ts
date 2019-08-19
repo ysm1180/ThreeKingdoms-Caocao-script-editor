@@ -20,5 +20,5 @@ export class Label {
     public setValue(value: string) {
         this.label.title = value;
         this.labelDescription.textContent = value;
-    } 
+    }
 }

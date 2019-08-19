@@ -1,4 +1,4 @@
-import { IDisposable, toDisposable, once } from './lifecycle';
+import { IDisposable, once, toDisposable } from './lifecycle';
 import { LinkedList } from './linkedList';
 
 export type Listener<T> = (e: T) => any;
@@ -19,7 +19,7 @@ export class ChainEventStorage<T> {
 
         let removes = [];
         if (this._pendingEvents.length) {
-            this._pendingEvents.forEach((e) => {
+            this._pendingEvents.forEach(e => {
                 removes.push(this.add(e));
             });
             this._pendingEvents = [];
@@ -46,7 +46,7 @@ export class ChainEventStorage<T> {
     }
 
     public dispose() {
-        this._disposable.forEach((disposable) => {
+        this._disposable.forEach(disposable => {
             disposable.dispose();
         });
         this._relayEvent = null;
@@ -54,13 +54,10 @@ export class ChainEventStorage<T> {
     }
 }
 
-
 export class Event<T> {
-    private _listeners = new LinkedList<(Function | [Function, any])>();
+    private _listeners = new LinkedList<Function | [Function, any]>();
 
-    constructor() {
-
-    }
+    constructor() {}
 
     public get listener(): Listener<T> {
         return (e: T) => {
@@ -69,16 +66,22 @@ export class Event<T> {
     }
 
     public add(listener: Listener<T>, thisArg?: any): IDisposable {
-        const remove = this._listeners.push(thisArg ? [listener, thisArg] : listener);
+        const remove = this._listeners.push(
+            thisArg ? [listener, thisArg] : listener
+        );
 
-        return toDisposable(once(remove)); 
+        return toDisposable(once(remove));
     }
 
     public fire(event?: T) {
         if (this._listeners) {
             const queue: [(Function | [Function, any]), T][] = [];
 
-            for (let iter = this._listeners.iterator(), e = iter.next(); !e.done; e = iter.next()) {
+            for (
+                let iter = this._listeners.iterator(), e = iter.next();
+                !e.done;
+                e = iter.next()
+            ) {
                 queue.push([e.value, event]);
             }
 
@@ -103,9 +106,7 @@ export class Event<T> {
 export class RelayEvent<T> {
     private _event = new Event<T>();
 
-    constructor() {
-
-    }
+    constructor() {}
 
     public set event(event: Event<T>) {
         event.add(this._event.listener);
@@ -114,6 +115,6 @@ export class RelayEvent<T> {
     public add(fn: Listener<T>, thisArg?: any): IDisposable {
         const remove = this._event.add(fn, thisArg);
 
-        return remove; 
+        return remove;
     }
 }

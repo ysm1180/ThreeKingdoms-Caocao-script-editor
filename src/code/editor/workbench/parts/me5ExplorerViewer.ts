@@ -1,23 +1,29 @@
-import { Label } from '../../../base/browser/ui/labels';
-import { Input } from '../../../base/browser/ui/input';
 import { addDisposableEventListener } from '../../../base/browser/dom';
-import { dispose } from '../../../base/common/lifecycle';
+import { Input } from '../../../base/browser/ui/input';
+import { Label } from '../../../base/browser/ui/labels';
 import { KeyCode } from '../../../base/common/keyCodes';
-import { Tree, IDataSource, IDataRenderer, IDataController } from '../../../base/parts/tree/browser/tree';
+import { dispose } from '../../../base/common/lifecycle';
+import {
+    IDataController, IDataRenderer, IDataSource, Tree
+} from '../../../base/parts/tree/browser/tree';
 import { Menu } from '../../../platform/actions/menu';
 import { MenuId } from '../../../platform/actions/registry';
-import { IContextMenuService, ContextMenuService } from '../services/contextmenuService';
-import { ContextMenuEvent } from '../../../platform/events/contextMenuEvent';
 import { RawContextKey } from '../../../platform/contexts/contextKey';
-import { ContextKey, IContextKeyService, ContextKeyService } from '../../../platform/contexts/contextKeyService';
-import { Me5Stat, ItemState } from './files/me5Data';
+import {
+    ContextKey, ContextKeyService, IContextKeyService
+} from '../../../platform/contexts/contextKeyService';
+import { ContextMenuEvent } from '../../../platform/events/contextMenuEvent';
+import { ContextMenuService, IContextMenuService } from '../services/contextmenuService';
 import { IWorkbenchEditorService, WorkbenchEditorService } from '../services/editor/editorService';
-import { ResourceFileService } from '../services/resourceFile/resourceFileService';
 import { IResourceFileService } from '../services/resourceFile/resourcefiles';
-
+import { ResourceFileService } from '../services/resourceFile/resourceFileService';
+import { ItemState, Me5Stat } from './files/me5Data';
 
 export const explorerEditableItemId = 'explorerRename';
-export const explorerEditContext = new RawContextKey<boolean>(explorerEditableItemId, false);
+export const explorerEditContext = new RawContextKey<boolean>(
+    explorerEditableItemId,
+    false
+);
 
 export class Me5DataSource implements IDataSource {
     public getId(element: Me5Stat): string {
@@ -51,9 +57,7 @@ export class Me5DataRenderer implements IDataRenderer {
 
     private editContext: ContextKey<boolean>;
 
-    constructor(
-        @IContextKeyService contextKeyService: ContextKeyService,
-    ) {
+    constructor(@IContextKeyService contextKeyService: ContextKeyService) {
         this.editContext = explorerEditContext.bindTo(contextKeyService);
     }
 
@@ -62,7 +66,11 @@ export class Me5DataRenderer implements IDataRenderer {
         return { label, container };
     }
 
-    public render(tree: Tree, element: Me5Stat, templateData: IMe5TemplateData) {
+    public render(
+        tree: Tree,
+        element: Me5Stat,
+        templateData: IMe5TemplateData
+    ) {
         if (element.state === ItemState.Edit) {
             templateData.label.element.style.display = 'none';
             this.renderInput(tree, templateData.container, element);
@@ -97,13 +105,17 @@ export class Me5DataRenderer implements IDataRenderer {
         };
 
         const toDispose = [
-            addDisposableEventListener(input.inputElement, 'keydown', (e: KeyboardEvent) => {
-                if (e.keyCode === KeyCode.Enter) {
-                    done(true);
-                } else if (e.keyCode === KeyCode.Escape) {
-                    done(false);
+            addDisposableEventListener(
+                input.inputElement,
+                'keydown',
+                (e: KeyboardEvent) => {
+                    if (e.keyCode === KeyCode.Enter) {
+                        done(true);
+                    } else if (e.keyCode === KeyCode.Escape) {
+                        done(false);
+                    }
                 }
-            }),
+            ),
 
             addDisposableEventListener(input.inputElement, 'blur', () => {
                 setTimeout(() => {
@@ -125,10 +137,8 @@ export class Me5DataController implements IDataController {
     constructor(
         @IWorkbenchEditorService private editorService: WorkbenchEditorService,
         @IContextMenuService private contextMenuService: ContextMenuService,
-        @IResourceFileService private resourceFileService: ResourceFileService,
-    ) {
-
-    }
+        @IResourceFileService private resourceFileService: ResourceFileService
+    ) {}
 
     public onClick(tree: Tree, element: Me5Stat) {
         tree.focus();
@@ -139,7 +149,11 @@ export class Me5DataController implements IDataController {
         this.editorService.refresh();
     }
 
-    public onContextMenu(tree: Tree, element: Me5Stat, event: ContextMenuEvent) {
+    public onContextMenu(
+        tree: Tree,
+        element: Me5Stat,
+        event: ContextMenuEvent
+    ) {
         event.preventDefault();
         event.stopPropagation();
 
@@ -154,12 +168,12 @@ export class Me5DataController implements IDataController {
             getAnchor: () => {
                 return {
                     x: event.posx,
-                    y: event.posy
+                    y: event.posy,
                 };
             },
             getItems: () => {
                 return this.contextMenu.getItems();
-            }
+            },
         });
     }
 }

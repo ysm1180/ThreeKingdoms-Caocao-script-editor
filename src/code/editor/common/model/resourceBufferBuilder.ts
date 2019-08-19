@@ -4,8 +4,7 @@ export class ResourceBufferFactory {
     constructor(
         private readonly buffer: Buffer,
         private createBufferFn: (source) => ResourceBuffer
-    ) {
-    }
+    ) {}
 
     public create() {
         return this.createBufferFn(this.buffer);
@@ -32,7 +31,9 @@ export class ResourceBufferBuilder {
         this.binaryBuffer = Buffer.concat([this.binaryBuffer, buffer]);
     }
 
-    public finish(createBufferFn: (source) => ResourceBuffer): ResourceBufferFactory {
+    public finish(
+        createBufferFn: (source) => ResourceBuffer
+    ): ResourceBufferFactory {
         if (this.binaryBuffer.length === 0) {
             this._acceptChunk('');
         }

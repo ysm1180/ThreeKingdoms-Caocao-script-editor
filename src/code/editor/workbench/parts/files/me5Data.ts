@@ -1,15 +1,16 @@
+import { Disposable, IDisposable, once, toDisposable } from '../../../../base/common/lifecycle';
 import { LinkedList } from '../../../../base/common/linkedList';
+import {
+    IWorkbenchEditorService, WorkbenchEditorService
+} from '../../services/editor/editorService';
+import { FilterFuntion, IResourceStat } from '../../services/resourceFile/resourceDataService';
 import { IResourceFileService } from '../../services/resourceFile/resourcefiles';
-import { Disposable, once, toDisposable, IDisposable } from '../../../../base/common/lifecycle';
 import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
-import { IWorkbenchEditorService, WorkbenchEditorService } from '../../services/editor/editorService';
-import { IResourceStat, FilterFuntion } from '../../services/resourceFile/resourceDataService';
 
 export enum ItemState {
     Normal,
     Edit,
 }
-
 
 export class Me5Stat extends Disposable implements IResourceStat {
     private static INDEX = 1;
@@ -28,7 +29,7 @@ export class Me5Stat extends Disposable implements IResourceStat {
         public root: Me5Stat,
         index: number,
         @IResourceFileService private resourceFileService: ResourceFileService,
-        @IWorkbenchEditorService private editorService: WorkbenchEditorService,
+        @IWorkbenchEditorService private editorService: WorkbenchEditorService
     ) {
         super();
 
@@ -90,7 +91,12 @@ export class Me5Stat extends Disposable implements IResourceStat {
         const input = this.editorService.getActiveEditorInput();
         const model = this.resourceFileService.models.get(input.getResource());
         const data = model.resourceModel.getData(this._dataIndex);
-        return Buffer.from(data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength));
+        return Buffer.from(
+            data.buffer.slice(
+                data.byteOffset,
+                data.byteOffset + data.byteLength
+            )
+        );
     }
 
     public get index() {

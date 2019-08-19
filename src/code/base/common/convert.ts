@@ -18,9 +18,12 @@ export function strToBytes(value: string): Buffer {
     return Buffer.from(value);
 }
 
-export function bytesToNumber(bytes: Uint8Array, bigEndian: boolean = false): number {
+export function bytesToNumber(
+    bytes: Uint8Array,
+    bigEndian: boolean = false
+): number {
     if (bigEndian) {
-        bytes = bytes.slice(0, 0 + 4).reverse();     
+        bytes = bytes.slice(0, 0 + 4).reverse();
     }
 
     return new Uint32Array(bytes.buffer.slice(0, 0 + 4))[0];

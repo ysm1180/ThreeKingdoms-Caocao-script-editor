@@ -1,6 +1,6 @@
-import { MenuId, MenuRegistry, IMenuItem } from './registry';
 import { CommandsRegistry } from '../commands/commands';
 import { ContextKeyExpr } from '../contexts/contextKey';
+import { IMenuItem, MenuId, MenuRegistry } from './registry';
 
 type MenuItemGroup = [string, IMenuItem[]];
 
@@ -8,7 +8,52 @@ export class MenuItemInfo {
     private _label: string;
     private _command: string;
     private _when: ContextKeyExpr;
-    private _role: string | ('undo' | 'redo' | 'cut' | 'copy' | 'paste' | 'pasteAndMatchStyle' | 'delete' | 'selectAll' | 'reload' | 'forceReload' | 'toggleDevTools' | 'resetZoom' | 'zoomIn' | 'zoomOut' | 'togglefullscreen' | 'window' | 'minimize' | 'close' | 'help' | 'about' | 'services' | 'hide' | 'hideOthers' | 'unhide' | 'quit' | 'startSpeaking' | 'stopSpeaking' | 'close' | 'minimize' | 'zoom' | 'front' | 'appMenu' | 'fileMenu' | 'editMenu' | 'viewMenu' | 'recentDocuments' | 'toggleTabBar' | 'selectNextTab' | 'selectPreviousTab' | 'mergeAllWindows' | 'clearRecentDocuments' | 'moveTabToNewWindow' | 'windowMenu');
+    private _role:
+        | string
+        | (
+              | 'undo'
+              | 'redo'
+              | 'cut'
+              | 'copy'
+              | 'paste'
+              | 'pasteAndMatchStyle'
+              | 'delete'
+              | 'selectAll'
+              | 'reload'
+              | 'forceReload'
+              | 'toggleDevTools'
+              | 'resetZoom'
+              | 'zoomIn'
+              | 'zoomOut'
+              | 'togglefullscreen'
+              | 'window'
+              | 'minimize'
+              | 'close'
+              | 'help'
+              | 'about'
+              | 'services'
+              | 'hide'
+              | 'hideOthers'
+              | 'unhide'
+              | 'quit'
+              | 'startSpeaking'
+              | 'stopSpeaking'
+              | 'close'
+              | 'minimize'
+              | 'zoom'
+              | 'front'
+              | 'appMenu'
+              | 'fileMenu'
+              | 'editMenu'
+              | 'viewMenu'
+              | 'recentDocuments'
+              | 'toggleTabBar'
+              | 'selectNextTab'
+              | 'selectPreviousTab'
+              | 'mergeAllWindows'
+              | 'clearRecentDocuments'
+              | 'moveTabToNewWindow'
+              | 'windowMenu');
 
     constructor(menu: IMenuItem) {
         if (menu.command.role) {
@@ -111,6 +156,4 @@ export class Menu {
 
         return orderA - orderB;
     }
-
-
 }

@@ -1,10 +1,13 @@
-import { VerticalScrollbar } from './verticalScrollbar';
-import { HorizontalScrollbar } from './horizontalScrollbar';
+import { Event } from '../../../common/event';
+import { Disposable, dispose, IDisposable } from '../../../common/lifecycle';
+import {
+    INewScrollDimensions, INewScrollPosition, IScrollDimensions, IScrollPosition, Scroll,
+    ScrollEvent
+} from '../../../common/scroll';
 import { addDisposableEventListener } from '../../dom';
 import { StandardMouseWheelEvent } from '../../mouseEvent';
-import { Disposable, IDisposable, dispose } from '../../../common/lifecycle';
-import { ScrollEvent, Scroll, INewScrollPosition, IScrollPosition, IScrollDimensions, INewScrollDimensions } from '../../../common/scroll';
-import { Event } from '../../../common/event';
+import { HorizontalScrollbar } from './horizontalScrollbar';
+import { VerticalScrollbar } from './verticalScrollbar';
 
 const SCROLL_WHEEL_SENSITIVITY = 50;
 
@@ -23,7 +26,11 @@ export class ScrollbarElement extends Disposable {
 
     public readonly onScroll = this.registerDispose(new Event<ScrollEvent>());
 
-    constructor(element: HTMLElement, options: ScrollableElementOptions, scroll?: Scroll) {
+    constructor(
+        element: HTMLElement,
+        options: ScrollableElementOptions,
+        scroll?: Scroll
+    ) {
         super();
 
         element.style.overflow = 'hidden';
@@ -31,10 +38,12 @@ export class ScrollbarElement extends Disposable {
 
         this.mouseWheelToDispose = [];
 
-        this.registerDispose(this.scroll.onScroll.add((e) => {
-            this._onDidScroll(e);
-            this.onScroll.fire(e);
-        }));
+        this.registerDispose(
+            this.scroll.onScroll.add(e => {
+                this._onDidScroll(e);
+                this.onScroll.fire(e);
+            })
+        );
 
         options = resolveOptions(options);
         this.verticalScrollbar = new VerticalScrollbar(scroll, options);
@@ -80,16 +89,33 @@ export class ScrollbarElement extends Disposable {
             const currentScrollPosition = this.scroll.getCurrentScrollPosition();
             let desiredScrollPosition: INewScrollPosition = {};
             if (deltaY) {
-                const desiredScrollTop = currentScrollPosition.scrollTop - SCROLL_WHEEL_SENSITIVITY * deltaY;
-                this.verticalScrollbar.writeScrollPosition(desiredScrollPosition, desiredScrollTop);
+                const desiredScrollTop =
+                    currentScrollPosition.scrollTop -
+                    SCROLL_WHEEL_SENSITIVITY * deltaY;
+                this.verticalScrollbar.writeScrollPosition(
+                    desiredScrollPosition,
+                    desiredScrollTop
+                );
             }
             if (deltaX) {
-                const desiredScrollLeft = currentScrollPosition.scrollLeft - SCROLL_WHEEL_SENSITIVITY * deltaX;
-                this.verticalScrollbar.writeScrollPosition(desiredScrollPosition, desiredScrollLeft);
+                const desiredScrollLeft =
+                    currentScrollPosition.scrollLeft -
+                    SCROLL_WHEEL_SENSITIVITY * deltaX;
+                this.verticalScrollbar.writeScrollPosition(
+                    desiredScrollPosition,
+                    desiredScrollLeft
+                );
             }
-            desiredScrollPosition = this.scroll.validateScrollPosition(desiredScrollPosition);
+            desiredScrollPosition = this.scroll.validateScrollPosition(
+                desiredScrollPosition
+            );
 
-            if (currentScrollPosition.scrollLeft !== desiredScrollPosition.scrollLeft || currentScrollPosition.scrollTop !== desiredScrollPosition.scrollTop) {
+            if (
+                currentScrollPosition.scrollLeft !==
+                    desiredScrollPosition.scrollLeft ||
+                currentScrollPosition.scrollTop !==
+                    desiredScrollPosition.scrollTop
+            ) {
                 this.scroll.setScrollPositionNow(desiredScrollPosition);
             }
         }
@@ -105,8 +131,16 @@ export class ScrollbarElement extends Disposable {
             this._onMouseWheel(e);
         };
 
-        this.mouseWheelToDispose.push(addDisposableEventListener(this.domNode, 'mousewheel', onMouseWheel));
-        this.mouseWheelToDispose.push(addDisposableEventListener(this.domNode, 'DOMMouseScroll', onMouseWheel));
+        this.mouseWheelToDispose.push(
+            addDisposableEventListener(this.domNode, 'mousewheel', onMouseWheel)
+        );
+        this.mouseWheelToDispose.push(
+            addDisposableEventListener(
+                this.domNode,
+                'DOMMouseScroll',
+                onMouseWheel
+            )
+        );
     }
 
     public getScrollDimensions(): IScrollDimensions {
@@ -136,11 +170,19 @@ export class ScrollableElement extends ScrollbarElement {
     }
 }
 
-function resolveOptions(opts: ScrollableElementOptions): ScrollableElementOptions {
-	let result: ScrollableElementOptions = {
-		horizontalScrollbarSize: (typeof opts.horizontalScrollbarSize !== 'undefined' ? opts.horizontalScrollbarSize : 14),
-		verticalScrollbarSize: (typeof opts.verticalScrollbarSize !== 'undefined' ? opts.verticalScrollbarSize : 14),
-	};
+function resolveOptions(
+    opts: ScrollableElementOptions
+): ScrollableElementOptions {
+    let result: ScrollableElementOptions = {
+        horizontalScrollbarSize:
+            typeof opts.horizontalScrollbarSize !== 'undefined'
+                ? opts.horizontalScrollbarSize
+                : 14,
+        verticalScrollbarSize:
+            typeof opts.verticalScrollbarSize !== 'undefined'
+                ? opts.verticalScrollbarSize
+                : 14,
+    };
 
-	return result;
+    return result;
 }

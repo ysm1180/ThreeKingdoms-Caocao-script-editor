@@ -20,6 +20,4 @@ export interface IUntitleResourceInput {
     resource?: string;
 
     label?: string;
-
-
 }

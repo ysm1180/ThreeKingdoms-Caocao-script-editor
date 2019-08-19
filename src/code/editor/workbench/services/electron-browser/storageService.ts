@@ -1,14 +1,12 @@
-import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 import { isNullOrUndefined, isString } from '../../../../base/common/types';
+import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 
-export const IStorageService: ServiceIdentifier<StorageService> = decorator<StorageService>('storageService');
+export const IStorageService: ServiceIdentifier<StorageService> = decorator<
+    StorageService
+>('storageService');
 
 export class StorageService {
-    constructor(
-        private storage: Storage,
-    ) {
-
-    }
+    constructor(private storage: Storage) {}
 
     public store(key: string, value: any) {
         if (isNullOrUndefined(value)) {
@@ -23,11 +21,11 @@ export class StorageService {
         }
     }
 
-    public get(key: string) : string {
+    public get(key: string): string {
         return this.storage.getItem(key);
     }
 
-    public getObject(key: string) : Object {
+    public getObject(key: string): Object {
         const value = this.get(key);
 
         if (isNullOrUndefined(value)) {

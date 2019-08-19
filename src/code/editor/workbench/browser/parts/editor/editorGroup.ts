@@ -1,6 +1,6 @@
 import { Event } from '../../../../../base/common/event';
+import { dispose, IDisposable } from '../../../../../base/common/lifecycle';
 import { EditorInput } from '../../../common/editor';
-import { IDisposable, dispose } from '../../../../../base/common/lifecycle';
 
 export class EditorGroup {
     private editors: EditorInput[];
@@ -74,15 +74,19 @@ export class EditorGroup {
     private _hookEditorListeners(editor: EditorInput): void {
         const unbind: IDisposable[] = [];
 
-        unbind.push(editor.onChangedState.add(() => {
-            this.fireEvent(this.onEditorStateChanged, editor, false);
-        }));
+        unbind.push(
+            editor.onChangedState.add(() => {
+                this.fireEvent(this.onEditorStateChanged, editor, false);
+            })
+        );
 
-        unbind.push(this.onEditorClosed.add(e => {
-            if (e.matches(editor)) {
-                dispose(unbind);
-            }
-        }));
+        unbind.push(
+            this.onEditorClosed.add(e => {
+                if (e.matches(editor)) {
+                    dispose(unbind);
+                }
+            })
+        );
     }
 
     public closeEditor(editor: EditorInput, openNext = true) {
@@ -123,7 +127,11 @@ export class EditorGroup {
         this.fireEvent(this.onEditorActivated, editor, false);
     }
 
-    private fireEvent(event: Event<EditorInput>, editor: EditorInput, isStructure: boolean) {
+    private fireEvent(
+        event: Event<EditorInput>,
+        editor: EditorInput,
+        isStructure: boolean
+    ) {
         event.fire(editor);
         if (isStructure) {
             this.onEditorStructureChanged.fire(editor);

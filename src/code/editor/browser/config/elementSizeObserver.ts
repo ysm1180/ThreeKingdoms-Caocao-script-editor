@@ -17,9 +17,7 @@ export class ElementSizeObserver extends Disposable {
         this._measure(false);
     }
 
-    public dispose(): void {
-
-    }
+    public dispose(): void {}
 
     public getWidth(): number {
         return this.width;
@@ -33,7 +31,10 @@ export class ElementSizeObserver extends Disposable {
         this._measure(true, dimension);
     }
 
-    private _measure(callChangeCallback: boolean, dimension?: IDimension): void {
+    private _measure(
+        callChangeCallback: boolean,
+        dimension?: IDimension
+    ): void {
         let width = 0;
         let height = 0;
         if (dimension) {
@@ -43,7 +44,7 @@ export class ElementSizeObserver extends Disposable {
             width = this.referenceDomElement.clientWidth;
             height = this.referenceDomElement.clientHeight;
         }
-        
+
         width = Math.max(5, width);
         height = Math.max(5, height);
 

@@ -1,12 +1,14 @@
+import { Event } from '../../../../../base/common/event';
+import { StateChange } from '../../../../../platform/files/files';
+import { ResourceBufferFactory } from '../../../../common/model/resourceBufferBuilder';
 import { ResourceModel } from '../../../../common/resourceModel';
+import { IEditorModel } from '../../../services/files/files';
+import {
+    IResourceDataService, IResourceStat, ResourceDataService
+} from '../../../services/resourceFile/resourceDataService';
+import { IResourceFileService } from '../../../services/resourceFile/resourcefiles';
 import { ResourceFileService } from '../../../services/resourceFile/resourceFileService';
 import { IRawResourceContent } from '../../../services/textfile/textfiles';
-import { ResourceBufferFactory } from '../../../../common/model/resourceBufferBuilder';
-import { IResourceFileService } from '../../../services/resourceFile/resourcefiles';
-import { IEditorModel } from '../../../services/files/files';
-import { StateChange } from '../../../../../platform/files/files';
-import { Event } from '../../../../../base/common/event';
-import { IResourceStat, IResourceDataService, ResourceDataService } from '../../../services/resourceFile/resourceDataService';
 
 export class ResourceFileEditorModel implements IEditorModel {
     private _resourceModel: ResourceModel;
@@ -21,8 +23,7 @@ export class ResourceFileEditorModel implements IEditorModel {
     constructor(
         private resource: string,
         @IResourceFileService private resourceFileService: ResourceFileService,
-        @IResourceDataService private resourceDataService: ResourceDataService,
-
+        @IResourceDataService private resourceDataService: ResourceDataService
     ) {
         this._resourceModel = null;
         this._isSaving = false;
@@ -46,19 +47,25 @@ export class ResourceFileEditorModel implements IEditorModel {
     }
 
     private _loadFromFile(): Promise<ResourceFileEditorModel> {
-        return this.resourceFileService.resolveRawContent(this.resource)
-            .then((content) => this._loadWithContent(content),
-                () => this.onHandleFailed());
-           
+        return this.resourceFileService
+            .resolveRawContent(this.resource)
+            .then(
+                content => this._loadWithContent(content),
+                () => this.onHandleFailed()
+            );
     }
 
-    private _loadWithContent(content: IRawResourceContent): Promise<ResourceFileEditorModel> {
+    private _loadWithContent(
+        content: IRawResourceContent
+    ): Promise<ResourceFileEditorModel> {
         return this._createResourceEditorModel(content.value);
     }
 
-    private _createResourceEditorModel(value: ResourceBufferFactory): Promise<ResourceFileEditorModel> {
+    private _createResourceEditorModel(
+        value: ResourceBufferFactory
+    ): Promise<ResourceFileEditorModel> {
         this._createResourceModel(value);
-        return this._createResourceStat().then((result) => {
+        return this._createResourceStat().then(result => {
             this._resourceStat = result;
             return this;
         });
@@ -73,7 +80,9 @@ export class ResourceFileEditorModel implements IEditorModel {
     }
 
     public getCurrentData() {
-        return this._resourceModel ? this._resourceModel.getCurrentData() : null;
+        return this._resourceModel
+            ? this._resourceModel.getCurrentData()
+            : null;
     }
 
     public setDataIndex(index: number): void {
@@ -96,19 +105,24 @@ export class ResourceFileEditorModel implements IEditorModel {
             this._isSaving = true;
             this.onDidStateChanged.fire(StateChange.SAVING);
 
-            this.resourceFileService.updateContents(this.resource, this._resourceStat).then(() => {
-                this.finishSave();
-                this.onDidStateChanged.fire(StateChange.SAVED);
+            this.resourceFileService
+                .updateContents(this.resource, this._resourceStat)
+                .then(
+                    () => {
+                        this.finishSave();
+                        this.onDidStateChanged.fire(StateChange.SAVED);
 
-                c();
-            }, () => {
-                console.error('Fail to save');
+                        c();
+                    },
+                    () => {
+                        console.error('Fail to save');
 
-                this.finishSave();
-                this.onDidStateChanged.fire(StateChange.SAVED);
+                        this.finishSave();
+                        this.onDidStateChanged.fire(StateChange.SAVED);
 
-                e();
-            });
+                        e();
+                    }
+                );
         });
 
         return this.savingPromise;
@@ -123,7 +137,5 @@ export class ResourceFileEditorModel implements IEditorModel {
         return this._isSaving;
     }
 
-    public dispose(): void {
-
-    }
+    public dispose(): void {}
 }

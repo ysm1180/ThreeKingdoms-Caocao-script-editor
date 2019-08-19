@@ -13,7 +13,6 @@ class Node<E> {
 }
 
 export class LinkedList<E> {
-
     private _first: Node<E>;
     private _last: Node<E>;
 
@@ -38,7 +37,11 @@ export class LinkedList<E> {
         let iter, target;
         let targetNode;
 
-        for (iter = this.iterator(), target = iter.next(); !target.done; target = iter.next()) {
+        for (
+            iter = this.iterator(), target = iter.next();
+            !target.done;
+            target = iter.next()
+        ) {
             if (target.value === elementAfter) {
                 targetNode = target.node;
                 break;
@@ -47,13 +50,13 @@ export class LinkedList<E> {
 
         if (target.done) {
             targetNode = this._last;
-        } 
+        }
 
         const newNode = new Node(element);
         if (!targetNode) {
             this._first = newNode;
             this._last = newNode;
-        } else  {
+        } else {
             newNode.prev = targetNode.prev;
             newNode.next = targetNode;
             if (targetNode.prev) {
@@ -67,7 +70,11 @@ export class LinkedList<E> {
         }
 
         return () => {
-            for (let candidate = this._first; candidate instanceof Node; candidate = candidate.next) {
+            for (
+                let candidate = this._first;
+                candidate instanceof Node;
+                candidate = candidate.next
+            ) {
                 if (candidate !== newNode) {
                     continue;
                 }
@@ -76,17 +83,14 @@ export class LinkedList<E> {
                     let anchor = candidate.prev;
                     anchor.next = candidate.next;
                     candidate.next.prev = anchor;
-
                 } else if (!candidate.prev && !candidate.next) {
                     // only node
                     this._first = undefined;
                     this._last = undefined;
-
                 } else if (!candidate.next) {
                     // last
                     this._last = this._last.prev;
                     this._last.next = undefined;
-
                 } else if (!candidate.prev) {
                     // first
                     this._first = this._first.next;
@@ -104,14 +108,12 @@ export class LinkedList<E> {
         if (!this._first) {
             this._first = newNode;
             this._last = newNode;
-
         } else if (atTheEnd) {
             // push
             const oldLast = this._last;
             this._last = newNode;
             newNode.prev = oldLast;
             oldLast.next = newNode;
-
         } else {
             // unshift
             const oldFirst = this._first;
@@ -121,8 +123,11 @@ export class LinkedList<E> {
         }
 
         return () => {
-
-            for (let candidate = this._first; candidate instanceof Node; candidate = candidate.next) {
+            for (
+                let candidate = this._first;
+                candidate instanceof Node;
+                candidate = candidate.next
+            ) {
                 if (candidate !== newNode) {
                     continue;
                 }
@@ -131,17 +136,14 @@ export class LinkedList<E> {
                     let anchor = candidate.prev;
                     anchor.next = candidate.next;
                     candidate.next.prev = anchor;
-
                 } else if (!candidate.prev && !candidate.next) {
                     // only node
                     this._first = undefined;
                     this._last = undefined;
-
                 } else if (!candidate.next) {
                     // last
                     this._last = this._last.prev;
                     this._last.next = undefined;
-
                 } else if (!candidate.prev) {
                     // first
                     this._first = this._first.next;
@@ -162,7 +164,7 @@ export class LinkedList<E> {
         };
         let node = this._first;
         return {
-            next(): { done: boolean; value: E, node: Node<E> } {
+            next(): { done: boolean; value: E; node: Node<E> } {
                 if (!node) {
                     element.done = true;
                     element.value = undefined;
@@ -174,7 +176,7 @@ export class LinkedList<E> {
                     node = node.next;
                 }
                 return element;
-            }
+            },
         };
     }
 

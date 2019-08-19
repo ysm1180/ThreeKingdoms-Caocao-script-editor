@@ -1,20 +1,24 @@
-import { MenuRegistry, MenuId } from '../../../../platform/actions/registry';
-import { ServicesAccessor } from '../../../../platform/instantiation/instantiation';
-import { KeybindingsRegistry } from '../../../../platform/keybindings/keybindingsRegistry';
 import { KeyCode, KeyMode } from '../../../../base/common/keyCodes';
-import { me5ExplorerRootContext, me5ExplorerGroupContext, me5ExplorerItemContext } from '../../browser/parts/me5Explorer';
+import { MenuId, MenuRegistry } from '../../../../platform/actions/registry';
 import { ContextKeyExpr } from '../../../../platform/contexts/contextKey';
-import { explorerEditContext } from '../me5ExplorerViewer';
-import { Me5Stat, ItemState } from '../files/me5Data';
-import { DialogService, IDialogService } from '../../services/electron-browser/dialogService';
-import { BinaryFile } from '../../../../platform/files/file';
-import { WorkbenchEditorService, IWorkbenchEditorService } from '../../services/editor/editorService';
-import { TreeService, ITreeService } from '../../../../platform/tree/treeService';
-import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
-import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { IConfirmation } from '../../../../platform/dialogs/dialogs';
-import { ImageType, ImageResource } from '../../common/imageResource';
+import { BinaryFile } from '../../../../platform/files/file';
+import { ServicesAccessor } from '../../../../platform/instantiation/instantiation';
+import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { KeybindingsRegistry } from '../../../../platform/keybindings/keybindingsRegistry';
+import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
+import {
+    me5ExplorerGroupContext, me5ExplorerItemContext, me5ExplorerRootContext
+} from '../../browser/parts/me5Explorer';
+import { ImageResource, ImageType } from '../../common/imageResource';
+import {
+    IWorkbenchEditorService, WorkbenchEditorService
+} from '../../services/editor/editorService';
+import { DialogService, IDialogService } from '../../services/electron-browser/dialogService';
 import { IResourceFileService } from '../../services/resourceFile/resourcefiles';
+import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
+import { ItemState, Me5Stat } from '../files/me5Data';
+import { explorerEditContext } from '../me5ExplorerViewer';
 
 const INSERT_GROUP_ID = 'INSERT_GROUP';
 const MODIFICATION_ID = 'MODIFICATION';
@@ -44,38 +48,45 @@ function doChangeItem(
         return;
     }
 
-    dialogService.openFile({
-        title: '파일을 선택해주세요.',
-        extensions: [
-            { name: 'ME5 아이템', extensions: 'png;jpg;bmp;mp3;wav' },
-            { name: '이미지', extensions: 'png;jpg;bmp' },
-            { name: '음악', extensions: 'mp3;wav' },
-        ],
-    }).then((req) => {
-        if (!req.files) {
-            return [];
-        }
+    dialogService
+        .openFile({
+            title: '파일을 선택해주세요.',
+            extensions: [
+                { name: 'ME5 아이템', extensions: 'png;jpg;bmp;mp3;wav' },
+                { name: '이미지', extensions: 'png;jpg;bmp' },
+                { name: '음악', extensions: 'mp3;wav' },
+            ],
+        })
+        .then(req => {
+            if (!req.files) {
+                return [];
+            }
 
-        const promises = [];
-        for (let path of req.files) {
-            const file = new BinaryFile(path);
-            const promise = resolveImageData(file);
-            promises.push(promise);
-        }
+            const promises = [];
+            for (let path of req.files) {
+                const file = new BinaryFile(path);
+                const promise = resolveImageData(file);
+                promises.push(promise);
+            }
 
-        return Promise.all(promises);
-    }).then((imageData: Uint8Array[]) => {
-        const activeInput = editorService.getActiveEditorInput();
-        for (const imageDataArray of imageData) {
-            const model = resourceFileService.models.get(activeInput.getResource());
-            const index = model.resourceModel.add(Buffer.from(imageDataArray.buffer));
-            element.index = index;
-        }
+            return Promise.all(promises);
+        })
+        .then((imageData: Uint8Array[]) => {
+            const activeInput = editorService.getActiveEditorInput();
+            for (const imageDataArray of imageData) {
+                const model = resourceFileService.models.get(
+                    activeInput.getResource()
+                );
+                const index = model.resourceModel.add(
+                    Buffer.from(imageDataArray.buffer)
+                );
+                element.index = index;
+            }
 
-        if (imageData.length > 0) {
-            editorService.refresh();
-        }
-    });
+            if (imageData.length > 0) {
+                editorService.refresh();
+            }
+        });
 }
 
 function doInsertItem(
@@ -101,55 +112,71 @@ function doInsertItem(
     }
 
     let names = [];
-    dialogService.openFile({
-        title: '추가할 파일을 선택해주세요.',
-        multi: true,
-        extensions: [
-            { name: 'ME5 아이템', extensions: 'png;jpg;bmp;mp3;wav' },
-            { name: '이미지', extensions: 'png;jpg;bmp' },
-            { name: '음악', extensions: 'mp3;wav' },
-        ],
-    }).then((req) => {
-        if (!req.files) {
-            return [];
-        }
+    dialogService
+        .openFile({
+            title: '추가할 파일을 선택해주세요.',
+            multi: true,
+            extensions: [
+                { name: 'ME5 아이템', extensions: 'png;jpg;bmp;mp3;wav' },
+                { name: '이미지', extensions: 'png;jpg;bmp' },
+                { name: '음악', extensions: 'mp3;wav' },
+            ],
+        })
+        .then(req => {
+            if (!req.files) {
+                return [];
+            }
 
-        const promises = [];
-        for (let path of req.files) {
-            const file = new BinaryFile(path);
-            names.push(file.name);
-            const promise = resolveImageData(file);
-            promises.push(promise);
-        }
+            const promises = [];
+            for (let path of req.files) {
+                const file = new BinaryFile(path);
+                names.push(file.name);
+                const promise = resolveImageData(file);
+                promises.push(promise);
+            }
 
-        return Promise.all(promises);
-    }).then((binaries: Uint8Array[]) => {
-        const selectItems : Me5Stat[] = [];
-        const activeInput = editorService.getActiveEditorInput();
-        const model = resourceFileService.models.get(activeInput.getResource());
-        for (const [index, binary] of binaries.entries()) {
-            const bufferIndex = model.resourceModel.add(Buffer.from(binary.buffer));
-            const item = instantiationService.create(Me5Stat, names[index], false, element.root, bufferIndex);
-            item.build(parent, isSelectionAfter ? element : null);
-            selectItems.push(item);
-        }
+            return Promise.all(promises);
+        })
+        .then((binaries: Uint8Array[]) => {
+            const selectItems: Me5Stat[] = [];
+            const activeInput = editorService.getActiveEditorInput();
+            const model = resourceFileService.models.get(
+                activeInput.getResource()
+            );
+            for (const [index, binary] of binaries.entries()) {
+                const bufferIndex = model.resourceModel.add(
+                    Buffer.from(binary.buffer)
+                );
+                const item = instantiationService.create(
+                    Me5Stat,
+                    names[index],
+                    false,
+                    element.root,
+                    bufferIndex
+                );
+                item.build(parent, isSelectionAfter ? element : null);
+                selectItems.push(item);
+            }
 
-        if (binaries.length > 0) {
-            lastTree.refresh(parent).then(() => {
-                return lastTree.expand(parent);
-            }).then(() => {
-                lastTree.setSelection(selectItems);
+            if (binaries.length > 0) {
+                lastTree
+                    .refresh(parent)
+                    .then(() => {
+                        return lastTree.expand(parent);
+                    })
+                    .then(() => {
+                        lastTree.setSelection(selectItems);
 
-                model.setDataIndex(selectItems[0].index);
-                editorService.refresh();
-            });
-        }
-    });
+                        model.setDataIndex(selectItems[0].index);
+                        editorService.refresh();
+                    });
+            }
+        });
 }
 
 function doInsertGroup(
     treeService: TreeService,
-    instantiationService: IInstantiationService,
+    instantiationService: IInstantiationService
 ) {
     const lastTree = treeService.LastFocusedTree;
     const element = <Me5Stat>lastTree.getFocus();
@@ -164,15 +191,19 @@ function doInsertGroup(
         itemAfter = element;
     }
 
-    const newGroup = instantiationService.create(Me5Stat, 'NEW GROUP', true, root, null);
+    const newGroup = instantiationService.create(
+        Me5Stat,
+        'NEW GROUP',
+        true,
+        root,
+        null
+    );
     newGroup.build(root, itemAfter);
 
     lastTree.refresh(root);
 }
 
-function doRename(
-    treeService: TreeService,
-) {
+function doRename(treeService: TreeService) {
     const lastTree = treeService.LastFocusedTree;
     const element = <Me5Stat>lastTree.getFocus();
 
@@ -186,10 +217,7 @@ function doRename(
     });
 }
 
-function doDelete(
-    dialogService: DialogService,
-    treeService: TreeService,
-) {
+function doDelete(dialogService: DialogService, treeService: TreeService) {
     const lastTree = treeService.LastFocusedTree;
     const elements = [<Me5Stat>lastTree.getFocus()];
 
@@ -212,37 +240,34 @@ function doDelete(
     }
 }
 
-function doExportImage(
-    dialogService: DialogService,
-    treeService: TreeService,
-) {
+function doExportImage(dialogService: DialogService, treeService: TreeService) {
     const lastTree = treeService.LastFocusedTree;
     const element = <Me5Stat>lastTree.getFocus();
 
-    dialogService.saveFile({
-        title: '다른 이름으로 저장',
-        extensions: [
-            { name: '이미지', extensions: 'png;jpg' },
-        ],
-    }).then((req) => {
-        if (!req || !req.file) {
-            return null;
-        }
+    dialogService
+        .saveFile({
+            title: '다른 이름으로 저장',
+            extensions: [{ name: '이미지', extensions: 'png;jpg' }],
+        })
+        .then(req => {
+            if (!req || !req.file) {
+                return null;
+            }
 
-        const buffer = element.data;
-        const file = new BinaryFile(req.file);
+            const buffer = element.data;
+            const file = new BinaryFile(req.file);
 
-        let convertPromise;
-        if (file.ext === ImageType.Png) {
-            convertPromise = ImageResource.convertToPng(buffer);
-        } else {
-            convertPromise = ImageResource.convertToJpeg(buffer);
-        }
+            let convertPromise;
+            if (file.ext === ImageType.Png) {
+                convertPromise = ImageResource.convertToPng(buffer);
+            } else {
+                convertPromise = ImageResource.convertToJpeg(buffer);
+            }
 
-        return convertPromise.then((buffer: Buffer) => {
-            file.write(0, buffer.length, buffer);
+            return convertPromise.then((buffer: Buffer) => {
+                file.write(0, buffer.length, buffer);
+            });
         });
-    });
 }
 
 KeybindingsRegistry.registerKeybindingRule({
@@ -252,7 +277,10 @@ KeybindingsRegistry.registerKeybindingRule({
         const treeService = accessor.get(ITreeService);
         doRename(treeService);
     },
-    when: ContextKeyExpr.and(me5ExplorerRootContext.not(), explorerEditContext.not()),
+    when: ContextKeyExpr.and(
+        me5ExplorerRootContext.not(),
+        explorerEditContext.not()
+    ),
 });
 
 KeybindingsRegistry.registerKeybindingRule({
@@ -263,7 +291,10 @@ KeybindingsRegistry.registerKeybindingRule({
         const treeService = accessor.get(ITreeService);
         doDelete(dialogService, treeService);
     },
-    when: ContextKeyExpr.and(me5ExplorerRootContext.not(), explorerEditContext.not()),
+    when: ContextKeyExpr.and(
+        me5ExplorerRootContext.not(),
+        explorerEditContext.not()
+    ),
 });
 
 KeybindingsRegistry.registerKeybindingRule({
@@ -274,7 +305,12 @@ KeybindingsRegistry.registerKeybindingRule({
         const editorService = accessor.get(IWorkbenchEditorService);
         const dialogService = accessor.get(IDialogService);
         const treeService = accessor.get(ITreeService);
-        doChangeItem(resourceFileService, editorService, dialogService, treeService);
+        doChangeItem(
+            resourceFileService,
+            editorService,
+            dialogService,
+            treeService
+        );
     },
     when: ContextKeyExpr.and(me5ExplorerItemContext, explorerEditContext.not()),
 });
@@ -291,7 +327,10 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
         },
     },
     order: 1,
-    when: ContextKeyExpr.and(ContextKeyExpr.not(me5ExplorerItemContext), explorerEditContext.not()),
+    when: ContextKeyExpr.and(
+        ContextKeyExpr.not(me5ExplorerItemContext),
+        explorerEditContext.not()
+    ),
 });
 
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
@@ -305,11 +344,20 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
             const dialogService = accessor.get(IDialogService);
             const treeService = accessor.get(ITreeService);
             const instantiationService = accessor.get(IInstantiationService);
-            doInsertItem(resourceFileService, editorService, dialogService, treeService, instantiationService);
+            doInsertItem(
+                resourceFileService,
+                editorService,
+                dialogService,
+                treeService,
+                instantiationService
+            );
         },
     },
     order: 2,
-    when: ContextKeyExpr.and(me5ExplorerGroupContext, explorerEditContext.not()),
+    when: ContextKeyExpr.and(
+        me5ExplorerGroupContext,
+        explorerEditContext.not()
+    ),
 });
 
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
@@ -329,7 +377,10 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
         id: RENAME_ID,
     },
     order: 2,
-    when: ContextKeyExpr.and(me5ExplorerRootContext.not(), explorerEditContext.not()),
+    when: ContextKeyExpr.and(
+        me5ExplorerRootContext.not(),
+        explorerEditContext.not()
+    ),
 });
 
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
@@ -339,7 +390,10 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
         id: DELETE_ID,
     },
     order: 3,
-    when: ContextKeyExpr.and(me5ExplorerRootContext.not(), explorerEditContext.not()),
+    when: ContextKeyExpr.and(
+        me5ExplorerRootContext.not(),
+        explorerEditContext.not()
+    ),
 });
 
 MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
@@ -356,8 +410,6 @@ MenuRegistry.appendMenuItem(MenuId.Me5ExplorerTreeContext, {
     order: 1,
     when: ContextKeyExpr.and(me5ExplorerItemContext, explorerEditContext.not()),
 });
-
-
 
 // Edit Shortcut
 KeybindingsRegistry.registerKeybindingRule({

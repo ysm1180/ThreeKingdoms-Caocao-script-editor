@@ -1,11 +1,10 @@
-import { BaseEditor } from './baseEditor';
-import { IEditorInput } from '../../../../../platform/editor/editor';
 import { DomBuilder } from '../../../../../base/browser/domBuilder';
-import { CodeEditor } from '../../../../browser/codeEditor';
+import { IEditorInput } from '../../../../../platform/editor/editor';
 import { IInstantiationService } from '../../../../../platform/instantiation/instantiationService';
-import { TextFileEditorModel } from '../../../services/textfile/textFileEditorModel';
+import { CodeEditor } from '../../../../browser/codeEditor';
 import { IDimension } from '../../../../common/editorCommon';
-
+import { TextFileEditorModel } from '../../../services/textfile/textFileEditorModel';
+import { BaseEditor } from './baseEditor';
 
 export class TextFileEditor extends BaseEditor {
     static ID = 'editor.texteditor';
@@ -13,7 +12,8 @@ export class TextFileEditor extends BaseEditor {
     private editorControl: CodeEditor;
 
     constructor(
-        @IInstantiationService private instantiationService: IInstantiationService,
+        @IInstantiationService
+        private instantiationService: IInstantiationService
     ) {
         super(TextFileEditor.ID);
     }
@@ -25,18 +25,21 @@ export class TextFileEditor extends BaseEditor {
     }
 
     private createEditor(parent: DomBuilder) {
-        this.editorControl = this.instantiationService.create(CodeEditor, parent.getHTMLElement());
+        this.editorControl = this.instantiationService.create(
+            CodeEditor,
+            parent.getHTMLElement()
+        );
     }
 
     public setInput(input: IEditorInput, refresh?: boolean): Promise<void> {
         if (!input) {
             return Promise.resolve();
         }
-        
+
         return super.setInput(input).then(() => {
             return input.resolve(refresh).then((model: TextFileEditorModel) => {
                 const modelPromise = model.load();
-    
+
                 return modelPromise.then((model: TextFileEditorModel) => {
                     this.editorControl.setModel(model.model);
                 });

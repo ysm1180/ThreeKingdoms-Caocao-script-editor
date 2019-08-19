@@ -11,15 +11,14 @@ export interface EditorLayoutInfo {
 export class InternalEditorOptions {
     public layoutInfo: EditorLayoutInfo;
 
-    constructor(source: {
-        layoutInfo: EditorLayoutInfo,
-    }) {
+    constructor(source: { layoutInfo: EditorLayoutInfo }) {
         this.layoutInfo = source.layoutInfo;
     }
 
     public equals(other: InternalEditorOptions): boolean {
-        return (
-            InternalEditorOptions._equalsLayoutInfo(this.layoutInfo, other.layoutInfo)
+        return InternalEditorOptions._equalsLayoutInfo(
+            this.layoutInfo,
+            other.layoutInfo
         );
     }
 
@@ -31,9 +30,14 @@ export class InternalEditorOptions {
         );
     }
 
-    public createChangeEvent(newOpts: InternalEditorOptions): IConfigurationChangedEvent {
-		return {
-			layoutInfo: (!InternalEditorOptions._equalsLayoutInfo(this.layoutInfo, newOpts.layoutInfo)),
-		};
-	}
+    public createChangeEvent(
+        newOpts: InternalEditorOptions
+    ): IConfigurationChangedEvent {
+        return {
+            layoutInfo: !InternalEditorOptions._equalsLayoutInfo(
+                this.layoutInfo,
+                newOpts.layoutInfo
+            ),
+        };
+    }
 }

@@ -1,9 +1,9 @@
-import { View } from './view/view';
+import { Disposable } from '../../base/common/lifecycle';
+import { IDimension } from '../common/editorCommon';
 import { TextModel } from '../common/textModel';
 import { ViewModel } from '../common/viewModel/viewModel';
 import { EditorConfiguration } from './config/configuration';
-import { IDimension } from '../common/editorCommon';
-import { Disposable } from '../../base/common/lifecycle';
+import { View } from './view/view';
 
 export class CodeEditor extends Disposable {
     private domElement: HTMLElement;
@@ -14,9 +14,7 @@ export class CodeEditor extends Disposable {
 
     protected readonly configuration: EditorConfiguration;
 
-    constructor(
-        parent: HTMLElement,
-    ) {
+    constructor(parent: HTMLElement) {
         super();
 
         this.domElement = parent;
@@ -45,7 +43,7 @@ export class CodeEditor extends Disposable {
             this.view.render();
         }
     }
-    
+
     protected _detachModel() {
         let removeDomNode: HTMLElement = null;
 
@@ -68,10 +66,7 @@ export class CodeEditor extends Disposable {
     }
 
     private _createView(): void {
-        this.view = new View(
-            this.configuration,
-            this.viewModel
-        );
+        this.view = new View(this.configuration, this.viewModel);
     }
 
     public render() {

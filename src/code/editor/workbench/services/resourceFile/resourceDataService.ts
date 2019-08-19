@@ -6,7 +6,7 @@ export interface IResourceStat {
     name: string;
 
     data: Buffer;
-    
+
     getId(): string;
 
     getChildren(filter?: FilterFuntion<IResourceStat>): IResourceStat[];
@@ -14,12 +14,12 @@ export interface IResourceStat {
     getIndex(filter?: FilterFuntion<IResourceStat>): number;
 }
 
-export const IResourceDataService = decorator<ResourceDataService>('resourceDataService');
+export const IResourceDataService = decorator<ResourceDataService>(
+    'resourceDataService'
+);
 
 export abstract class ResourceDataService {
-    constructor() {
-
-    }
+    constructor() {}
 
     public abstract resolveFile(resource: string): Promise<IResourceStat>;
 }

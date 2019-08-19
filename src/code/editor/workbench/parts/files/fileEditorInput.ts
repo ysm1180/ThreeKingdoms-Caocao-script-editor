@@ -1,10 +1,11 @@
 import * as path from 'path';
+
 import { IEditorInput } from '../../../../platform/editor/editor';
-import { TextFileEditor } from '../../browser/parts/editor/textFileEditor';
 import { Files } from '../../../../platform/files/file';
-import { ControlEditor } from '../../browser/parts/editor/controlEditor';
-import { EditorInput } from '../../common/editor';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { ControlEditor } from '../../browser/parts/editor/controlEditor';
+import { TextFileEditor } from '../../browser/parts/editor/textFileEditor';
+import { EditorInput } from '../../common/editor';
 import { TextFileEditorModel } from '../../services/textfile/textFileEditorModel';
 
 export class FileEditorInput extends EditorInput {
@@ -14,7 +15,8 @@ export class FileEditorInput extends EditorInput {
     constructor(
         resource: string,
         name: string,
-        @IInstantiationService private instantiationService: IInstantiationService,
+        @IInstantiationService
+        private instantiationService: IInstantiationService
     ) {
         super();
 
@@ -40,7 +42,10 @@ export class FileEditorInput extends EditorInput {
 
     public resolve(): Promise<TextFileEditorModel> {
         return Promise.resolve().then(() => {
-            let model: TextFileEditorModel = this.instantiationService.create(TextFileEditorModel, this.resource);
+            let model: TextFileEditorModel = this.instantiationService.create(
+                TextFileEditorModel,
+                this.resource
+            );
             let modelPromise = model.load();
 
             return modelPromise;

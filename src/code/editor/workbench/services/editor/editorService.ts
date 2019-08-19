@@ -1,13 +1,18 @@
 import * as path from 'path';
-import { decorator } from '../../../../platform/instantiation/instantiation';
-import { EditorPart } from '../../browser/parts/editor/editorPart';
-import { IResourceInput, IEditorInput, IUntitleResourceInput } from '../../../../platform/editor/editor';
-import { EditorInput } from '../../common/editor';
-import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
-import { FileEditorInput } from '../../parts/files/fileEditorInput';
-import { ResourceEditorInput } from '../../common/editor/resourceEditorInput';
 
-export const IWorkbenchEditorService = decorator<WorkbenchEditorService>('workbenchEditorService');
+import {
+    IEditorInput, IResourceInput, IUntitleResourceInput
+} from '../../../../platform/editor/editor';
+import { decorator } from '../../../../platform/instantiation/instantiation';
+import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { EditorPart } from '../../browser/parts/editor/editorPart';
+import { EditorInput } from '../../common/editor';
+import { ResourceEditorInput } from '../../common/editor/resourceEditorInput';
+import { FileEditorInput } from '../../parts/files/fileEditorInput';
+
+export const IWorkbenchEditorService = decorator<WorkbenchEditorService>(
+    'workbenchEditorService'
+);
 
 type IResourceInputType = IResourceInput | IUntitleResourceInput;
 
@@ -16,14 +21,15 @@ export class WorkbenchEditorService {
 
     constructor(
         editorPart: EditorPart,
-        @IInstantiationService private instantiationService: IInstantiationService,
+        @IInstantiationService
+        private instantiationService: IInstantiationService
     ) {
         this.editorPart = editorPart;
     }
 
     public getActiveEditorInput(): IEditorInput {
-		return this.editorPart.getActiveEditorInput();
-	}
+        return this.editorPart.getActiveEditorInput();
+    }
 
     public openEditor(input: IResourceInputType): Promise<any>;
     public openEditor(input: IEditorInput): Promise<any>;
@@ -51,7 +57,6 @@ export class WorkbenchEditorService {
 
     private createInput(input: IResourceInputType): EditorInput {
         if (!input.resource) {
-
         }
 
         let label: string = input.label;
@@ -66,14 +71,22 @@ export class WorkbenchEditorService {
         const ext = path.extname(resource);
 
         if (ext === '.me5') {
-            return this.instantiationService.create(ResourceEditorInput, resource, label);
+            return this.instantiationService.create(
+                ResourceEditorInput,
+                resource,
+                label
+            );
         }
 
-        return this.instantiationService.create(FileEditorInput, resource, label);
+        return this.instantiationService.create(
+            FileEditorInput,
+            resource,
+            label
+        );
     }
 
     public openEditors(inputs: IResourceInputType[]) {
-        const editors = inputs.map((input) => this.createInput(input));
+        const editors = inputs.map(input => this.createInput(input));
 
         return this.editorPart.openEditors(editors);
     }

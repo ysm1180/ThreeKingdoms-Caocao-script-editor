@@ -1,6 +1,6 @@
+import { createFastDomNode, FastDomNode } from '../../../base/browser/fastDomNode';
 import { ViewportData } from '../../common/view/viewportData';
 import { ViewLine } from './viewLine';
-import { FastDomNode, createFastDomNode } from '../../../base/browser/fastDomNode';
 
 export class RenderedLinesCollection {
     private lines: ViewLine[];
@@ -11,10 +11,10 @@ export class RenderedLinesCollection {
         this.lineNumberStart = 1;
     }
 
-    public get(): { lineNumberStart: number, lines: ViewLine[] } {
+    public get(): { lineNumberStart: number; lines: ViewLine[] } {
         return {
             lines: this.lines,
-            lineNumberStart: this.lineNumberStart
+            lineNumberStart: this.lineNumberStart,
         };
     }
 
@@ -36,12 +36,12 @@ export class RenderedLinesCollection {
     }
 
     public getStartLineNumber(): number {
-		return this.lineNumberStart;
-	}
+        return this.lineNumberStart;
+    }
 
-	public getEndLineNumber(): number {
-		return this.lineNumberStart + this.lines.length - 1;
-	}
+    public getEndLineNumber(): number {
+        return this.lineNumberStart + this.lines.length - 1;
+    }
 }
 
 export class VisibleLines {
@@ -62,7 +62,10 @@ export class VisibleLines {
 
     public renderLines(viewportData: ViewportData) {
         const lineData = this.linesCollection.get();
-        const renderer = new ViewLayerRenderer(this.domNode.domNode, viewportData);
+        const renderer = new ViewLayerRenderer(
+            this.domNode.domNode,
+            viewportData
+        );
 
         const ctx: IRendererContext = {
             lines: lineData.lines,
@@ -70,7 +73,11 @@ export class VisibleLines {
             lineNumberStart: lineData.lineNumberStart,
         };
 
-        const resCtx = renderer.render(ctx, viewportData.startLineNumber, viewportData.endLineNumber);
+        const resCtx = renderer.render(
+            ctx,
+            viewportData.startLineNumber,
+            viewportData.endLineNumber
+        );
 
         this.linesCollection.set(resCtx.lineNumberStart, resCtx.lines);
     }
@@ -80,12 +87,12 @@ export class VisibleLines {
     }
 
     public getStartLineNumber(): number {
-		return this.linesCollection.getStartLineNumber();
-	}
+        return this.linesCollection.getStartLineNumber();
+    }
 
-	public getEndLineNumber(): number {
-		return this.linesCollection.getEndLineNumber();
-	}
+    public getEndLineNumber(): number {
+        return this.linesCollection.getEndLineNumber();
+    }
 
     public getVisibleLine(lineNumber: number): ViewLine {
         return this.linesCollection.getLine(lineNumber);
@@ -107,7 +114,11 @@ export class ViewLayerRenderer {
         this.viewportData = viewportData;
     }
 
-    public render(ctx: IRendererContext, startLineNumber: number, endLineNumber: number): IRendererContext {
+    public render(
+        ctx: IRendererContext,
+        startLineNumber: number,
+        endLineNumber: number
+    ): IRendererContext {
         let rendererContext: IRendererContext = {
             lines: ctx.lines.slice(0),
             linesLength: ctx.linesLength,
@@ -134,7 +145,10 @@ export class ViewLayerRenderer {
         for (let i = 0; i < linesLength; i++) {
             const line = lines[i];
 
-            innerHTML += line.renderLine(i + lineNumberStart, this.viewportData);
+            innerHTML += line.renderLine(
+                i + lineNumberStart,
+                this.viewportData
+            );
         }
 
         this._finishRenderingLines(ctx, innerHTML);

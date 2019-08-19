@@ -1,21 +1,23 @@
 import { DomBuilder } from '../../../../base/browser/domBuilder';
-import { Part } from '../part';
-import { TabControl } from './tabControl';
-import { IEditorGroupService, EditorPart } from './editor/editorPart';
-import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
 import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
+import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
+import { Part } from '../part';
+import { EditorPart, IEditorGroupService } from './editor/editorPart';
+import { TabControl } from './tabControl';
 
-export const ITitlePartService: ServiceIdentifier<TitlePart> = decorator<TitlePart>('titlePart');
+export const ITitlePartService: ServiceIdentifier<TitlePart> = decorator<
+    TitlePart
+>('titlePart');
 
 export class TitlePart extends Part {
     private tab: TabControl;
 
     constructor(
         @IEditorGroupService private editorService: EditorPart,
-        @IInstantiationService private instantiationService: IInstantiationService
+        @IInstantiationService
+        private instantiationService: IInstantiationService
     ) {
         super();
-
     }
 
     public create(parent: DomBuilder) {

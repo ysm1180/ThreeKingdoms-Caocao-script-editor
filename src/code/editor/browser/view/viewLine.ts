@@ -1,6 +1,6 @@
+import { createFastDomNode, FastDomNode } from '../../../base/browser/fastDomNode';
 import { ViewportData } from '../../common/view/viewportData';
 import { RenderLineInput, renderViewLine } from '../../common/viewLayout/viewLineRenderer';
-import { FastDomNode, createFastDomNode } from '../../../base/browser/fastDomNode';
 
 export class ViewLine {
     private renderedViewLine: RenderedViewLine;
@@ -26,10 +26,7 @@ export class ViewLine {
         const lineData = viewportData.getViewLineRenderingData(lineNumber);
 
         let html = '';
-        const renderLineInput = new RenderLineInput(
-            lineData.content,
-            4
-        );
+        const renderLineInput = new RenderLineInput(lineData.content, 4);
 
         // if (this.renderedViewLine && this.renderedViewLine.input.equels(renderLineInput)) {
 
@@ -70,7 +67,9 @@ export class RenderedViewLine {
 
     public getWidth(): number {
         if (this._cacheWidth === -1) {
-            this._cacheWidth = (<HTMLElement>this.domNode.domNode.firstChild).offsetWidth;
+            this._cacheWidth = (<HTMLElement>(
+                this.domNode.domNode.firstChild
+            )).offsetWidth;
         }
         return this._cacheWidth;
     }

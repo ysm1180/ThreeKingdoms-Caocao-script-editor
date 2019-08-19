@@ -7,8 +7,7 @@ export class AudioResource {
     private _data: Uint8Array;
     private _type: AudioType;
 
-    constructor() {
-    }
+    constructor() {}
 
     public build(data: Uint8Array) {
         this._data = data;

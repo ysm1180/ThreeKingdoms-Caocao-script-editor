@@ -1,8 +1,9 @@
-import * as path from 'path';
 import * as fs from 'fs';
+import * as path from 'path';
+import { isBuffer } from 'util';
+
 import * as Convert from '../../base/common/convert';
 import { isString } from '../../base/common/types';
-import { isBuffer } from 'util';
 
 export namespace Files {
     export const me5 = 'me5';
@@ -13,7 +14,7 @@ export namespace Files {
 export class BinaryFile {
     public data: Buffer = Buffer.alloc(0);
     protected _path: string;
-    protected tempData: { buffer: Buffer, offset: number }[];
+    protected tempData: { buffer: Buffer; offset: number }[];
     protected dataSize: number;
 
     constructor(resource: string | Buffer) {
@@ -31,7 +32,10 @@ export class BinaryFile {
 
     public get ext(): string {
         if (this._path) {
-            return path.extname(this._path).substr(1).toLowerCase();
+            return path
+                .extname(this._path)
+                .substr(1)
+                .toLowerCase();
         }
 
         return null;
@@ -39,7 +43,9 @@ export class BinaryFile {
 
     public get name(): string {
         if (this._path) {
-            return path.basename(this._path).replace(path.extname(this._path), '');
+            return path
+                .basename(this._path)
+                .replace(path.extname(this._path), '');
         }
 
         return null;
@@ -60,7 +66,7 @@ export class BinaryFile {
 
                         this.data = data;
 
-                        fs.close(fd, (closeError) => {
+                        fs.close(fd, closeError => {
                             if (closeError) {
                                 return e(closeError);
                             }
@@ -69,12 +75,15 @@ export class BinaryFile {
                         });
                     });
                 });
-            }).then((result) => {
-                return result;
-            }, (err) => {
-                console.error(err);
-                return null;
-            });
+            }).then(
+                result => {
+                    return result;
+                },
+                err => {
+                    console.error(err);
+                    return null;
+                }
+            );
         } else if (this.data.length > 0) {
             return Promise.resolve(this);
         } else {
@@ -83,7 +92,10 @@ export class BinaryFile {
     }
 
     public readNumber(offset: number): number {
-        const bytes = this.data.buffer.slice(this.data.byteOffset + offset, this.data.byteOffset + offset + 4);
+        const bytes = this.data.buffer.slice(
+            this.data.byteOffset + offset,
+            this.data.byteOffset + offset + 4
+        );
         const number = new Uint32Array(bytes);
         return number[0];
     }
@@ -97,7 +109,12 @@ export class BinaryFile {
     }
 
     public readBytes(offset: number, length: number): Uint8Array {
-        return new Uint8Array(this.data.buffer.slice(this.data.byteOffset + offset, this.data.byteOffset + offset + length));
+        return new Uint8Array(
+            this.data.buffer.slice(
+                this.data.byteOffset + offset,
+                this.data.byteOffset + offset + length
+            )
+        );
     }
 
     public write(offset: number, length: number, data: Buffer) {
@@ -123,7 +140,10 @@ export class BinaryFile {
 
                 fs.fdatasync(fd, syncError => {
                     if (syncError) {
-                        console.warn('[node.js fs] fdatasync is now disabled for this session because it failed: ', syncError);
+                        console.warn(
+                            '[node.js fs] fdatasync is now disabled for this session because it failed: ',
+                            syncError
+                        );
                         return e(syncError);
                     }
 

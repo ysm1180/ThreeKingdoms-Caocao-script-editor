@@ -1,4 +1,4 @@
-import { DomBuilder, $ } from '../../../base/browser/domBuilder';
+import { $, DomBuilder } from '../../../base/browser/domBuilder';
 import { Disposable } from '../../../base/common/lifecycle';
 import { IDimension } from '../../common/editorCommon';
 
@@ -25,7 +25,7 @@ export class Part extends Disposable {
 
     protected createContent(parent: DomBuilder) {
         return $(parent).div({
-            class: 'content'
+            class: 'content',
         });
     }
 

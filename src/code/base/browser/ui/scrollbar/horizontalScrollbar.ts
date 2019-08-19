@@ -1,11 +1,10 @@
-import { AbstractScrollbar } from './abstractScrollbar';
-import { ScrollbarState } from './scrollbarState';
-import { ScrollableElementOptions } from './scrollbarElement';
-import { Scroll, ScrollEvent, INewScrollPosition } from '../../../common/scroll';
+import { INewScrollPosition, Scroll, ScrollEvent } from '../../../common/scroll';
 import { IMouseEvent } from '../../mouseEvent';
+import { AbstractScrollbar } from './abstractScrollbar';
+import { ScrollableElementOptions } from './scrollbarElement';
+import { ScrollbarState } from './scrollbarState';
 
 export class HorizontalScrollbar extends AbstractScrollbar {
-
     constructor(scroll: Scroll, options: ScrollableElementOptions) {
         super({
             extraClassName: 'horizontal',
@@ -37,15 +36,21 @@ export class HorizontalScrollbar extends AbstractScrollbar {
         this._onElementVisibleSize(e.width);
     }
 
-    public writeScrollPosition(target: INewScrollPosition, scrollPosition: number) {
+    public writeScrollPosition(
+        target: INewScrollPosition,
+        scrollPosition: number
+    ) {
         target.scrollLeft = scrollPosition;
     }
 
     protected _sliderMousePosition(e: IMouseEvent): number {
-		return e.posx;
+        return e.posx;
     }
-    
-    protected _mouseDownRelativePosition(offsetX: number, offsetY: number): number {
-		return offsetX;
-	}
+
+    protected _mouseDownRelativePosition(
+        offsetX: number,
+        offsetY: number
+    ): number {
+        return offsetX;
+    }
 }

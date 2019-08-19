@@ -1,14 +1,12 @@
-import { IEditorInput } from '../../../platform/editor/editor';
 import { Event } from '../../../base/common/event';
+import { IEditorInput } from '../../../platform/editor/editor';
 
 export abstract class EditorInput implements IEditorInput {
     public onSaving = new Event<void>();
     public onSaved = new Event<void>();
     public onChangedState = new Event<void>();
 
-    constructor() {
-
-    }
+    constructor() {}
 
     public getResource(): string {
         return null;
@@ -36,7 +34,5 @@ export abstract class EditorInput implements IEditorInput {
         return null;
     }
 
-    public dispose(): void {
-
-    }
+    public dispose(): void {}
 }

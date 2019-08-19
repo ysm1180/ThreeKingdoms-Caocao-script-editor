@@ -1,18 +1,15 @@
-import { DomBuilder, $ } from '../../../../../base/browser/domBuilder';
-import { ImageResource } from '../../../common/imageResource';
+import { $, DomBuilder } from '../../../../../base/browser/domBuilder';
+import { AudioPlayer } from '../../../../../base/browser/ui/audio';
 import { encodeToBase64 } from '../../../../../base/common/encode';
 import { AudioResource } from '../../../common/audioResource';
-import { AudioPlayer } from '../../../../../base/browser/ui/audio';
+import { ImageResource } from '../../../common/imageResource';
 
 export interface IBinaryResourceDescritor {
     resource: Buffer;
 }
 
 export class BinaryResourceViewer {
-    static show(
-        descriptor: IBinaryResourceDescritor,
-        container: DomBuilder,
-    ) {
+    static show(descriptor: IBinaryResourceDescritor, container: DomBuilder) {
         $(container).addClass('resource-viewer');
 
         if (BinaryResourceViewer.isImageResource(descriptor)) {
@@ -22,41 +19,43 @@ export class BinaryResourceViewer {
         }
     }
 
-    private static isImageResource(descriptor: IBinaryResourceDescritor): boolean {
+    private static isImageResource(
+        descriptor: IBinaryResourceDescritor
+    ): boolean {
         return ImageResource.getTypeFromBinary(descriptor.resource) !== null;
     }
 
-    private static isAudioResource(descriptor: IBinaryResourceDescritor): boolean {
+    private static isAudioResource(
+        descriptor: IBinaryResourceDescritor
+    ): boolean {
         return AudioResource.getTypeFromBinary(descriptor.resource) !== null;
     }
 }
 
 export class BinaryImageView {
-    static create(
-        container: DomBuilder,
-        descriptor: IBinaryResourceDescritor,
-    ) {
+    static create(container: DomBuilder, descriptor: IBinaryResourceDescritor) {
         container.empty();
 
         const type = ImageResource.getTypeFromBinary(descriptor.resource);
-        $($(container).div({
-            class: 'image-view'
-        })).img({
-            src: `data:image/${type};base64,${encodeToBase64(descriptor.resource)}`
+        $(
+            $(container).div({
+                class: 'image-view',
+            })
+        ).img({
+            src: `data:image/${type};base64,${encodeToBase64(
+                descriptor.resource
+            )}`,
         });
     }
 }
 
 export class BinaryAudioPlayer {
-    static create(
-        container: DomBuilder,
-        descriptor: IBinaryResourceDescritor,
-    ) {
+    static create(container: DomBuilder, descriptor: IBinaryResourceDescritor) {
         container.empty();
 
         const type = AudioResource.getTypeFromBinary(descriptor.resource);
         const audioContainer = $(container).div({
-            class: 'audio-player'
+            class: 'audio-player',
         });
         const audio = new AudioPlayer(audioContainer.getHTMLElement());
 

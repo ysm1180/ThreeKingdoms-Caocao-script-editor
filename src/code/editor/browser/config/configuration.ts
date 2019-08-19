@@ -1,27 +1,33 @@
-import { ElementSizeObserver } from './elementSizeObserver';
-import { Disposable } from '../../../base/common/lifecycle';
-import { InternalEditorOptions, IConfigurationChangedEvent } from '../../common/config/editorOptions';
 import { Event } from '../../../base/common/event';
+import { Disposable } from '../../../base/common/lifecycle';
+import {
+    IConfigurationChangedEvent, InternalEditorOptions
+} from '../../common/config/editorOptions';
 import { IDimension } from '../../common/editorCommon';
+import { ElementSizeObserver } from './elementSizeObserver';
 
 export class EditorConfiguration extends Disposable {
     public editorOptions: InternalEditorOptions;
 
     private observer: ElementSizeObserver;
 
-    public readonly onDidChange = this.registerDispose(new Event<IConfigurationChangedEvent>());
+    public readonly onDidChange = this.registerDispose(
+        new Event<IConfigurationChangedEvent>()
+    );
 
     constructor(referenceDom: HTMLElement) {
         super();
 
-        this.observer = new ElementSizeObserver(referenceDom, () => this._onReferenceDomElementSizeChanged());
+        this.observer = new ElementSizeObserver(referenceDom, () =>
+            this._onReferenceDomElementSizeChanged()
+        );
         this.editorOptions = null;
 
         this._recomputeOptions();
     }
 
     private _onReferenceDomElementSizeChanged(): void {
-		this._recomputeOptions();
+        this._recomputeOptions();
     }
 
     private _computeInternalOptions(): InternalEditorOptions {
@@ -30,10 +36,10 @@ export class EditorConfiguration extends Disposable {
                 contentLeft: 0,
                 contentWidth: this.observer.getWidth(),
                 contentHeight: this.observer.getHeight(),
-            }
+            },
         });
     }
-    
+
     private _recomputeOptions(): void {
         const oldOptions = this.editorOptions;
         const newOptions = this._computeInternalOptions();
@@ -43,7 +49,7 @@ export class EditorConfiguration extends Disposable {
         }
 
         this.editorOptions = newOptions;
-        
+
         if (oldOptions) {
             this.onDidChange.fire(oldOptions.createChangeEvent(newOptions));
         }

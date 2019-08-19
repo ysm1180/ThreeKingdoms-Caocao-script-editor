@@ -1,14 +1,14 @@
 import { createFastDomNode, FastDomNode } from '../../../base/browser/fastDomNode';
 import { ViewContext } from '../../common/view/viewContext';
-import { ViewLines } from './viewLines';
-import { ViewportData } from '../../common/view/viewportData';
-import { ViewModel } from '../../common/viewModel/viewModel';
-import { ViewPart } from './viewPart';
-import { EditorScrollbar } from '../viewParts/editorScrollbar';
-import { EditorConfiguration } from '../config/configuration';
-import { ViewEvent, ViewConfigurationChangedEvent } from '../../common/view/viewEvents';
 import { ViewEventDispatcher } from '../../common/view/viewEventDispatcher';
 import { ViewEventHandler } from '../../common/view/viewEventHandler';
+import { ViewConfigurationChangedEvent, ViewEvent } from '../../common/view/viewEvents';
+import { ViewportData } from '../../common/view/viewportData';
+import { ViewModel } from '../../common/viewModel/viewModel';
+import { EditorConfiguration } from '../config/configuration';
+import { EditorScrollbar } from '../viewParts/editorScrollbar';
+import { ViewLines } from './viewLines';
+import { ViewPart } from './viewPart';
 
 export class View extends ViewEventHandler {
     public domNode: FastDomNode<HTMLElement>;
@@ -22,23 +22,28 @@ export class View extends ViewEventHandler {
 
     private eventDispatcher: ViewEventDispatcher;
 
-    constructor(
-        configuration: EditorConfiguration,
-        model: ViewModel,
-    ) {
+    constructor(configuration: EditorConfiguration, model: ViewModel) {
         super();
 
-        this.eventDispatcher = new ViewEventDispatcher((callback: () => void) => this._renderOnce(callback));
-        this.context = new ViewContext(configuration, model, this.eventDispatcher);
+        this.eventDispatcher = new ViewEventDispatcher((callback: () => void) =>
+            this._renderOnce(callback)
+        );
+        this.context = new ViewContext(
+            configuration,
+            model,
+            this.eventDispatcher
+        );
 
         this.viewParts = [];
 
         this._createViewParts();
         this._setLayout();
 
-        this.registerDispose(model.addEventListener((events: ViewEvent[]) => {
-            this.eventDispatcher.emitMany(events);
-        }));
+        this.registerDispose(
+            model.addEventListener((events: ViewEvent[]) => {
+                this.eventDispatcher.emitMany(events);
+            })
+        );
     }
 
     private _createViewParts() {

@@ -1,16 +1,14 @@
-import { TextModel } from '../../../common/textModel';
-import { ITextFileService, IRawTextContent } from './textfiles';
 import { ITextBufferFactory } from '../../../common/models';
+import { TextModel } from '../../../common/textModel';
+import { IRawTextContent, ITextFileService } from './textfiles';
 
 export class TextFileEditorModel {
     private _textModel: TextModel;
 
     constructor(
         private resource: string,
-        @ITextFileService private textFileService: ITextFileService,
-    ) {
-
-    }
+        @ITextFileService private textFileService: ITextFileService
+    ) {}
 
     public get model(): TextModel {
         return this._textModel;
@@ -25,18 +23,23 @@ export class TextFileEditorModel {
     }
 
     private loadFromFile(): Promise<TextFileEditorModel> {
-        return this.textFileService.resolveTextContent(this.resource)
-            .then((content) => this.doLoadWithContent(content),
-                () => this.onHandleFailed());
+        return this.textFileService
+            .resolveTextContent(this.resource)
+            .then(
+                content => this.doLoadWithContent(content),
+                () => this.onHandleFailed()
+            );
     }
 
     private doLoadWithContent(content: IRawTextContent) {
         return this.doCreateTextModel(content.value);
     }
 
-    private doCreateTextModel(value: ITextBufferFactory): Promise<TextFileEditorModel> {
+    private doCreateTextModel(
+        value: ITextBufferFactory
+    ): Promise<TextFileEditorModel> {
         this.doCreateTextEditorModel(value);
-        
+
         return Promise.resolve(this);
     }
 

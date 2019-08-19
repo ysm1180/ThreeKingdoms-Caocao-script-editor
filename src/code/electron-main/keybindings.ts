@@ -1,7 +1,8 @@
-import { IWindowMainService } from '../platform/windows/electron-main/windows';
-import { Event } from '../base/common/event';
-import { CodeWindow } from './window';
 import { ipcMain } from 'electron';
+
+import { Event } from '../base/common/event';
+import { IWindowMainService } from '../platform/windows/electron-main/windows';
+import { CodeWindow } from './window';
 
 export interface IKeybinding {
     id: string;
@@ -15,7 +16,7 @@ export class KeybindingsResolver {
     public onKeybindingsChanged = new Event<void>();
 
     constructor(
-        @IWindowMainService private windowMainService: IWindowMainService,
+        @IWindowMainService private windowMainService: IWindowMainService
     ) {
         this.commandIds = new Set<string>();
         this.keybindings = Object.create(null);
@@ -32,7 +33,9 @@ export class KeybindingsResolver {
                 // Should not happen
             }
 
-            const resolvedKeybindings: { [commandId: string]: IKeybinding } = Object.create(null);
+            const resolvedKeybindings: {
+                [commandId: string]: IKeybinding;
+            } = Object.create(null);
             let keybindingsChanged = false;
             let keybindingsCount = 0;
             keybindings.forEach(keybinding => {
@@ -40,7 +43,10 @@ export class KeybindingsResolver {
 
                 resolvedKeybindings[keybinding.id] = keybinding;
 
-                if (!this.keybindings[keybinding.id] || keybinding.label !== this.keybindings[keybinding.id].label) {
+                if (
+                    !this.keybindings[keybinding.id] ||
+                    keybinding.label !== this.keybindings[keybinding.id].label
+                ) {
                     keybindingsChanged = true;
                 }
             });
@@ -56,7 +62,7 @@ export class KeybindingsResolver {
             }
         });
 
-        const once = this.windowMainService.onWindowReady.add((win) => {
+        const once = this.windowMainService.onWindowReady.add(win => {
             once.dispose();
             this.resolveKeybindings(win);
         });

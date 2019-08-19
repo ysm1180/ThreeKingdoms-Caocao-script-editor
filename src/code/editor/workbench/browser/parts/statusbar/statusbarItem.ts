@@ -1,16 +1,15 @@
-import { IStatusbarItem, IStatusbarEntry, StatusbarItemAlignment } from '../../../../../platform/statusbar/statusbar';
+import { combinedDisposable, IDisposable } from '../../../../../base/common/lifecycle';
 import { ContextKeyExpr } from '../../../../../platform/contexts/contextKey';
-import { IDisposable, combinedDisposable } from '../../../../../base/common/lifecycle';
+import {
+    IStatusbarEntry, IStatusbarItem, StatusbarItemAlignment
+} from '../../../../../platform/statusbar/statusbar';
 
 export class FileStatusItem implements IStatusbarItem {
     private label: HTMLElement;
 
     public static ID = 'STATUS_FILE_ITEM';
 
-    constructor(
-        private entry: IStatusbarEntry,
-    ) {
-    }
+    constructor(private entry: IStatusbarEntry) {}
 
     public get alignment(): StatusbarItemAlignment {
         return StatusbarItemAlignment.LEFT;

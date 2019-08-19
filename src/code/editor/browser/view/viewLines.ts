@@ -1,8 +1,8 @@
-import { ViewContext } from '../../common/view/viewContext';
 import { FastDomNode } from '../../../base/browser/fastDomNode';
+import { Disposable } from '../../../base/common/lifecycle';
+import { ViewContext } from '../../common/view/viewContext';
 import { ViewportData } from '../../common/view/viewportData';
 import { VisibleLines } from './viewLayer';
-import { Disposable } from '../../../base/common/lifecycle';
 
 export class ViewLines extends Disposable {
     private linesContent: FastDomNode<HTMLElement>;
@@ -16,12 +16,12 @@ export class ViewLines extends Disposable {
         super();
 
         this.context = context;
-        this.linesContent = linesContent;  
+        this.linesContent = linesContent;
 
         this.visibleLines = new VisibleLines();
         this.domNode = this.visibleLines.getDomNode();
         this.domNode.setClassName('view-lines');
-        
+
         this.maxLineWidth = 0;
     }
 
@@ -35,7 +35,8 @@ export class ViewLines extends Disposable {
         const maxHorizontalWidth = this._computeScrollWidth();
         this._ensureMaxLineWidth(maxHorizontalWidth);
 
-        const top = this.context.viewLayout.scroll.getCurrentScrollPosition().scrollTop;
+        const top = this.context.viewLayout.scroll.getCurrentScrollPosition()
+            .scrollTop;
         this.linesContent.setTop(-top);
     }
 
@@ -44,8 +45,14 @@ export class ViewLines extends Disposable {
 
         const startLineNumber = this.visibleLines.getStartLineNumber();
         const endLineNumber = this.visibleLines.getEndLineNumber();
-        for (let lineNumber = startLineNumber; lineNumber <= endLineNumber; lineNumber++) {
-            const width = this.visibleLines.getVisibleLine(lineNumber).getWidth();
+        for (
+            let lineNumber = startLineNumber;
+            lineNumber <= endLineNumber;
+            lineNumber++
+        ) {
+            const width = this.visibleLines
+                .getVisibleLine(lineNumber)
+                .getWidth();
             if (result < width) {
                 result = width;
             }
@@ -55,13 +62,13 @@ export class ViewLines extends Disposable {
     }
 
     private _ensureMaxLineWidth(lineWidth: number): void {
-		let iLineWidth = Math.ceil(lineWidth);
-		if (this.maxLineWidth < iLineWidth) {
-			this.maxLineWidth = iLineWidth;
-			this.context.viewLayout.onMaxLineWidthChanged(this.maxLineWidth);
-		}
+        let iLineWidth = Math.ceil(lineWidth);
+        if (this.maxLineWidth < iLineWidth) {
+            this.maxLineWidth = iLineWidth;
+            this.context.viewLayout.onMaxLineWidthChanged(this.maxLineWidth);
+        }
     }
-    
+
     public dispose(): void {
         super.dispose();
     }

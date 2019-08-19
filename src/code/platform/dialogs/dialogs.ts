@@ -30,7 +30,6 @@ export interface ISavingFile {
     name?: string;
 }
 
-
 export interface IFileExtension {
     name?: string;
     extensions: string; // split by semicolon
@@ -50,7 +49,7 @@ export function getFileFilters(...extensions: IFileExtension[]): FileFilter[] {
             extensions[i].name = names.join(', ');
         }
 
-        const displayExtension = exs.map((ex) => `*.${ex}`).join(', ');
+        const displayExtension = exs.map(ex => `*.${ex}`).join(', ');
 
         filters.push({
             name: `${extensions[i].name} 파일 (${displayExtension})`,

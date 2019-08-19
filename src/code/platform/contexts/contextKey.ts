@@ -1,4 +1,4 @@
-import { Context, ContextKeyService, ContextKey } from './contextKeyService';
+import { Context, ContextKey, ContextKeyService } from './contextKeyService';
 
 export abstract class ContextKeyExpr {
     public static has(key: string) {
@@ -25,10 +25,7 @@ export abstract class ContextKeyExpr {
 }
 
 export class ContextKeyHasExpr implements ContextKeyExpr {
-    constructor(
-        protected key: string,
-    ) {
-    }
+    constructor(protected key: string) {}
 
     public evaluate(context: Context): boolean {
         return !!context.getValue(this.key);
@@ -36,11 +33,7 @@ export class ContextKeyHasExpr implements ContextKeyExpr {
 }
 
 export class ContextKeyNotExpr implements ContextKeyExpr {
-    constructor(
-        private expr: ContextKeyExpr,
-    ) {
-
-    }
+    constructor(private expr: ContextKeyExpr) {}
 
     public evaluate(context: Context): boolean {
         return !this.expr.evaluate(context);
@@ -50,9 +43,7 @@ export class ContextKeyNotExpr implements ContextKeyExpr {
 export class ContextKeyAndExpr implements ContextKeyExpr {
     private expressions: ContextKeyExpr[];
 
-    constructor(
-        ...expr: ContextKeyExpr[]
-    ) {
+    constructor(...expr: ContextKeyExpr[]) {
         this.expressions = expr;
     }
 
@@ -67,13 +58,10 @@ export class ContextKeyAndExpr implements ContextKeyExpr {
     }
 }
 
-
 export class ContextKeyOrExpr implements ContextKeyExpr {
     private expressions: ContextKeyExpr[];
 
-    constructor(
-        ...expr: ContextKeyExpr[]
-    ) {
+    constructor(...expr: ContextKeyExpr[]) {
         this.expressions = expr;
     }
 
@@ -89,12 +77,7 @@ export class ContextKeyOrExpr implements ContextKeyExpr {
 }
 
 export class ContextKeyEqualExpr implements ContextKeyExpr {
-    constructor(
-        private key: string,
-        private value: any,
-    ) {
-        
-    }
+    constructor(private key: string, private value: any) {}
 
     public evaluate(context: Context): boolean {
         return context.getValue(this.key) === this.value;
@@ -116,4 +99,3 @@ export class RawContextKey<T> extends ContextKeyHasExpr {
         return ContextKeyExpr.not(this);
     }
 }
-

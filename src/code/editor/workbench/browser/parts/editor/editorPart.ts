@@ -1,20 +1,27 @@
-import { DomBuilder, $ } from '../../../../../base/browser/domBuilder';
+import { $, DomBuilder } from '../../../../../base/browser/domBuilder';
 import { Event } from '../../../../../base/common/event';
-import { Part } from '../../part';
-import { EditorGroup } from './editorGroup';
-import { BaseEditor } from './baseEditor';
+import { RawContextKey } from '../../../../../platform/contexts/contextKey';
+import {
+    ContextKey, ContextKeyService, IContextKeyService
+} from '../../../../../platform/contexts/contextKeyService';
 import { decorator, ServiceIdentifier } from '../../../../../platform/instantiation/instantiation';
 import { IInstantiationService } from '../../../../../platform/instantiation/instantiationService';
-import { EditorRegistry, EditorDescriptor } from '../../editor';
 import { IDimension } from '../../../../common/editorCommon';
-import { RawContextKey } from '../../../../../platform/contexts/contextKey';
-import { IContextKeyService, ContextKeyService, ContextKey } from '../../../../../platform/contexts/contextKeyService';
 import { EditorInput } from '../../../common/editor';
+import { EditorDescriptor, EditorRegistry } from '../../editor';
+import { Part } from '../../part';
+import { BaseEditor } from './baseEditor';
+import { EditorGroup } from './editorGroup';
 
 export const editorInputIsActivatedId = 'editorInputIsactivatedId';
-export const editorInputActivatedContext = new RawContextKey<boolean>(editorInputIsActivatedId, false);
+export const editorInputActivatedContext = new RawContextKey<boolean>(
+    editorInputIsActivatedId,
+    false
+);
 
-export const IEditorGroupService: ServiceIdentifier<EditorPart> = decorator<EditorPart>('editorPart');
+export const IEditorGroupService: ServiceIdentifier<EditorPart> = decorator<
+    EditorPart
+>('editorPart');
 
 export class EditorPart extends Part {
     private editorGroup: EditorGroup;
@@ -29,7 +36,8 @@ export class EditorPart extends Part {
 
     constructor(
         @IContextKeyService contextKeyService: ContextKeyService,
-        @IInstantiationService private instantiationService: IInstantiationService,
+        @IInstantiationService
+        private instantiationService: IInstantiationService
     ) {
         super();
 
@@ -37,14 +45,22 @@ export class EditorPart extends Part {
         this.currentEditor = null;
         this.instantiatedEditors = [];
 
-        this.editorActivatedContext = editorInputActivatedContext.bindTo(contextKeyService);
+        this.editorActivatedContext = editorInputActivatedContext.bindTo(
+            contextKeyService
+        );
     }
 
     private _createGroup(): EditorGroup {
-        const group: EditorGroup = this.instantiationService.create(EditorGroup);
+        const group: EditorGroup = this.instantiationService.create(
+            EditorGroup
+        );
 
-        this.registerDispose(group.onEditorStructureChanged.add(e => this.onEditorChanged.fire()));
-        this.registerDispose(group.onEditorStateChanged.add(e => this.onEditorChanged.fire()));
+        this.registerDispose(
+            group.onEditorStructureChanged.add(e => this.onEditorChanged.fire())
+        );
+        this.registerDispose(
+            group.onEditorStateChanged.add(e => this.onEditorChanged.fire())
+        );
 
         return group;
     }
@@ -95,9 +111,14 @@ export class EditorPart extends Part {
         return this.setInput(input, editor, isNewOpen);
     }
 
-    public setInput(input: EditorInput, editor: BaseEditor, forceOpen: boolean = false): Promise<void> {
+    public setInput(
+        input: EditorInput,
+        editor: BaseEditor,
+        forceOpen: boolean = false
+    ): Promise<void> {
         const previousInput = editor.input;
-        const inputChanged = (!previousInput || !previousInput.matches(input) || forceOpen);
+        const inputChanged =
+            !previousInput || !previousInput.matches(input) || forceOpen;
 
         return editor.setInput(input, forceOpen).then(() => {
             if (inputChanged) {
@@ -135,17 +156,21 @@ export class EditorPart extends Part {
         const editor = this.doInstantiateEditor(desc);
 
         if (!editor.getContainer()) {
-            editor.create($().div({
-                class: 'editor-container',
-                id: desc.getId(),
-            }));
+            editor.create(
+                $().div({
+                    class: 'editor-container',
+                    id: desc.getId(),
+                })
+            );
         }
 
         return editor;
     }
 
     private doInstantiateEditor(desc: EditorDescriptor): BaseEditor {
-        const instantiatedEditor = this.instantiatedEditors.filter(e => desc.describes(e))[0];
+        const instantiatedEditor = this.instantiatedEditors.filter(e =>
+            desc.describes(e)
+        )[0];
         if (instantiatedEditor) {
             return instantiatedEditor;
         }
@@ -158,7 +183,10 @@ export class EditorPart extends Part {
     }
 
     private doHideEditor(editor: BaseEditor) {
-        editor.getContainer().offDOM().hide();
+        editor
+            .getContainer()
+            .offDOM()
+            .hide();
 
         this.currentEditor = null;
     }

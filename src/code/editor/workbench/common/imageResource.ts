@@ -1,8 +1,8 @@
 import * as bmp from 'bmp-js';
 import * as jpeg from 'jpeg-js';
 import * as sharp from 'sharp';
-import { bytesToNumber } from '../../../base/common/convert';
 
+import { bytesToNumber } from '../../../base/common/convert';
 
 export const enum ImageType {
     Png = 'png',
@@ -58,13 +58,16 @@ export class ImageResource {
     public static getTypeFromBinary(data: Uint8Array): ImageType {
         let type: ImageType = null;
         if (data) {
-            if (data[0] === 'B'.charCodeAt(0) && data[1] === 'M'.charCodeAt(0)) {
+            if (
+                data[0] === 'B'.charCodeAt(0) &&
+                data[1] === 'M'.charCodeAt(0)
+            ) {
                 type = ImageType.Bmp;
-            } else if (data[0] === 0xFF && data[1] === 0xD8) {
+            } else if (data[0] === 0xff && data[1] === 0xd8) {
                 type = ImageType.Jpg;
             } else if (data[0] === 0x89 && data[1] === 0x50) {
                 type = ImageType.Png;
-            } 
+            }
         }
 
         return type;
@@ -77,15 +80,17 @@ export class ImageResource {
             const jpegOption = {
                 quality: 100,
             };
-            
+
             if (type === ImageType.Jpg) {
-                return sharp(data).jpeg(jpegOption).toBuffer();
+                return sharp(data)
+                    .jpeg(jpegOption)
+                    .toBuffer();
             } else if (type === ImageType.Bmp) {
                 const bitmap = bmp.decode(data);
                 for (let i = 0; i < bitmap.data.length / 4; i++) {
                     let temp = bitmap.data[i * 4];
                     bitmap.data[i * 4] = bitmap.data[i * 4 + 3];
-                    bitmap.data[i * 4 + 3] = 0xFF;
+                    bitmap.data[i * 4 + 3] = 0xff;
 
                     temp = bitmap.data[i * 4 + 1];
                     bitmap.data[i * 4 + 1] = bitmap.data[i * 4 + 2];
@@ -98,16 +103,23 @@ export class ImageResource {
                         height: bitmap.height,
                         channels: 4,
                     },
-                }).jpeg(jpegOption).toBuffer();
+                })
+                    .jpeg(jpegOption)
+                    .toBuffer();
             } else if (type === ImageType.Png) {
-                return sharp(data).jpeg(jpegOption).toBuffer();
+                return sharp(data)
+                    .jpeg(jpegOption)
+                    .toBuffer();
             } else {
                 return data;
             }
         });
     }
 
-    public static convertToPng(data: Buffer, compress: boolean = false): Promise<Buffer> {
+    public static convertToPng(
+        data: Buffer,
+        compress: boolean = false
+    ): Promise<Buffer> {
         return Promise.resolve().then(() => {
             let pngOption;
             if (compress) {
@@ -129,7 +141,7 @@ export class ImageResource {
                 for (let i = 0; i < bitmap.data.length / 4; i++) {
                     let temp = bitmap.data[i * 4];
                     bitmap.data[i * 4] = bitmap.data[i * 4 + 3];
-                    bitmap.data[i * 4 + 3] = 0xFF;
+                    bitmap.data[i * 4 + 3] = 0xff;
 
                     temp = bitmap.data[i * 4 + 1];
                     bitmap.data[i * 4 + 1] = bitmap.data[i * 4 + 2];
@@ -142,9 +154,13 @@ export class ImageResource {
                         height: bitmap.height,
                         channels: 4,
                     },
-                }).png(pngOption).toBuffer();
+                })
+                    .png(pngOption)
+                    .toBuffer();
             } else if (type === ImageType.Jpg) {
-                return sharp(data).png(pngOption).toBuffer();
+                return sharp(data)
+                    .png(pngOption)
+                    .toBuffer();
             } else {
                 return data;
             }

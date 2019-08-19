@@ -1,28 +1,42 @@
 import { DomBuilder } from '../../../../base/browser/domBuilder';
-import { Tree, ITreeOptions, ITreeConfiguration } from '../../../../base/parts/tree/browser/tree';
-import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
-import { RawContextKey, ContextKeyExpr, ContextKeyNotExpr } from '../../../../platform/contexts/contextKey';
-import { ContextKey, IContextKeyService, ContextKeyService } from '../../../../platform/contexts/contextKeyService';
+import { dispose, IDisposable } from '../../../../base/common/lifecycle';
+import { ITreeConfiguration, ITreeOptions, Tree } from '../../../../base/parts/tree/browser/tree';
+import {
+    ContextKeyExpr, ContextKeyNotExpr, RawContextKey
+} from '../../../../platform/contexts/contextKey';
+import {
+    ContextKey, ContextKeyService, IContextKeyService
+} from '../../../../platform/contexts/contextKeyService';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
-import { CompositeView } from '../compositeView';
-import { IEditorGroupService, EditorPart } from './editor/editorPart';
-import { Me5Stat } from '../../parts/files/me5Data';
-import { ICompositeViewService, CompositeViewService } from '../../services/view/compositeViewService';
-import { Me5DataSource, Me5DataRenderer, Me5DataController } from '../../parts/me5ExplorerViewer';
-import { EditorGroup } from './editor/editorGroup';
-import { IDisposable, dispose } from '../../../../base/common/lifecycle';
+import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
 import { ResourceEditorInput } from '../../common/editor/resourceEditorInput';
+import { Me5Stat } from '../../parts/files/me5Data';
+import { Me5DataController, Me5DataRenderer, Me5DataSource } from '../../parts/me5ExplorerViewer';
 import { IResourceStat } from '../../services/resourceFile/resourceDataService';
 import { IResourceFileService } from '../../services/resourceFile/resourcefiles';
 import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
+import {
+    CompositeViewService, ICompositeViewService
+} from '../../services/view/compositeViewService';
+import { CompositeView } from '../compositeView';
+import { EditorGroup } from './editor/editorGroup';
+import { EditorPart, IEditorGroupService } from './editor/editorPart';
 
 export const me5ExplorerItemIsMe5GroupId = 'explorerItemIsMe5Group';
 export const me5ExplorerItemIsMe5StatId = 'explorerItemIsMe5Stat';
 
-export const me5ExplorerGroupContext = new RawContextKey<boolean>(me5ExplorerItemIsMe5GroupId, false);
-export const me5ExplorerRootContext = new RawContextKey<boolean>(me5ExplorerItemIsMe5StatId, false);
+export const me5ExplorerGroupContext = new RawContextKey<boolean>(
+    me5ExplorerItemIsMe5GroupId,
+    false
+);
+export const me5ExplorerRootContext = new RawContextKey<boolean>(
+    me5ExplorerItemIsMe5StatId,
+    false
+);
 
-export const me5ExplorerItemContext: ContextKeyNotExpr = ContextKeyExpr.not(ContextKeyExpr.or(me5ExplorerGroupContext, me5ExplorerRootContext));
+export const me5ExplorerItemContext: ContextKeyNotExpr = ContextKeyExpr.not(
+    ContextKeyExpr.or(me5ExplorerGroupContext, me5ExplorerRootContext)
+);
 
 export class Me5Tree extends Tree {
     private _cache = new Map<String, IResourceStat>();
@@ -31,17 +45,18 @@ export class Me5Tree extends Tree {
         container: HTMLElement,
         configuration: ITreeConfiguration,
         options: ITreeOptions,
-        @ITreeService treeService: TreeService,
+        @ITreeService treeService: TreeService
     ) {
-        super(container,
+        super(
+            container,
             {
                 dataSource: configuration.dataSource,
                 renderer: configuration.renderer,
-                controller: configuration.controller
+                controller: configuration.controller,
             },
             {
                 ...options,
-                ...{ indentPixels: 12 }
+                ...{ indentPixels: 12 },
             }
         );
 
@@ -86,9 +101,11 @@ export class Me5ExplorerView extends CompositeView {
     constructor(
         @IContextKeyService private contextKeyService: ContextKeyService,
         @IEditorGroupService private editorService: EditorPart,
-        @ICompositeViewService private compositeViewService: CompositeViewService,
+        @ICompositeViewService
+        private compositeViewService: CompositeViewService,
         @IResourceFileService private resourceFileService: ResourceFileService,
-        @IInstantiationService private instantiationService: IInstantiationService,
+        @IInstantiationService
+        private instantiationService: IInstantiationService
     ) {
         super(EXPLORER_VIEW_ID);
 
@@ -96,8 +113,12 @@ export class Me5ExplorerView extends CompositeView {
         this.renderer = this.instantiationService.create(Me5DataRenderer);
         this.controller = this.instantiationService.create(Me5DataController);
 
-        this.groupContext = me5ExplorerGroupContext.bindTo(this.contextKeyService);
-        this.rootContext = me5ExplorerRootContext.bindTo(this.contextKeyService);
+        this.groupContext = me5ExplorerGroupContext.bindTo(
+            this.contextKeyService
+        );
+        this.rootContext = me5ExplorerRootContext.bindTo(
+            this.contextKeyService
+        );
 
         this.pendingPromise = Object.create(null);
 
@@ -105,31 +126,44 @@ export class Me5ExplorerView extends CompositeView {
     }
 
     public create(container: DomBuilder) {
-        this.explorerViewer = this.instantiationService.create(Me5Tree,
+        this.explorerViewer = this.instantiationService.create(
+            Me5Tree,
             container.getHTMLElement(),
             {
                 dataSource: this.dataSource,
                 renderer: this.renderer,
-                controller: this.controller
+                controller: this.controller,
             },
             {}
         );
 
-        this.registerDispose(this.explorerViewer.onDidChangeFocus.add((e) => {
-            const focused = e.focus as Me5Stat;
-            if (focused) {
-                this.groupContext.set(focused.isGroup && !focused.isRoot);
-                this.rootContext.set(focused.isRoot);
-            }
-        }));
+        this.registerDispose(
+            this.explorerViewer.onDidChangeFocus.add(e => {
+                const focused = e.focus as Me5Stat;
+                if (focused) {
+                    this.groupContext.set(focused.isGroup && !focused.isRoot);
+                    this.rootContext.set(focused.isRoot);
+                }
+            })
+        );
 
         this.group = this.editorService.getEditorGroup();
 
-        this.registerDispose(this.compositeViewService.onDidCompositeOpen.add((composit) => this._onCompositeOpen(composit)));
-        this.registerDispose(this.compositeViewService.onDidCompositeClose.add((composit) => this._onCompositClose(composit)));
-        this.registerDispose(this.group.onEditorStructureChanged.add((editor) => {
-            this.explorerViewer.setCache(editor.getResource(), null);
-        }));
+        this.registerDispose(
+            this.compositeViewService.onDidCompositeOpen.add(composit =>
+                this._onCompositeOpen(composit)
+            )
+        );
+        this.registerDispose(
+            this.compositeViewService.onDidCompositeClose.add(composit =>
+                this._onCompositClose(composit)
+            )
+        );
+        this.registerDispose(
+            this.group.onEditorStructureChanged.add(editor => {
+                this.explorerViewer.setCache(editor.getResource(), null);
+            })
+        );
     }
 
     private _onCompositeOpen(composit: CompositeView) {
@@ -137,10 +171,12 @@ export class Me5ExplorerView extends CompositeView {
             return;
         }
 
-        this.onceEvents.push(this.editorService.onEditorInputChanged.add(() => {
-            this._onOpenInput();
-            this.onceEvents = dispose(this.onceEvents);
-        }));
+        this.onceEvents.push(
+            this.editorService.onEditorInputChanged.add(() => {
+                this._onOpenInput();
+                this.onceEvents = dispose(this.onceEvents);
+            })
+        );
     }
 
     private _onCompositClose(composit: CompositeView) {
@@ -157,7 +193,9 @@ export class Me5ExplorerView extends CompositeView {
             this.setElementStates(previousRoot.getId());
         }
 
-        const activeEditorInput = <ResourceEditorInput>this.group.activeEditorInput;
+        const activeEditorInput = <ResourceEditorInput>(
+            this.group.activeEditorInput
+        );
         if (!activeEditorInput) {
             return;
         }
@@ -178,7 +216,7 @@ export class Me5ExplorerView extends CompositeView {
         }
 
         this.pendingPromise[resource] = done;
-        done.then((stat) => {
+        done.then(stat => {
             this.explorerViewer.setCache(activeEditorInput.getResource(), stat);
             this.explorerViewer.setRoot(stat).then(() => {
                 let expandPromise: Promise<any>;

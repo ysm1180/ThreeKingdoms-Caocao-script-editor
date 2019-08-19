@@ -1,16 +1,17 @@
-import * as path from 'path';
 import * as fs from 'fs';
+import * as path from 'path';
+
 import { isUndefined } from '../../../base/common/types';
 import { decorator, ServiceIdentifier } from '../../instantiation/instantiation';
 
-export const IFileStorageService: ServiceIdentifier<FileStorageService> = decorator<FileStorageService>('fileStorageService');
+export const IFileStorageService: ServiceIdentifier<
+    FileStorageService
+> = decorator<FileStorageService>('fileStorageService');
 
 export class FileStorage {
     private database: Object;
 
-    constructor(private path: string) {
-
-    }
+    constructor(private path: string) {}
 
     private ensureLoaded() {
         if (!this.database) {
@@ -28,7 +29,11 @@ export class FileStorage {
     public setItem(key: string, value: any) {
         this.ensureLoaded();
 
-        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+        if (
+            typeof value === 'string' ||
+            typeof value === 'number' ||
+            typeof value === 'boolean'
+        ) {
             if (this.database[key] === value) {
                 return;
             }
@@ -51,7 +56,7 @@ export class FileStorage {
         try {
             return JSON.parse(fs.readFileSync(this.path).toString());
         } catch {
-           return {};
+            return {};
         }
     }
 
@@ -69,7 +74,9 @@ export class FileStorageService {
     private fileStorage: FileStorage;
 
     constructor(userDataPath: string) {
-        this.fileStorage = new FileStorage(path.join(userDataPath, 'storage.json'));
+        this.fileStorage = new FileStorage(
+            path.join(userDataPath, 'storage.json')
+        );
     }
 
     public get(key: string) {

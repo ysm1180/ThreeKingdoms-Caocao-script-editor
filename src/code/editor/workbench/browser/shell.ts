@@ -1,11 +1,14 @@
+import { ipcRenderer } from 'electron';
+
 import { $, DomBuilder } from '../../../base/browser/domBuilder';
-import { Workbench } from './workbench';
-import { ElectronWindow } from '../window';
-import { InstantiationService, IInstantiationService } from '../../../platform/instantiation/instantiationService';
+import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
+import {
+    IInstantiationService, InstantiationService
+} from '../../../platform/instantiation/instantiationService';
 import { ServiceStorage } from '../../../platform/instantiation/serviceStorage';
 import { IStorageService, StorageService } from '../services/electron-browser/storageService';
-import { ipcRenderer } from 'electron';
-import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
+import { ElectronWindow } from '../window';
+import { Workbench } from './workbench';
 
 export class WorkbenchShell {
     private container: HTMLElement;
@@ -14,16 +17,16 @@ export class WorkbenchShell {
 
     private workbench: Workbench;
 
-    constructor(
-        container: HTMLElement
-    ) {
+    constructor(container: HTMLElement) {
         this.container = container;
     }
 
     public open() {
-        this.content = $(this.container).div({
-            class: 'shell-content'
-        }).getHTMLElement();
+        this.content = $(this.container)
+            .div({
+                class: 'shell-content',
+            })
+            .getHTMLElement();
         this.contentContainer = this.createContents($(this.content));
 
         this.layout();
@@ -34,7 +37,10 @@ export class WorkbenchShell {
     public layout() {
         const containerSize = $(this.container).getClientArea();
         if (containerSize !== null) {
-            this.contentContainer.size(containerSize.width, containerSize.height);
+            this.contentContainer.size(
+                containerSize.width,
+                containerSize.height
+            );
         } else {
             throw Error('error document body size');
         }
@@ -48,9 +54,17 @@ export class WorkbenchShell {
         const serviceStorage = new ServiceStorage();
         const instantiationService = new InstantiationService(serviceStorage);
 
-        serviceStorage.set(IStorageService, new ClassDescriptor(StorageService, window.localStorage));
+        serviceStorage.set(
+            IStorageService,
+            new ClassDescriptor(StorageService, window.localStorage)
+        );
 
-        this.workbench = this.createWorkbench(instantiationService, serviceStorage, parent.getHTMLElement(), workbenchContainer.getHTMLElement());
+        this.workbench = this.createWorkbench(
+            instantiationService,
+            serviceStorage,
+            parent.getHTMLElement(),
+            workbenchContainer.getHTMLElement()
+        );
         this.workbench.startup();
         ipcRenderer.send('app:workbenchLoaded');
 
@@ -59,8 +73,17 @@ export class WorkbenchShell {
         return workbenchContainer;
     }
 
-    public createWorkbench(instantiationService: IInstantiationService, serviceStorage: ServiceStorage, parent: HTMLElement, container: HTMLElement) {
-        const workbench = instantiationService.create(Workbench, container, serviceStorage);
+    public createWorkbench(
+        instantiationService: IInstantiationService,
+        serviceStorage: ServiceStorage,
+        parent: HTMLElement,
+        container: HTMLElement
+    ) {
+        const workbench = instantiationService.create(
+            Workbench,
+            container,
+            serviceStorage
+        );
 
         return workbench;
     }

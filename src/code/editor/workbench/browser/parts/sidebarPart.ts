@@ -1,12 +1,12 @@
+import { $, DomBuilder } from '../../../../base/browser/domBuilder';
 import { Event } from '../../../../base/common/event';
-import { DomBuilder, $ } from '../../../../base/browser/domBuilder';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiationService';
-import { Part } from '../part';
-import { CompositeView, CompositViewRegistry } from '../compositeView';
-import { IEditorGroupService, EditorPart } from './editor/editorPart';
-import { EditorGroup } from './editor/editorGroup';
-import { IPartService } from '../../services/part/partService';
 import { IDimension } from '../../../common/editorCommon';
+import { IPartService } from '../../services/part/partService';
+import { CompositeView, CompositViewRegistry } from '../compositeView';
+import { Part } from '../part';
+import { EditorGroup } from './editor/editorGroup';
+import { EditorPart, IEditorGroupService } from './editor/editorPart';
 
 export class SidebarPart extends Part {
     private instantiatedComposites: CompositeView[];
@@ -22,7 +22,8 @@ export class SidebarPart extends Part {
     constructor(
         @IPartService private partService: IPartService,
         @IEditorGroupService private editorService: EditorPart,
-        @IInstantiationService private instantiationService: IInstantiationService,
+        @IInstantiationService
+        private instantiationService: IInstantiationService
     ) {
         super();
 
@@ -31,9 +32,11 @@ export class SidebarPart extends Part {
         this.mapCompositeToCompositeContainer = {};
 
         this.group = this.editorService.getEditorGroup();
-        this.registerDispose(this.editorService.onEditorChanged.add(() => {
-            this._onEditorChanged();
-        }));
+        this.registerDispose(
+            this.editorService.onEditorChanged.add(() => {
+                this._onEditorChanged();
+            })
+        );
     }
 
     private _onEditorChanged() {
@@ -44,7 +47,9 @@ export class SidebarPart extends Part {
             return;
         }
 
-        const descriptors = CompositViewRegistry.getCompositeViewDescriptors(activeInput);
+        const descriptors = CompositViewRegistry.getCompositeViewDescriptors(
+            activeInput
+        );
         if (descriptors.length === 0) {
             this._hideActiveComposite();
             this.partService.setSideBarHidden(true);
@@ -80,14 +85,18 @@ export class SidebarPart extends Part {
             return null;
         }
 
-        let compositeContainer = this.mapCompositeToCompositeContainer[composite.getId()];
+        let compositeContainer = this.mapCompositeToCompositeContainer[
+            composite.getId()
+        ];
         if (!compositeContainer) {
             compositeContainer = $().div({
-                'class': 'composite',
-                id: composite.getId()
+                class: 'composite',
+                id: composite.getId(),
             });
 
-            this.mapCompositeToCompositeContainer[composite.getId()] = compositeContainer;
+            this.mapCompositeToCompositeContainer[
+                composite.getId()
+            ] = compositeContainer;
 
             composite.create(compositeContainer);
         }
@@ -105,9 +114,13 @@ export class SidebarPart extends Part {
             }
         }
 
-        const compositeDescriptor = CompositViewRegistry.getCompositeViewDescriptor(id);
+        const compositeDescriptor = CompositViewRegistry.getCompositeViewDescriptor(
+            id
+        );
         if (compositeDescriptor) {
-            const composite = this.instantiationService.create(compositeDescriptor.ctor);
+            const composite = this.instantiationService.create(
+                compositeDescriptor.ctor
+            );
             this.instantiatedComposites.push(composite);
             return composite;
         }
@@ -123,7 +136,9 @@ export class SidebarPart extends Part {
         const composite = this.activeComposite;
         this.activeComposite = null;
 
-        const compositeContainer = this.mapCompositeToCompositeContainer[composite.getId()];
+        const compositeContainer = this.mapCompositeToCompositeContainer[
+            composite.getId()
+        ];
         compositeContainer.offDOM();
         compositeContainer.hide();
 

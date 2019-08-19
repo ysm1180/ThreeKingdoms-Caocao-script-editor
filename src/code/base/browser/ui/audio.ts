@@ -1,6 +1,6 @@
+import { Disposable, dispose, IDisposable } from '../../common/lifecycle';
+import { addClass, addDisposableEventListener, removeClass } from '../dom';
 import { $, DomBuilder } from '../domBuilder';
-import { Disposable, IDisposable, dispose } from '../../common/lifecycle';
-import { addDisposableEventListener, removeClass, addClass } from '../dom';
 import { StandardMouseEvent } from '../mouseEvent';
 
 export class AudioPlayer extends Disposable {
@@ -46,25 +46,37 @@ export class AudioPlayer extends Disposable {
         this.timeline.className = 'audio-timeline';
         this.container.appendChild(this.timeline);
 
-        this.progress = $().div({
-            class: 'audio-progress',
-        }).appendTo(this.timeline);
+        this.progress = $()
+            .div({
+                class: 'audio-progress',
+            })
+            .appendTo(this.timeline);
 
         parent.appendChild(this.container);
 
         this.registerDispose(
             addDisposableEventListener(this._audio, 'canplaythrough', () => {
-                this.durationLabel.textContent = this.toTime(this._audio.duration);
+                this.durationLabel.textContent = this.toTime(
+                    this._audio.duration
+                );
             })
         );
         this.registerDispose(
-            addDisposableEventListener(this.playButton, 'click', () => this.onPlayPause())
+            addDisposableEventListener(this.playButton, 'click', () =>
+                this.onPlayPause()
+            )
         );
         this.registerDispose(
-            addDisposableEventListener(this._audio, 'timeupdate', () => this.onTimeUpdate())
+            addDisposableEventListener(this._audio, 'timeupdate', () =>
+                this.onTimeUpdate()
+            )
         );
         this.registerDispose(
-            addDisposableEventListener(this.timeline, 'mousedown', (e: MouseEvent) => this.onMovePlayHead(e))
+            addDisposableEventListener(
+                this.timeline,
+                'mousedown',
+                (e: MouseEvent) => this.onMovePlayHead(e)
+            )
         );
 
         this.paused = true;
@@ -122,7 +134,9 @@ export class AudioPlayer extends Disposable {
     }
 
     private onTimeUpdate() {
-        const width = this.timeline.offsetWidth * (this._audio.currentTime / this._audio.duration);
+        const width =
+            this.timeline.offsetWidth *
+            (this._audio.currentTime / this._audio.duration);
         this.progress.size(width);
 
         this.elapsedLabel.textContent = this.toTime(this._audio.currentTime);
@@ -137,26 +151,41 @@ export class AudioPlayer extends Disposable {
 
         const unbind: IDisposable[] = [];
 
-        unbind.push(addDisposableEventListener(this.timeline, 'mousemove', (e: MouseEvent) => {
-            const mouseEvent = new StandardMouseEvent(e);
+        unbind.push(
+            addDisposableEventListener(
+                this.timeline,
+                'mousemove',
+                (e: MouseEvent) => {
+                    const mouseEvent = new StandardMouseEvent(e);
 
-            this._audio.currentTime = this._audio.duration * ((mouseEvent.posx - this.timeline.getBoundingClientRect().left) / this.timeline.offsetWidth);
-        }));
+                    this._audio.currentTime =
+                        this._audio.duration *
+                        ((mouseEvent.posx -
+                            this.timeline.getBoundingClientRect().left) /
+                            this.timeline.offsetWidth);
+                }
+            )
+        );
 
-        unbind.push(addDisposableEventListener(this.timeline, 'mouseup', () => {
-            dispose(unbind);
-        }));
+        unbind.push(
+            addDisposableEventListener(this.timeline, 'mouseup', () => {
+                dispose(unbind);
+            })
+        );
 
-        this._audio.currentTime = this._audio.duration * ((mouseEvent.posx - this.timeline.getBoundingClientRect().left) / this.timeline.offsetWidth);
+        this._audio.currentTime =
+            this._audio.duration *
+            ((mouseEvent.posx - this.timeline.getBoundingClientRect().left) /
+                this.timeline.offsetWidth);
     }
 
     public dispose() {
         if (!this.disposed) {
             this._audio.pause();
             this.parent.removeChild(this.container);
-    
+
             super.dispose();
-    
+
             this.disposed = true;
         }
     }

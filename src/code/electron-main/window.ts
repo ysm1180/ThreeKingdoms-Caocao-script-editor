@@ -13,19 +13,17 @@ export interface IWindowCreationOption {
     state: IWindowState;
 }
 
-export const getDefaultState = function (): IWindowState {
+export const getDefaultState = function(): IWindowState {
     return {
         width: 1024,
-        height: 768
+        height: 768,
     };
 };
 
 export class CodeWindow {
     public window: BrowserWindow;
 
-    constructor(
-        option: IWindowCreationOption,
-    ) {
+    constructor(option: IWindowCreationOption) {
         this.createBrowserWindow(option);
     }
 
@@ -37,11 +35,16 @@ export class CodeWindow {
 
         this.window = new BrowserWindow(options);
 
-        this.window.loadURL(url.format({
-            pathname: path.join(__dirname, '../editor/bootstrap/index.html'),
-            protocol: 'file:',
-            slashes: true,
-        }));
+        this.window.loadURL(
+            url.format({
+                pathname: path.join(
+                    __dirname,
+                    '../editor/bootstrap/index.html'
+                ),
+                protocol: 'file:',
+                slashes: true,
+            })
+        );
 
         if (process.env['NODE_ENV'] === 'development') {
             const client = require('electron-connect').client;
@@ -60,5 +63,4 @@ export class CodeWindow {
     public send(channel: string, ...args: any[]): void {
         this.window.webContents.send(channel, ...args);
     }
-
 }

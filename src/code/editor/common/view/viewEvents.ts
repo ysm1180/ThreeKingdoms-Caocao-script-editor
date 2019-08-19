@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConfigurationChangedEvent } from '../config/editorOptions';
 import { Disposable, IDisposable } from '../../../base/common/lifecycle';
 import { ScrollEvent } from '../../../base/common/scroll';
+import { IConfigurationChangedEvent } from '../config/editorOptions';
 
 export const enum ViewEventType {
     ConfigurtionChanged = 1,
@@ -21,7 +21,6 @@ export class ViewConfigurationChangedEvent {
         this.layoutInfo = source.layoutInfo;
     }
 }
-
 
 export class ViewScrollChangedEvent {
     public readonly type = ViewEventType.ScrollChanged;
@@ -49,11 +48,7 @@ export class ViewScrollChangedEvent {
     }
 }
 
-
-export type ViewEvent = (
-    ViewConfigurationChangedEvent |
-    ViewScrollChangedEvent
-);
+export type ViewEvent = ViewConfigurationChangedEvent | ViewScrollChangedEvent;
 
 export class ViewEventsCollector {
     private _events: ViewEvent[];
@@ -73,7 +68,6 @@ export class ViewEventsCollector {
         this._events = null;
         return result;
     }
-
 }
 
 export interface IViewEventListener {
@@ -123,7 +117,9 @@ export class ViewEventEmitter extends Disposable {
         }
     }
 
-    public addEventListener(listener: (events: ViewEvent[]) => void): IDisposable {
+    public addEventListener(
+        listener: (events: ViewEvent[]) => void
+    ): IDisposable {
         this._listeners.push(listener);
         return {
             dispose: () => {
@@ -134,7 +130,7 @@ export class ViewEventEmitter extends Disposable {
                         break;
                     }
                 }
-            }
+            },
         };
     }
 }

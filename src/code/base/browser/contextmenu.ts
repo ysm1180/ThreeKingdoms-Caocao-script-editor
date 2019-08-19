@@ -1,4 +1,4 @@
 export interface IContextMenuDelegate {
-    getAnchor(): { x: number, y: number };
+    getAnchor(): { x: number; y: number };
     getItems();
 }

@@ -1,17 +1,17 @@
+import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import * as path from 'path';
-import { BrowserWindow, dialog, app, ipcMain } from 'electron';
-import { CodeWindow, IWindowCreationOption } from './window';
-import { getFileFilters, IFileExtension } from '../platform/dialogs/dialogs';
-import { IOpenFileRequest, IMessageBoxResult, ISaveFileRequest } from '../platform/windows/windows';
-import { IInstantiationService } from '../platform/instantiation/instantiationService';
-import { IFileStorageService, FileStorageService } from '../platform/files/node/fileStorageService';
-import { IWindowMainService } from '../platform/windows/electron-main/windows';
+
 import { Event } from '../base/common/event';
+import { getFileFilters, IFileExtension } from '../platform/dialogs/dialogs';
+import { FileStorageService, IFileStorageService } from '../platform/files/node/fileStorageService';
+import { IInstantiationService } from '../platform/instantiation/instantiationService';
+import { IWindowMainService } from '../platform/windows/electron-main/windows';
+import { IMessageBoxResult, IOpenFileRequest, ISaveFileRequest } from '../platform/windows/windows';
+import { CodeWindow, IWindowCreationOption } from './window';
 
 export class WindowManager implements IWindowMainService {
-    
     private dialog: Dialog;
-    
+
     public onWindowReady = new Event<CodeWindow>();
 
     public static workingPathKey = 'workingPath';
@@ -19,7 +19,8 @@ export class WindowManager implements IWindowMainService {
 
     constructor(
         @IFileStorageService private fileStorageService: FileStorageService,
-        @IInstantiationService private instantiationService: IInstantiationService,
+        @IInstantiationService
+        private instantiationService: IInstantiationService
     ) {
         this.dialog = new Dialog();
 
@@ -28,12 +29,15 @@ export class WindowManager implements IWindowMainService {
 
     private _registerListeners(): void {
         ipcMain.on('app:workbenchLoaded', (_event: any) => {
-			this.onWindowReady.fire(WindowManager.win);
-		});
+            this.onWindowReady.fire(WindowManager.win);
+        });
     }
 
     public openNewWindow(option: IWindowCreationOption) {
-        WindowManager.win = this.instantiationService.create(CodeWindow, option);
+        WindowManager.win = this.instantiationService.create(
+            CodeWindow,
+            option
+        );
     }
 
     public showOpenDialog(options?: Electron.OpenDialogOptions) {
@@ -57,7 +61,9 @@ export class WindowManager implements IWindowMainService {
     }
 
     public openWorkingFiles(): Promise<IOpenFileRequest> {
-        const recentWorkingPath: string = this.fileStorageService.get(WindowManager.workingPathKey);
+        const recentWorkingPath: string = this.fileStorageService.get(
+            WindowManager.workingPathKey
+        );
 
         const filters: IFileExtension[] = [
             {
@@ -80,7 +86,10 @@ export class WindowManager implements IWindowMainService {
         }).then((data: IOpenFileRequest) => {
             if (data.files && data.files.length > 0) {
                 const dir = path.dirname(data.files[0]);
-                this.fileStorageService.store(WindowManager.workingPathKey, dir);
+                this.fileStorageService.store(
+                    WindowManager.workingPathKey,
+                    dir
+                );
             }
 
             WindowManager.win.send('editor:openFiles', data);
@@ -99,33 +108,44 @@ export class WindowManager implements IWindowMainService {
 }
 
 export class Dialog {
-    constructor(
+    constructor() {}
 
-    ) {
-
-    }
-
-    public showOpenDialog(options: Electron.OpenDialogOptions, window?: BrowserWindow): Promise<IOpenFileRequest> {
+    public showOpenDialog(
+        options: Electron.OpenDialogOptions,
+        window?: BrowserWindow
+    ): Promise<IOpenFileRequest> {
         return new Promise((c, e) => {
-            dialog.showOpenDialog(window ? window : void 0, options).then(({filePaths}) => {
-                c({ files: filePaths });
-            });
+            dialog
+                .showOpenDialog(window ? window : void 0, options)
+                .then(({ filePaths }) => {
+                    c({ files: filePaths });
+                });
         });
     }
 
-    public showMessageBox(options: Electron.MessageBoxOptions, window?: BrowserWindow): Promise<IMessageBoxResult> {
+    public showMessageBox(
+        options: Electron.MessageBoxOptions,
+        window?: BrowserWindow
+    ): Promise<IMessageBoxResult> {
         return new Promise((c, e) => {
-            dialog.showMessageBox(window ? window : void 0, options).then(({response, checkboxChecked}) => {
-                c({ button: response, checkboxChecked });
-            });
+            dialog
+                .showMessageBox(window ? window : void 0, options)
+                .then(({ response, checkboxChecked }) => {
+                    c({ button: response, checkboxChecked });
+                });
         });
     }
 
-    public showSaveDialog(options: Electron.SaveDialogOptions, window?: BrowserWindow): Promise<ISaveFileRequest> {
+    public showSaveDialog(
+        options: Electron.SaveDialogOptions,
+        window?: BrowserWindow
+    ): Promise<ISaveFileRequest> {
         return new Promise((c, e) => {
-            dialog.showSaveDialog(window ? window : void 0, options).then(({filePath}) => {
-                c({ file: filePath });
-            });
+            dialog
+                .showSaveDialog(window ? window : void 0, options)
+                .then(({ filePath }) => {
+                    c({ file: filePath });
+                });
         });
     }
 }

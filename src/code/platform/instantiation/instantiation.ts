@@ -22,7 +22,9 @@ export namespace init {
         }
     }
 
-    export function getService(ctor: any): { id: ServiceIdentifier<any>, index: number }[] {
+    export function getService(
+        ctor: any
+    ): { id: ServiceIdentifier<any>; index: number }[] {
         return ctor[SERVICE] || [];
     }
 }
@@ -32,7 +34,7 @@ export function decorator<T>(serviceId: string): ServiceIdentifier<T> {
         return init.services.get(serviceId);
     }
 
-    const id = <any>function (target: any, key: any, index: number) {
+    const id = <any>function(target: any, key: any, index: number) {
         init.storeService(id, target, index);
     };
     id.toString = () => serviceId;

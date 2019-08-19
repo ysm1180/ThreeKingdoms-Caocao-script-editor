@@ -1,9 +1,9 @@
-import { LinesLayout } from './linesLayout';
-import { Disposable } from '../../../base/common/lifecycle';
-import { EditorConfiguration } from '../../browser/config/configuration';
-import { Scroll, ScrollEvent } from '../../../base/common/scroll';
 import { Event } from '../../../base/common/event';
+import { Disposable } from '../../../base/common/lifecycle';
+import { Scroll, ScrollEvent } from '../../../base/common/scroll';
+import { EditorConfiguration } from '../../browser/config/configuration';
 import { Viewport } from '../viewModel/viewModel';
+import { LinesLayout } from './linesLayout';
 
 export class ViewLayout extends Disposable {
     private configuration: EditorConfiguration;
@@ -11,8 +11,12 @@ export class ViewLayout extends Disposable {
 
     public readonly scroll: Scroll;
     public readonly onDidScroll: Event<ScrollEvent>;
-    
-    constructor(configuration: EditorConfiguration, lineCount: number, lineHeight: number) {
+
+    constructor(
+        configuration: EditorConfiguration,
+        lineCount: number,
+        lineHeight: number
+    ) {
         super();
 
         this.configuration = configuration;
@@ -32,9 +36,9 @@ export class ViewLayout extends Disposable {
     private _getTotalHeight(): number {
         const scrollDimensions = this.scroll.getScrollDimensions();
 
-		let result = this.linesLayout.getLinesTotalHeight();
+        let result = this.linesLayout.getLinesTotalHeight();
 
-		return Math.max(scrollDimensions.height, result);
+        return Math.max(scrollDimensions.height, result);
     }
 
     private _updateHeight(): void {
@@ -44,12 +48,12 @@ export class ViewLayout extends Disposable {
     }
 
     public onMaxLineWidthChanged(maxLineWidth: number): void {
-		this.scroll.setScrollDimensions({
-			scrollWidth: maxLineWidth
+        this.scroll.setScrollDimensions({
+            scrollWidth: maxLineWidth,
         });
-        
+
         this._updateHeight();
-	}
+    }
 
     public onConfigurationChanged(e): void {
         this.scroll.setScrollDimensions({
@@ -62,12 +66,12 @@ export class ViewLayout extends Disposable {
 
     public getCurrnetViewport(): Viewport {
         const scrollDimensions = this.scroll.getScrollDimensions();
-		const currentScrollPosition = this.scroll.getCurrentScrollPosition();
-		return new Viewport(
-			currentScrollPosition.scrollTop,
-			currentScrollPosition.scrollLeft,
-			scrollDimensions.width,
-			scrollDimensions.height
-		);
+        const currentScrollPosition = this.scroll.getCurrentScrollPosition();
+        return new Viewport(
+            currentScrollPosition.scrollTop,
+            currentScrollPosition.scrollLeft,
+            scrollDimensions.width,
+            scrollDimensions.height
+        );
     }
 }

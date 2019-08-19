@@ -3,9 +3,7 @@ import { ServiceIdentifier } from './instantiation';
 export class ServiceStorage {
     private entries = new Map<ServiceIdentifier<any>, any>();
 
-    constructor() {
-
-    }
+    constructor() {}
 
     public has(key: ServiceIdentifier<any>) {
         return this.entries.has(key);
@@ -19,7 +17,9 @@ export class ServiceStorage {
         return this.entries.get(key);
     }
 
-    public forEach(callback: (id: ServiceIdentifier<any>, instanceOrDescriptor: any) => any): void {
-		this.entries.forEach((value, key) => callback(key, value));
-	}
+    public forEach(
+        callback: (id: ServiceIdentifier<any>, instanceOrDescriptor: any) => any
+    ): void {
+        this.entries.forEach((value, key) => callback(key, value));
+    }
 }
