@@ -10,7 +10,6 @@
 		"sourceMap": true,
 		"declaration": false,
 		"noImplicitReturns": true,
-		"noUnusedLocals": true,
 		"noImplicitThis": true,
 		"alwaysStrict": true,
 		"strictBindCallApply": true,
@@ -18,6 +17,7 @@
 		"checkJs": true,
 		"baseUrl": ".",
 		"outDir": "../dist",
+		"noUnusedLocals": false,
 		"typeRoots": [
 			"typings"
 		]
