@@ -105,11 +105,6 @@ export class StandardMouseWheelEvent {
             ) {
                 this.deltaX = -e.detail / 3;
             }
-
-            // Assume a vertical scroll if nothing else worked
-            if (this.deltaY === 0 && this.deltaX === 0 && e.wheelDelta) {
-                this.deltaY = e.wheelDelta / 120;
-            }
         }
     }
 
