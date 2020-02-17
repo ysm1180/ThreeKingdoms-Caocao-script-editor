@@ -27,7 +27,9 @@ export interface ISashOptions {
 }
 
 export interface ISashEvent {
+    startX: number;
     mouseX: number;
+    startY: number;
     mouseY: number;
 }
 
@@ -49,7 +51,7 @@ export class Sash {
         this.element = $('.sash').appendTo(container);
         this.size = options.size || 5;
 
-        this.element.on('mousedown', e => this.onMouseDown(e as MouseEvent));
+        this.element.on('mousedown', (e) => this.onMouseDown(e as MouseEvent));
 
         this.setOrientation(options.orientation || Orientation.VERTICAL);
 
@@ -59,12 +61,17 @@ export class Sash {
     public onMouseDown(e: MouseEvent): void {
         const mouseEvent = new StandardMouseEvent(e);
 
+        const startX = mouseEvent.posx;
+        const startY = mouseEvent.posy;
+
         mouseEvent.preventDefault();
         mouseEvent.stopPropagation();
 
         const eventData: ISashEvent = {
-            mouseX: mouseEvent.posx,
-            mouseY: mouseEvent.posy,
+            startX: startX,
+            mouseX: startY,
+            startY: startX,
+            mouseY: startY,
         };
         this.onDidStart.fire(eventData);
 
@@ -82,24 +89,24 @@ export class Sash {
 
         const $window = $(window);
         $window
-            .on('mousemove', e => {
+            .on('mousemove', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
 
                 const mouseEvent = new StandardMouseEvent(e);
                 const eventData: ISashEvent = {
+                    startX,
+                    startY,
                     mouseX: mouseEvent.posx,
                     mouseY: mouseEvent.posy,
                 };
                 this.onDidChange.fire(eventData);
             })
-            .once('mouseup', e => {
+            .once('mouseup', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
 
-                this.element
-                    .getHTMLElement()
-                    .removeChild(styleContainer.getHTMLElement());
+                this.element.getHTMLElement().removeChild(styleContainer.getHTMLElement());
 
                 this.onDidEnd.fire();
 
@@ -111,9 +118,7 @@ export class Sash {
         this.orientation = orientation;
 
         const orientationClass =
-            this.orientation === Orientation.HORIZONTAL
-                ? 'horizontal'
-                : 'vertical';
+            this.orientation === Orientation.HORIZONTAL ? 'horizontal' : 'vertical';
         this.element.removeClass('horizontal', 'vertical');
         this.element.addClass(orientationClass);
 
@@ -137,21 +142,16 @@ export class Sash {
         };
 
         if (this.orientation === Orientation.HORIZONTAL) {
-            const horizontalProvider = <IHorizontalSashLayoutProvider>(
-                this.layoutProvider
-            );
+            const horizontalProvider = <IHorizontalSashLayoutProvider>this.layoutProvider;
             style = { top: horizontalProvider.getHorizontalSashTop() + 'px' };
             if (horizontalProvider.getHorizontalSashLeft) {
                 style.left = horizontalProvider.getHorizontalSashLeft() + 'px';
             }
             if (horizontalProvider.getHorizontalSashWidth) {
-                style.width =
-                    horizontalProvider.getHorizontalSashWidth() + 'px';
+                style.width = horizontalProvider.getHorizontalSashWidth() + 'px';
             }
         } else {
-            const verticalProvider = <IVerticalSashLayoutProvider>(
-                this.layoutProvider
-            );
+            const verticalProvider = <IVerticalSashLayoutProvider>this.layoutProvider;
             style = { left: verticalProvider.getVerticalSashLeft() + 'px' };
             if (verticalProvider.getVerticalSashTop) {
                 style.top = verticalProvider.getVerticalSashTop() + 'px';

@@ -212,9 +212,6 @@ export class Workbench implements IPartService {
             this.workbench.removeClass('nosidebar');
         }
 
-        if (hidden) {
-        }
-
         this.layout();
     }
 
