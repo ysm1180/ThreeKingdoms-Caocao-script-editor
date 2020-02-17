@@ -19,7 +19,7 @@ export class CommandService {
         }
         return this.instantiationService.invokeFunction.apply(
             this.instantiationService,
-            [command.handler].concat(args)
+            [command.handler].concat(args) as any[]
         );
     }
 }
