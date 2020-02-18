@@ -4,8 +4,8 @@ import { app } from 'electron';
 
 import {
     IInstantiationService, InstantiationService
-} from '../platform/instantiation/instantiationService';
-import { ServiceStorage } from '../platform/instantiation/serviceStorage';
+} from '../../platform/instantiation/instantiationService';
+import { ServiceStorage } from '../../platform/instantiation/serviceStorage';
 import { EditorApplication } from './app';
 
 function createService(): IInstantiationService {

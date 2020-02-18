@@ -2,10 +2,10 @@
 
 import { Menu, MenuItem } from 'electron';
 
-import * as arrays from '../base/common/array';
-import { SAVE_FILE_ID } from '../editor/workbench/parts/files/fileCommands';
-import { IInstantiationService } from '../platform/instantiation/instantiationService';
-import { IWindowMainService } from '../platform/windows/electron-main/windows';
+import * as arrays from '../../base/common/array';
+import { SAVE_FILE_ID } from '../../editor/workbench/parts/files/fileCommands';
+import { IInstantiationService } from '../../platform/instantiation/instantiationService';
+import { IWindowMainService } from '../../platform/windows/electron-main/windows';
 import { KeybindingsResolver } from './keybindings';
 import { WindowManager } from './windows';
 

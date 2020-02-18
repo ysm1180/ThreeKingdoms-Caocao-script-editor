@@ -1,12 +1,16 @@
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import * as path from 'path';
 
-import { Event } from '../base/common/event';
-import { getFileFilters, IFileExtension } from '../platform/dialogs/dialogs';
-import { FileStorageService, IFileStorageService } from '../platform/files/node/fileStorageService';
-import { IInstantiationService } from '../platform/instantiation/instantiationService';
-import { IWindowMainService } from '../platform/windows/electron-main/windows';
-import { IMessageBoxResult, IOpenFileRequest, ISaveFileRequest } from '../platform/windows/windows';
+import { Event } from '../../base/common/event';
+import { getFileFilters, IFileExtension } from '../../platform/dialogs/dialogs';
+import {
+    FileStorageService, IFileStorageService
+} from '../../platform/files/node/fileStorageService';
+import { IInstantiationService } from '../../platform/instantiation/instantiationService';
+import { IWindowMainService } from '../../platform/windows/electron-main/windows';
+import {
+    IMessageBoxResult, IOpenFileRequest, ISaveFileRequest
+} from '../../platform/windows/windows';
 import { CodeWindow, IWindowCreationOption } from './window';
 
 export class WindowManager implements IWindowMainService {

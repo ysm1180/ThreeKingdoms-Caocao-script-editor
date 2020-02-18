@@ -1,4 +1,4 @@
-import { INewScrollPosition, Scroll, ScrollEvent } from '../../../../base/common/scroll';
+import { INewScrollPosition, Scroll, ScrollEvent } from '../../../common/scroll';
 import { IMouseEvent } from '../../mouseEvent';
 import { AbstractScrollbar } from './abstractScrollbar';
 import { ScrollableElementOptions } from './scrollbarElement';

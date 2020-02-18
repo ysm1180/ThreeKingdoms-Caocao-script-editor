@@ -40,10 +40,7 @@ export class CodeWindow {
 
         this.window.loadURL(
             url.format({
-                pathname: path.join(
-                    __dirname,
-                    '../editor/bootstrap/index.html'
-                ),
+                pathname: path.join(__dirname, '../workbench/index.html'),
                 protocol: 'file:',
                 slashes: true,
             })

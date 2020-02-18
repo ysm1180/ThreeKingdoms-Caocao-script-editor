@@ -1,5 +1,5 @@
 import { Event } from '../../../base/common/event';
-import { CodeWindow, IWindowCreationOption } from '../../../electron-main/window';
+import { CodeWindow, IWindowCreationOption } from '../../../code/electron-main/window';
 import { decorator } from '../../instantiation/instantiation';
 import { IMessageBoxResult, IOpenFileRequest, ISaveFileRequest } from '../windows';
 

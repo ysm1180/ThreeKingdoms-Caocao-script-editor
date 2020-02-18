@@ -1,10 +1,12 @@
-import { FileStorageService, IFileStorageService } from '../platform/files/node/fileStorageService';
-import { ClassDescriptor } from '../platform/instantiation/descriptor';
-import { ServicesAccessor } from '../platform/instantiation/instantiation';
-import { IInstantiationService } from '../platform/instantiation/instantiationService';
-import { ServiceStorage } from '../platform/instantiation/serviceStorage';
-import { IWindowMainService } from '../platform/windows/electron-main/windows';
-import { WindowChannel } from '../platform/windows/windowsIpc';
+import {
+    FileStorageService, IFileStorageService
+} from '../../platform/files/node/fileStorageService';
+import { ClassDescriptor } from '../../platform/instantiation/descriptor';
+import { ServicesAccessor } from '../../platform/instantiation/instantiation';
+import { IInstantiationService } from '../../platform/instantiation/instantiationService';
+import { ServiceStorage } from '../../platform/instantiation/serviceStorage';
+import { IWindowMainService } from '../../platform/windows/electron-main/windows';
+import { WindowChannel } from '../../platform/windows/windowsIpc';
 import { AppMenu } from './menus';
 import { getDefaultState } from './window';
 import { WindowManager } from './windows';

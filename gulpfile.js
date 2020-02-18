@@ -7,6 +7,7 @@ const gulptslint = require('gulp-tslint');
 const electron = require('electron-connect').server.create();
 var ts = require('gulp-typescript');
 const tsProject = ts.createProject('src/tsconfig.json');
+const sourcemaps = require('gulp-sourcemaps');
 
 function toFileUri(filePath) {
     const match = filePath.match(/^([a-z]):(.*)$/i);
@@ -63,11 +64,11 @@ const compileTypescript = function() {
     return gulp
         .src('src/**/*.ts', { base: 'src' })
         .pipe(tsProject())
-        .js.pipe(gulp.dest('dist/'));
+        .js.pipe(sourcemaps.init()).pipe(sourcemaps.write()).pipe(gulp.dest('dist/'));
 };
 
 const compileJavascript = function() {
-    return gulp.src('src/**/*.js').pipe(gulp.dest('dist/'));
+    return gulp.src('src/**/*.js').pipe(sourcemaps.init()).pipe(sourcemaps.write()).pipe(gulp.dest('dist/'));
 };
 
 const electronRestart = function(done) {
@@ -108,7 +109,7 @@ gulp.task('electron-reload', electronReload);
 
 gulp.task('watch', function(done) {
     electron.start();
-
+    
     gulp.watch(['src/**/*.css'], gulp.series('minify-css', 'electron-reload'));
     gulp.watch(['src/**/*.ts'], gulp.series('tslint', 'compile', 'electron-restart'));
     gulp.watch(['src/**/*.svg'], gulp.series('move-assets', 'electron-restart'));

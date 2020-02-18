@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 
-import { Event } from '../base/common/event';
-import { IWindowMainService } from '../platform/windows/electron-main/windows';
+import { Event } from '../../base/common/event';
+import { IWindowMainService } from '../../platform/windows/electron-main/windows';
 import { CodeWindow } from './window';
 
 export interface IKeybinding {
