@@ -1,66 +1,67 @@
-import { BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
+import { BrowserWindow } from 'electron';
+
 export interface IWindowState {
-    width?: number;
-    height?: number;
-    x?: number;
-    y?: number;
+  width?: number;
+  height?: number;
+  x?: number;
+  y?: number;
 }
 
 export interface IWindowCreationOption {
-    state: IWindowState;
+  state: IWindowState;
 }
 
 export const getDefaultState = function(): IWindowState {
-    return {
-        width: 1024,
-        height: 768,
-    };
+  return {
+    width: 1024,
+    height: 768,
+  };
 };
 
 export class CodeWindow {
-    public window: BrowserWindow;
+  public window: BrowserWindow;
 
-    constructor(option: IWindowCreationOption) {
-        this.createBrowserWindow(option);
+  constructor(option: IWindowCreationOption) {
+    this.createBrowserWindow(option);
+  }
+
+  public createBrowserWindow(option: IWindowCreationOption): void {
+    const options: Electron.BrowserWindowConstructorOptions = {
+      width: option.state.width,
+      height: option.state.height,
+      webPreferences: {
+        nodeIntegration: true,
+      },
+    };
+
+    this.window = new BrowserWindow(options);
+
+    this.window.loadURL(
+      url.format({
+        pathname: path.join(__dirname, '../workbench/index.html'),
+        protocol: 'file:',
+        slashes: true,
+      })
+    );
+
+    if (process.env['NODE_ENV'] === 'development') {
+      const client = require('electron-connect').client;
+      client.create(this.window);
     }
 
-    public createBrowserWindow(option: IWindowCreationOption): void {
-        const options: Electron.BrowserWindowConstructorOptions = {
-            width: option.state.width,
-            height: option.state.height,
-            webPreferences: {
-                nodeIntegration: true,
-            },
-        };
+    this.registerListener();
+  }
 
-        this.window = new BrowserWindow(options);
+  private registerListener() {
+    this.window.on('closed', () => {
+      this.window = null;
+    });
+  }
 
-        this.window.loadURL(
-            url.format({
-                pathname: path.join(__dirname, '../workbench/index.html'),
-                protocol: 'file:',
-                slashes: true,
-            })
-        );
-
-        if (process.env['NODE_ENV'] === 'development') {
-            const client = require('electron-connect').client;
-            client.create(this.window);
-        }
-
-        this.registerListener();
-    }
-
-    private registerListener() {
-        this.window.on('closed', () => {
-            this.window = null;
-        });
-    }
-
-    public send(channel: string, ...args: any[]): void {
-        this.window.webContents.send(channel, ...args);
-    }
+  public send(channel: string, ...args: any[]): void {
+    this.window.webContents.send(channel, ...args);
+  }
 }

@@ -1,79 +1,71 @@
-import { decorator, ServiceIdentifier } from '../instantiation/instantiation';
+import { decorator } from '../instantiation/instantiation';
 
-export const IWindowService: ServiceIdentifier<IWindowService> = decorator<
-    IWindowService
->('windowService');
+export const IWindowService = decorator<IWindowService>('windowService');
 
 export interface IWindowService {
-    showOpenDialog(
-        options: Electron.OpenDialogOptions
-    ): Promise<IOpenFileRequest>;
+  showOpenDialog(options: Electron.OpenDialogOptions): Promise<IOpenFileRequest>;
 
-    showMessageBox(
-        options: Electron.MessageBoxOptions
-    ): Promise<IMessageBoxResult>;
+  showMessageBox(options: Electron.MessageBoxOptions): Promise<IMessageBoxResult>;
 
-    showSaveDialog(
-        options: Electron.SaveDialogOptions
-    ): Promise<ISaveFileRequest>;
+  showSaveDialog(options: Electron.SaveDialogOptions): Promise<ISaveFileRequest>;
 }
 
 export interface IOpenFileRequest {
-    files: string[];
+  files: string[];
 }
 
 export interface ISaveFileRequest {
-    file: string;
+  file: string;
 }
 
 export interface OpenDialogOptions {
-    title?: string;
-    defaultPath?: string;
-    buttonLabel?: string;
-    filters?: FileFilter[];
-    properties?: Array<
-        | 'openFile'
-        | 'openDirectory'
-        | 'multiSelections'
-        | 'showHiddenFiles'
-        | 'createDirectory'
-        | 'promptToCreate'
-        | 'noResolveAliases'
-        | 'treatPackageAsDirectory'
-    >;
-    message?: string;
+  title?: string;
+  defaultPath?: string;
+  buttonLabel?: string;
+  filters?: FileFilter[];
+  properties?: Array<
+    | 'openFile'
+    | 'openDirectory'
+    | 'multiSelections'
+    | 'showHiddenFiles'
+    | 'createDirectory'
+    | 'promptToCreate'
+    | 'noResolveAliases'
+    | 'treatPackageAsDirectory'
+  >;
+  message?: string;
 }
 
 export interface FileFilter {
-    extensions: string[];
-    name: string;
+  extensions: string[];
+  name: string;
 }
 
 export interface MessageBoxOptions {
-    type?: string;
-    buttons?: string[];
-    defaultId?: number;
-    title?: string;
-    message: string;
-    detail?: string;
-    checkboxLabel?: string;
-    checkboxChecked?: boolean;
-    cancelId?: number;
-    noLink?: boolean;
-    normalizeAccessKeys?: boolean;
+  type?: string;
+  buttons?: string[];
+  defaultId?: number;
+  title?: string;
+  message: string;
+  detail?: string;
+  checkboxLabel?: string;
+  checkboxChecked?: boolean;
+  cancelId?: number;
+  noLink?: boolean;
+  normalizeAccessKeys?: boolean;
 }
 
 export interface IMessageBoxResult {
-    button: number;
-    checkboxChecked?: boolean;
+  button: number;
+  checkboxChecked?: boolean;
 }
 
 export interface SaveDialogOptions {
-    title?: string;
-    defaultPath?: string;
-    buttonLabel?: string;
-    filters?: FileFilter[];
-    message?: string;
-    nameFieldLabel?: string;
-    showsTagField?: boolean;
+  title?: string;
+  defaultPath?: string;
+  buttonLabel?: string;
+  filters?: FileFilter[];
+  message?: string;
+  nameFieldLabel?: string;
+  showsTagField?: boolean;
 }

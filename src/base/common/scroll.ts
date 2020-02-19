@@ -1,210 +1,200 @@
-import { Event } from './event';
 import { Disposable } from './lifecycle';
+import { Event } from './event';
 
 export interface ScrollEvent {
-    width: number;
-    scrollWidth: number;
-    scrollLeft: number;
+  width: number;
+  scrollWidth: number;
+  scrollLeft: number;
 
-    height: number;
-    scrollHeight: number;
-    scrollTop: number;
+  height: number;
+  scrollHeight: number;
+  scrollTop: number;
 
-    widthChanged: boolean;
-    scrollWidthChanged: boolean;
-    scrollLeftChanged: boolean;
+  widthChanged: boolean;
+  scrollWidthChanged: boolean;
+  scrollLeftChanged: boolean;
 
-    heightChanged: boolean;
-    scrollHeightChanged: boolean;
-    scrollTopChanged: boolean;
+  heightChanged: boolean;
+  scrollHeightChanged: boolean;
+  scrollTopChanged: boolean;
 }
 
 export class ScrollState {
-    public readonly width: number;
-    public readonly scrollWidth: number;
-    public readonly scrollLeft: number;
-    public readonly height: number;
-    public readonly scrollHeight: number;
-    public readonly scrollTop: number;
+  public readonly width: number;
+  public readonly scrollWidth: number;
+  public readonly scrollLeft: number;
+  public readonly height: number;
+  public readonly scrollHeight: number;
+  public readonly scrollTop: number;
 
-    constructor(
-        width: number,
-        scrollWidth: number,
-        scrollLeft: number,
-        height: number,
-        scrollHeight: number,
-        scrollTop: number
-    ) {
-        width = width | 0;
-        scrollWidth = scrollWidth | 0;
-        scrollLeft = scrollLeft | 0;
-        height = height | 0;
-        scrollHeight = scrollHeight | 0;
-        scrollTop = scrollTop | 0;
+  constructor(
+    width: number,
+    scrollWidth: number,
+    scrollLeft: number,
+    height: number,
+    scrollHeight: number,
+    scrollTop: number
+  ) {
+    width = width | 0;
+    scrollWidth = scrollWidth | 0;
+    scrollLeft = scrollLeft | 0;
+    height = height | 0;
+    scrollHeight = scrollHeight | 0;
+    scrollTop = scrollTop | 0;
 
-        if (width < 0) {
-            width = 0;
-        }
-        if (scrollLeft + width > scrollWidth) {
-            scrollLeft = scrollWidth - width;
-        }
-        if (scrollLeft < 0) {
-            scrollLeft = 0;
-        }
-
-        if (height < 0) {
-            height = 0;
-        }
-        if (scrollTop + height > scrollHeight) {
-            scrollTop = scrollHeight - height;
-        }
-        if (scrollTop < 0) {
-            scrollTop = 0;
-        }
-
-        this.width = width;
-        this.scrollWidth = scrollWidth;
-        this.scrollLeft = scrollLeft;
-        this.height = height;
-        this.scrollHeight = scrollHeight;
-        this.scrollTop = scrollTop;
+    if (width < 0) {
+      width = 0;
+    }
+    if (scrollLeft + width > scrollWidth) {
+      scrollLeft = scrollWidth - width;
+    }
+    if (scrollLeft < 0) {
+      scrollLeft = 0;
     }
 
-    public equals(other: ScrollState): boolean {
-        return (
-            this.width === other.width &&
-            this.scrollWidth === other.scrollWidth &&
-            this.scrollLeft === other.scrollLeft &&
-            this.height === other.height &&
-            this.scrollHeight === other.scrollHeight &&
-            this.scrollTop === other.scrollTop
-        );
+    if (height < 0) {
+      height = 0;
+    }
+    if (scrollTop + height > scrollHeight) {
+      scrollTop = scrollHeight - height;
+    }
+    if (scrollTop < 0) {
+      scrollTop = 0;
     }
 
-    public withScrollDimensions(update: INewScrollDimensions): ScrollState {
-        return new ScrollState(
-            typeof update.width !== 'undefined' ? update.width : this.width,
-            typeof update.scrollWidth !== 'undefined'
-                ? update.scrollWidth
-                : this.scrollWidth,
-            this.scrollLeft,
-            typeof update.height !== 'undefined' ? update.height : this.height,
-            typeof update.scrollHeight !== 'undefined'
-                ? update.scrollHeight
-                : this.scrollHeight,
-            this.scrollTop
-        );
-    }
+    this.width = width;
+    this.scrollWidth = scrollWidth;
+    this.scrollLeft = scrollLeft;
+    this.height = height;
+    this.scrollHeight = scrollHeight;
+    this.scrollTop = scrollTop;
+  }
 
-    public withScrollPosition(update: INewScrollPosition): ScrollState {
-        return new ScrollState(
-            this.width,
-            this.scrollWidth,
-            typeof update.scrollLeft !== 'undefined'
-                ? update.scrollLeft
-                : this.scrollLeft,
-            this.height,
-            this.scrollHeight,
-            typeof update.scrollTop !== 'undefined'
-                ? update.scrollTop
-                : this.scrollTop
-        );
-    }
+  public equals(other: ScrollState): boolean {
+    return (
+      this.width === other.width &&
+      this.scrollWidth === other.scrollWidth &&
+      this.scrollLeft === other.scrollLeft &&
+      this.height === other.height &&
+      this.scrollHeight === other.scrollHeight &&
+      this.scrollTop === other.scrollTop
+    );
+  }
 
-    public createScrollEvent(previous: ScrollState): ScrollEvent {
-        let widthChanged = this.width !== previous.width;
-        let scrollWidthChanged = this.scrollWidth !== previous.scrollWidth;
-        let scrollLeftChanged = this.scrollLeft !== previous.scrollLeft;
+  public withScrollDimensions(update: INewScrollDimensions): ScrollState {
+    return new ScrollState(
+      typeof update.width !== 'undefined' ? update.width : this.width,
+      typeof update.scrollWidth !== 'undefined' ? update.scrollWidth : this.scrollWidth,
+      this.scrollLeft,
+      typeof update.height !== 'undefined' ? update.height : this.height,
+      typeof update.scrollHeight !== 'undefined' ? update.scrollHeight : this.scrollHeight,
+      this.scrollTop
+    );
+  }
 
-        let heightChanged = this.height !== previous.height;
-        let scrollHeightChanged = this.scrollHeight !== previous.scrollHeight;
-        let scrollTopChanged = this.scrollTop !== previous.scrollTop;
+  public withScrollPosition(update: INewScrollPosition): ScrollState {
+    return new ScrollState(
+      this.width,
+      this.scrollWidth,
+      typeof update.scrollLeft !== 'undefined' ? update.scrollLeft : this.scrollLeft,
+      this.height,
+      this.scrollHeight,
+      typeof update.scrollTop !== 'undefined' ? update.scrollTop : this.scrollTop
+    );
+  }
 
-        return {
-            width: this.width,
-            scrollWidth: this.scrollWidth,
-            scrollLeft: this.scrollLeft,
+  public createScrollEvent(previous: ScrollState): ScrollEvent {
+    let widthChanged = this.width !== previous.width;
+    let scrollWidthChanged = this.scrollWidth !== previous.scrollWidth;
+    let scrollLeftChanged = this.scrollLeft !== previous.scrollLeft;
 
-            height: this.height,
-            scrollHeight: this.scrollHeight,
-            scrollTop: this.scrollTop,
+    let heightChanged = this.height !== previous.height;
+    let scrollHeightChanged = this.scrollHeight !== previous.scrollHeight;
+    let scrollTopChanged = this.scrollTop !== previous.scrollTop;
 
-            widthChanged: widthChanged,
-            scrollWidthChanged: scrollWidthChanged,
-            scrollLeftChanged: scrollLeftChanged,
+    return {
+      width: this.width,
+      scrollWidth: this.scrollWidth,
+      scrollLeft: this.scrollLeft,
 
-            heightChanged: heightChanged,
-            scrollHeightChanged: scrollHeightChanged,
-            scrollTopChanged: scrollTopChanged,
-        };
-    }
+      height: this.height,
+      scrollHeight: this.scrollHeight,
+      scrollTop: this.scrollTop,
+
+      widthChanged: widthChanged,
+      scrollWidthChanged: scrollWidthChanged,
+      scrollLeftChanged: scrollLeftChanged,
+
+      heightChanged: heightChanged,
+      scrollHeightChanged: scrollHeightChanged,
+      scrollTopChanged: scrollTopChanged,
+    };
+  }
 }
 
 export interface IScrollDimensions {
-    readonly width: number;
-    readonly scrollWidth: number;
-    readonly height: number;
-    readonly scrollHeight: number;
+  readonly width: number;
+  readonly scrollWidth: number;
+  readonly height: number;
+  readonly scrollHeight: number;
 }
 
 export interface INewScrollDimensions {
-    width?: number;
-    scrollWidth?: number;
-    height?: number;
-    scrollHeight?: number;
+  width?: number;
+  scrollWidth?: number;
+  height?: number;
+  scrollHeight?: number;
 }
 
 export interface IScrollPosition {
-    readonly scrollLeft: number;
-    readonly scrollTop: number;
+  readonly scrollLeft: number;
+  readonly scrollTop: number;
 }
 
 export interface INewScrollPosition {
-    scrollLeft?: number;
-    scrollTop?: number;
+  scrollLeft?: number;
+  scrollTop?: number;
 }
 
 export class Scroll extends Disposable {
-    private state: ScrollState;
+  private state: ScrollState;
 
-    public readonly onScroll = new Event<ScrollEvent>();
+  public readonly onScroll = new Event<ScrollEvent>();
 
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        this.state = new ScrollState(0, 0, 0, 0, 0, 0);
+    this.state = new ScrollState(0, 0, 0, 0, 0, 0);
+  }
+
+  public setScrollDimensions(dimensions: INewScrollDimensions): void {
+    const newState = this.state.withScrollDimensions(dimensions);
+    this._setState(newState);
+  }
+
+  public setScrollPositionNow(update: INewScrollPosition): void {
+    const newState = this.state.withScrollPosition(update);
+    this._setState(newState);
+  }
+
+  public validateScrollPosition(scrollPosition: INewScrollPosition): IScrollPosition {
+    return this.state.withScrollPosition(scrollPosition);
+  }
+
+  public getCurrentScrollPosition(): IScrollPosition {
+    return this.state;
+  }
+
+  public getScrollDimensions(): IScrollDimensions {
+    return this.state;
+  }
+
+  private _setState(newState: ScrollState): void {
+    const oldState = this.state;
+    if (oldState.equals(newState)) {
+      return;
     }
-
-    public setScrollDimensions(dimensions: INewScrollDimensions): void {
-        const newState = this.state.withScrollDimensions(dimensions);
-        this._setState(newState);
-    }
-
-    public setScrollPositionNow(update: INewScrollPosition): void {
-        const newState = this.state.withScrollPosition(update);
-        this._setState(newState);
-    }
-
-    public validateScrollPosition(
-        scrollPosition: INewScrollPosition
-    ): IScrollPosition {
-        return this.state.withScrollPosition(scrollPosition);
-    }
-
-    public getCurrentScrollPosition(): IScrollPosition {
-        return this.state;
-    }
-
-    public getScrollDimensions(): IScrollDimensions {
-        return this.state;
-    }
-
-    private _setState(newState: ScrollState): void {
-        const oldState = this.state;
-        if (oldState.equals(newState)) {
-            return;
-        }
-        this.state = newState;
-        this.onScroll.fire(this.state.createScrollEvent(oldState));
-    }
+    this.state = newState;
+    this.onScroll.fire(this.state.createScrollEvent(oldState));
+  }
 }

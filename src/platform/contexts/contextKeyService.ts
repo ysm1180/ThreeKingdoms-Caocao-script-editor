@@ -1,88 +1,82 @@
+import { decorator } from '../instantiation/instantiation';
 import { isUndefined } from '../../base/common/types';
-import { decorator, ServiceIdentifier } from '../instantiation/instantiation';
 
-export const IContextKeyService: ServiceIdentifier<
-    ContextKeyService
-> = decorator<ContextKeyService>('contextKeyService');
+export const IContextKeyService = decorator<ContextKeyService>('contextKeyService');
 
 export class Context {
-    private value: { [key: string]: any };
+  private value: { [key: string]: any };
 
-    constructor() {
-        this.value = {};
-    }
+  constructor() {
+    this.value = {};
+  }
 
-    public setValue(key: string, value: any): boolean {
-        if (this.value[key] !== value) {
-            this.value[key] = value;
-            return true;
-        }
-        return false;
+  public setValue(key: string, value: any): boolean {
+    if (this.value[key] !== value) {
+      this.value[key] = value;
+      return true;
     }
+    return false;
+  }
 
-    public getValue<T>(key: string): T {
-        return this.value[key];
-    }
+  public getValue<T>(key: string): T {
+    return this.value[key];
+  }
 
-    public removeValue(key: string): boolean {
-        if (key in this.value) {
-            delete this.value[key];
-            return true;
-        }
-        return false;
+  public removeValue(key: string): boolean {
+    if (key in this.value) {
+      delete this.value[key];
+      return true;
     }
+    return false;
+  }
 }
 
 export class ContextKey<T> {
-    constructor(
-        private parent: ContextKeyService,
-        private key: string,
-        private defaultValue: T
-    ) {
-        this.reset();
-    }
+  constructor(private parent: ContextKeyService, private key: string, private defaultValue: T) {
+    this.reset();
+  }
 
-    public set(value: T) {
-        this.parent.setContext(this.key, value);
-    }
+  public set(value: T) {
+    this.parent.setContext(this.key, value);
+  }
 
-    public reset() {
-        if (isUndefined(this.defaultValue)) {
-            this.parent.removeContext(this.key);
-        } else {
-            this.parent.setContext(this.key, this.defaultValue);
-        }
+  public reset() {
+    if (isUndefined(this.defaultValue)) {
+      this.parent.removeContext(this.key);
+    } else {
+      this.parent.setContext(this.key, this.defaultValue);
     }
+  }
 
-    public get(): T {
-        return this.parent.getContextKeyValue<T>(this.key);
-    }
+  public get(): T {
+    return this.parent.getContextKeyValue<T>(this.key);
+  }
 }
 
 export class ContextKeyService {
-    private context: Context;
+  private context: Context;
 
-    constructor() {
-        this.context = new Context();
-    }
+  constructor() {
+    this.context = new Context();
+  }
 
-    public setContext(key: string, value: any) {
-        this.context.setValue(key, value);
-    }
+  public setContext(key: string, value: any) {
+    this.context.setValue(key, value);
+  }
 
-    public getContextKeyValue<T>(key: string): T {
-        return this.context.getValue<T>(key);
-    }
+  public getContextKeyValue<T>(key: string): T {
+    return this.context.getValue<T>(key);
+  }
 
-    public removeContext(key: string) {
-        this.context.removeValue(key);
-    }
+  public removeContext(key: string) {
+    this.context.removeValue(key);
+  }
 
-    public createKey<T>(key: string, defaultValue: T) {
-        return new ContextKey<T>(this, key, defaultValue);
-    }
+  public createKey<T>(key: string, defaultValue: T) {
+    return new ContextKey<T>(this, key, defaultValue);
+  }
 
-    public getContext(): Context {
-        return this.context;
-    }
+  public getContext(): Context {
+    return this.context;
+  }
 }

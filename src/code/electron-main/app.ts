@@ -1,6 +1,4 @@
-import {
-    FileStorageService, IFileStorageService
-} from '../../platform/files/node/fileStorageService';
+import { FileStorageService, IFileStorageService } from '../../platform/files/node/fileStorageService';
 import { ClassDescriptor } from '../../platform/instantiation/descriptor';
 import { ServicesAccessor } from '../../platform/instantiation/instantiation';
 import { IInstantiationService } from '../../platform/instantiation/instantiationService';
@@ -12,45 +10,37 @@ import { getDefaultState } from './window';
 import { WindowManager } from './windows';
 
 export class EditorApplication {
-    private windowMainService: IWindowMainService;
-    private windowChannel: WindowChannel;
+  private windowMainService: IWindowMainService;
+  private windowChannel: WindowChannel;
 
-    constructor(
-        @IInstantiationService
-        private instantiationService: IInstantiationService
-    ) {}
+  constructor(
+    @IInstantiationService
+    private instantiationService: IInstantiationService
+  ) {}
 
-    public startup() {
-        const appInstantiationService = this.initServices();
-        appInstantiationService.invokeFunction(accessor =>
-            this.openFirstWindow(accessor)
-        );
+  public startup() {
+    const appInstantiationService = this.initServices();
+    appInstantiationService.invokeFunction((accessor) => this.openFirstWindow(accessor));
 
-        appInstantiationService.create(AppMenu);
-    }
+    appInstantiationService.create(AppMenu);
+  }
 
-    private initServices() {
-        const serviceStorage = new ServiceStorage();
+  private initServices() {
+    const serviceStorage = new ServiceStorage();
 
-        serviceStorage.set(
-            IFileStorageService,
-            new ClassDescriptor(FileStorageService, '.')
-        );
-        serviceStorage.set(
-            IWindowMainService,
-            new ClassDescriptor(WindowManager)
-        );
+    serviceStorage.set(IFileStorageService, new ClassDescriptor(FileStorageService, '.'));
+    serviceStorage.set(IWindowMainService, new ClassDescriptor(WindowManager));
 
-        return this.instantiationService.createChild(serviceStorage);
-    }
+    return this.instantiationService.createChild(serviceStorage);
+  }
 
-    public openFirstWindow(accessor: ServicesAccessor) {
-        this.windowMainService = accessor.get(IWindowMainService);
-        this.windowChannel = new WindowChannel(this.windowMainService);
+  public openFirstWindow(accessor: ServicesAccessor) {
+    this.windowMainService = accessor.get(IWindowMainService);
+    this.windowChannel = new WindowChannel(this.windowMainService);
 
-        const state = getDefaultState();
-        this.windowMainService.openNewWindow({
-            state,
-        });
-    }
+    const state = getDefaultState();
+    this.windowMainService.openNewWindow({
+      state,
+    });
+  }
 }

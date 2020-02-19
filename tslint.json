@@ -1,7 +1,10 @@
 {
     "rules": {
         "class-name": true,
-        "curly": [true, "ignore-same-line"],
+        "curly": [
+            true,
+            "ignore-same-line"
+        ],
         "no-arg": true,
         "no-construct": true,
         "no-debugger": true,
@@ -16,8 +19,15 @@
         "number-literal-format": true,
         "no-unused-expression": true,
         "no-duplicate-variable": true,
-        "quotemark": [true, "single"],
-        "semicolon": [true, "always", "ignore-bound-class-methods"],
+        "quotemark": [
+            true,
+            "single"
+        ],
+        "semicolon": [
+            true,
+            "always",
+            "ignore-bound-class-methods"
+        ],
         "space-within-parens": true,
         "triple-equals": true
     }

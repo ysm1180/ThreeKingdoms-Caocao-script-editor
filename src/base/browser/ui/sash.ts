@@ -3,172 +3,167 @@ import { $, DomBuilder } from '../domBuilder';
 import { StandardMouseEvent } from '../mouseEvent';
 
 export enum Orientation {
-    HORIZONTAL,
-    VERTICAL,
+  HORIZONTAL,
+  VERTICAL,
 }
 
 export interface ISashLayoutProvider {}
 
 export interface IVerticalSashLayoutProvider extends ISashLayoutProvider {
-    getVerticalSashLeft(): number;
-    getVerticalSashTop?(): number;
-    getVerticalSashHeight?(): number;
+  getVerticalSashLeft(): number;
+  getVerticalSashTop?(): number;
+  getVerticalSashHeight?(): number;
 }
 
 export interface IHorizontalSashLayoutProvider extends ISashLayoutProvider {
-    getHorizontalSashTop(): number;
-    getHorizontalSashLeft?(): number;
-    getHorizontalSashWidth?(): number;
+  getHorizontalSashTop(): number;
+  getHorizontalSashLeft?(): number;
+  getHorizontalSashWidth?(): number;
 }
 
 export interface ISashOptions {
-    orientation?: Orientation;
-    size?: number;
+  orientation?: Orientation;
+  size?: number;
 }
 
 export interface ISashEvent {
-    startX: number;
-    mouseX: number;
-    startY: number;
-    mouseY: number;
+  startX: number;
+  mouseX: number;
+  startY: number;
+  mouseY: number;
 }
 
 export class Sash {
-    private element: DomBuilder;
-    private orientation: Orientation;
-    private size: number;
-    private layoutProvider: ISashLayoutProvider;
+  private element: DomBuilder;
+  private orientation: Orientation;
+  private size: number;
+  private layoutProvider: ISashLayoutProvider;
 
-    public readonly onDidStart = new Event<ISashEvent>();
-    public readonly onDidChange = new Event<ISashEvent>();
-    public readonly onDidEnd = new Event<void>();
+  public readonly onDidStart = new Event<ISashEvent>();
+  public readonly onDidChange = new Event<ISashEvent>();
+  public readonly onDidEnd = new Event<void>();
 
-    constructor(
-        container: HTMLElement,
-        layoutProvider: ISashLayoutProvider,
-        options: ISashOptions = {}
-    ) {
-        this.element = $('.sash').appendTo(container);
-        this.size = options.size || 5;
+  constructor(container: HTMLElement, layoutProvider: ISashLayoutProvider, options: ISashOptions = {}) {
+    this.element = $('.sash').appendTo(container);
+    this.size = options.size || 5;
 
-        this.element.on('mousedown', (e) => this.onMouseDown(e as MouseEvent));
+    this.element.on('mousedown', (e) => this.onMouseDown(e as MouseEvent));
 
-        this.setOrientation(options.orientation || Orientation.VERTICAL);
+    this.setOrientation(options.orientation || Orientation.VERTICAL);
 
-        this.layoutProvider = layoutProvider;
+    this.layoutProvider = layoutProvider;
+  }
+
+  public onMouseDown(e: MouseEvent): void {
+    const mouseEvent = new StandardMouseEvent(e);
+
+    const startX = mouseEvent.posx;
+    const startY = mouseEvent.posy;
+
+    mouseEvent.preventDefault();
+    mouseEvent.stopPropagation();
+
+    const eventData: ISashEvent = {
+      startX: startX,
+      mouseX: startY,
+      startY: startX,
+      mouseY: startY,
+    };
+    this.onDidStart.fire(eventData);
+
+    let styleHtml: string;
+    if (this.orientation === Orientation.VERTICAL) {
+      styleHtml = `* { cursor: ew-resize; }`;
+    } else {
+      styleHtml = `* { cursor: ns-resize; }`;
     }
 
-    public onMouseDown(e: MouseEvent): void {
+    const styleContainer = $()
+      .styleSheet()
+      .html(styleHtml)
+      .appendTo(this.element);
+
+    const $window = $(window);
+    $window
+      .on('mousemove', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
         const mouseEvent = new StandardMouseEvent(e);
-
-        const startX = mouseEvent.posx;
-        const startY = mouseEvent.posy;
-
-        mouseEvent.preventDefault();
-        mouseEvent.stopPropagation();
-
         const eventData: ISashEvent = {
-            startX: startX,
-            mouseX: startY,
-            startY: startX,
-            mouseY: startY,
+          startX,
+          startY,
+          mouseX: mouseEvent.posx,
+          mouseY: mouseEvent.posy,
         };
-        this.onDidStart.fire(eventData);
+        this.onDidChange.fire(eventData);
+      })
+      .once('mouseup', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
 
-        let styleHtml: string;
-        if (this.orientation === Orientation.VERTICAL) {
-            styleHtml = `* { cursor: ew-resize; }`;
-        } else {
-            styleHtml = `* { cursor: ns-resize; }`;
-        }
+        this.element.getHTMLElement().removeChild(styleContainer.getHTMLElement());
 
-        const styleContainer = $()
-            .styleSheet()
-            .html(styleHtml)
-            .appendTo(this.element);
+        this.onDidEnd.fire();
 
-        const $window = $(window);
-        $window
-            .on('mousemove', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+        $window.off('mousemove');
+      });
+  }
 
-                const mouseEvent = new StandardMouseEvent(e);
-                const eventData: ISashEvent = {
-                    startX,
-                    startY,
-                    mouseX: mouseEvent.posx,
-                    mouseY: mouseEvent.posy,
-                };
-                this.onDidChange.fire(eventData);
-            })
-            .once('mouseup', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+  public setOrientation(orientation: Orientation) {
+    this.orientation = orientation;
 
-                this.element.getHTMLElement().removeChild(styleContainer.getHTMLElement());
+    const orientationClass = this.orientation === Orientation.HORIZONTAL ? 'horizontal' : 'vertical';
+    this.element.removeClass('horizontal', 'vertical');
+    this.element.addClass(orientationClass);
 
-                this.onDidEnd.fire();
-
-                $window.off('mousemove');
-            });
+    if (this.orientation === Orientation.HORIZONTAL) {
+      this.element.size(null, this.size);
+    } else {
+      this.element.size(this.size);
     }
 
-    public setOrientation(orientation: Orientation) {
-        this.orientation = orientation;
+    if (this.layoutProvider) {
+      this.layout();
+    }
+  }
 
-        const orientationClass =
-            this.orientation === Orientation.HORIZONTAL ? 'horizontal' : 'vertical';
-        this.element.removeClass('horizontal', 'vertical');
-        this.element.addClass(orientationClass);
+  public layout() {
+    let style: {
+      left?: string;
+      top?: string;
+      width?: string;
+      height?: string;
+    };
 
-        if (this.orientation === Orientation.HORIZONTAL) {
-            this.element.size(null, this.size);
-        } else {
-            this.element.size(this.size);
-        }
-
-        if (this.layoutProvider) {
-            this.layout();
-        }
+    if (this.orientation === Orientation.HORIZONTAL) {
+      const horizontalProvider = <IHorizontalSashLayoutProvider>this.layoutProvider;
+      style = { top: horizontalProvider.getHorizontalSashTop() + 'px' };
+      if (horizontalProvider.getHorizontalSashLeft) {
+        style.left = horizontalProvider.getHorizontalSashLeft() + 'px';
+      }
+      if (horizontalProvider.getHorizontalSashWidth) {
+        style.width = horizontalProvider.getHorizontalSashWidth() + 'px';
+      }
+    } else {
+      const verticalProvider = <IVerticalSashLayoutProvider>this.layoutProvider;
+      style = { left: verticalProvider.getVerticalSashLeft() + 'px' };
+      if (verticalProvider.getVerticalSashTop) {
+        style.top = verticalProvider.getVerticalSashTop() + 'px';
+      }
+      if (verticalProvider.getVerticalSashHeight) {
+        style.height = verticalProvider.getVerticalSashHeight() + 'px';
+      }
     }
 
-    public layout() {
-        let style: {
-            left?: string;
-            top?: string;
-            width?: string;
-            height?: string;
-        };
+    this.element.style(style);
+  }
 
-        if (this.orientation === Orientation.HORIZONTAL) {
-            const horizontalProvider = <IHorizontalSashLayoutProvider>this.layoutProvider;
-            style = { top: horizontalProvider.getHorizontalSashTop() + 'px' };
-            if (horizontalProvider.getHorizontalSashLeft) {
-                style.left = horizontalProvider.getHorizontalSashLeft() + 'px';
-            }
-            if (horizontalProvider.getHorizontalSashWidth) {
-                style.width = horizontalProvider.getHorizontalSashWidth() + 'px';
-            }
-        } else {
-            const verticalProvider = <IVerticalSashLayoutProvider>this.layoutProvider;
-            style = { left: verticalProvider.getVerticalSashLeft() + 'px' };
-            if (verticalProvider.getVerticalSashTop) {
-                style.top = verticalProvider.getVerticalSashTop() + 'px';
-            }
-            if (verticalProvider.getVerticalSashHeight) {
-                style.height = verticalProvider.getVerticalSashHeight() + 'px';
-            }
-        }
+  public show(): void {
+    this.element.show();
+  }
 
-        this.element.style(style);
-    }
-
-    public show(): void {
-        this.element.show();
-    }
-
-    public hide(): void {
-        this.element.hide();
-    }
+  public hide(): void {
+    this.element.hide();
+  }
 }

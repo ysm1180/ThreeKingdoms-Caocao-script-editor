@@ -1,61 +1,56 @@
-import { Event } from '../../../base/common/event';
+import { IConfigurationChangedEvent, InternalEditorOptions } from '../../common/config/editorOptions';
+
 import { Disposable } from '../../../base/common/lifecycle';
-import {
-    IConfigurationChangedEvent, InternalEditorOptions
-} from '../../common/config/editorOptions';
-import { IDimension } from '../../common/editorCommon';
 import { ElementSizeObserver } from './elementSizeObserver';
+import { Event } from '../../../base/common/event';
+import { IDimension } from '../../common/editorCommon';
 
 export class EditorConfiguration extends Disposable {
-    public editorOptions: InternalEditorOptions;
+  public editorOptions: InternalEditorOptions;
 
-    private observer: ElementSizeObserver;
+  private observer: ElementSizeObserver;
 
-    public readonly onDidChange = this.registerDispose(
-        new Event<IConfigurationChangedEvent>()
-    );
+  public readonly onDidChange = this.registerDispose(new Event<IConfigurationChangedEvent>());
 
-    constructor(referenceDom: HTMLElement) {
-        super();
+  constructor(referenceDom: HTMLElement) {
+    super();
 
-        this.observer = new ElementSizeObserver(referenceDom, () =>
-            this._onReferenceDomElementSizeChanged()
-        );
-        this.editorOptions = null;
+    this.observer = new ElementSizeObserver(referenceDom, () => this._onReferenceDomElementSizeChanged());
+    this.editorOptions = null;
 
-        this._recomputeOptions();
+    this._recomputeOptions();
+  }
+
+  private _onReferenceDomElementSizeChanged(): void {
+    this._recomputeOptions();
+  }
+
+  private _computeInternalOptions(): InternalEditorOptions {
+    return new InternalEditorOptions({
+      layoutInfo: {
+        contentLeft: 0,
+        contentWidth: this.observer.getWidth(),
+        contentHeight: this.observer.getHeight(),
+      },
+    });
+  }
+
+  private _recomputeOptions(): void {
+    const oldOptions = this.editorOptions;
+    const newOptions = this._computeInternalOptions();
+
+    if (oldOptions && oldOptions.equals(newOptions)) {
+      return;
     }
 
-    private _onReferenceDomElementSizeChanged(): void {
-        this._recomputeOptions();
+    this.editorOptions = newOptions;
+
+    if (oldOptions) {
+      this.onDidChange.fire(oldOptions.createChangeEvent(newOptions));
     }
+  }
 
-    private _computeInternalOptions(): InternalEditorOptions {
-        return new InternalEditorOptions({
-            layoutInfo: {
-                contentLeft: 0,
-                contentWidth: this.observer.getWidth(),
-                contentHeight: this.observer.getHeight(),
-            },
-        });
-    }
-
-    private _recomputeOptions(): void {
-        const oldOptions = this.editorOptions;
-        const newOptions = this._computeInternalOptions();
-
-        if (oldOptions && oldOptions.equals(newOptions)) {
-            return;
-        }
-
-        this.editorOptions = newOptions;
-
-        if (oldOptions) {
-            this.onDidChange.fire(oldOptions.createChangeEvent(newOptions));
-        }
-    }
-
-    public observeReferenceDomElement(dimension?: IDimension): void {
-        this.observer.observe(dimension);
-    }
+  public observeReferenceDomElement(dimension?: IDimension): void {
+    this.observer.observe(dimension);
+  }
 }

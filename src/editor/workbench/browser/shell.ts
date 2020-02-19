@@ -1,96 +1,84 @@
+import { $, DomBuilder } from '../../../base/browser/domBuilder';
+import { IInstantiationService, InstantiationService } from '../../../platform/instantiation/instantiationService';
+import { IStorageService, StorageService } from '../services/electron-browser/storageService';
+
+import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
+import { ElectronWindow } from '../window';
+import { ServiceStorage } from '../../../platform/instantiation/serviceStorage';
+import { Workbench } from './workbench';
 import { ipcRenderer } from 'electron';
 
-import { $, DomBuilder } from '../../../base/browser/domBuilder';
-import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
-import {
-    IInstantiationService, InstantiationService
-} from '../../../platform/instantiation/instantiationService';
-import { ServiceStorage } from '../../../platform/instantiation/serviceStorage';
-import { IStorageService, StorageService } from '../services/electron-browser/storageService';
-import { ElectronWindow } from '../window';
-import { Workbench } from './workbench';
-
 export class WorkbenchShell {
-    private container: HTMLElement;
-    private content: HTMLElement;
-    private contentContainer: DomBuilder;
+  private container: HTMLElement;
+  private content: HTMLElement;
+  private contentContainer: DomBuilder;
 
-    private workbench: Workbench;
+  private workbench: Workbench;
 
-    constructor(container: HTMLElement) {
-        this.container = container;
+  constructor(container: HTMLElement) {
+    this.container = container;
+  }
+
+  public open() {
+    this.content = $(this.container)
+      .div({
+        class: 'shell-content',
+      })
+      .getHTMLElement();
+    this.contentContainer = this.createContents($(this.content));
+
+    this.layout();
+
+    this.registerListeners();
+  }
+
+  public layout() {
+    const containerSize = $(this.container).getClientArea();
+    if (containerSize !== null) {
+      this.contentContainer.size(containerSize.width, containerSize.height);
+    } else {
+      throw Error('error document body size');
     }
 
-    public open() {
-        this.content = $(this.container)
-            .div({
-                class: 'shell-content',
-            })
-            .getHTMLElement();
-        this.contentContainer = this.createContents($(this.content));
+    this.workbench.layout();
+  }
 
-        this.layout();
+  private createContents(parent: DomBuilder): DomBuilder {
+    const workbenchContainer = parent.div();
 
-        this.registerListeners();
-    }
+    const serviceStorage = new ServiceStorage();
+    const instantiationService = new InstantiationService(serviceStorage);
 
-    public layout() {
-        const containerSize = $(this.container).getClientArea();
-        if (containerSize !== null) {
-            this.contentContainer.size(
-                containerSize.width,
-                containerSize.height
-            );
-        } else {
-            throw Error('error document body size');
-        }
+    serviceStorage.set(IStorageService, new ClassDescriptor(StorageService, window.localStorage));
 
-        this.workbench.layout();
-    }
+    this.workbench = this.createWorkbench(
+      instantiationService,
+      serviceStorage,
+      parent.getHTMLElement(),
+      workbenchContainer.getHTMLElement()
+    );
+    this.workbench.startup();
+    ipcRenderer.send('app:workbenchLoaded');
 
-    private createContents(parent: DomBuilder): DomBuilder {
-        const workbenchContainer = parent.div();
+    instantiationService.create(ElectronWindow);
 
-        const serviceStorage = new ServiceStorage();
-        const instantiationService = new InstantiationService(serviceStorage);
+    return workbenchContainer;
+  }
 
-        serviceStorage.set(
-            IStorageService,
-            new ClassDescriptor(StorageService, window.localStorage)
-        );
+  public createWorkbench(
+    instantiationService: IInstantiationService,
+    serviceStorage: ServiceStorage,
+    parent: HTMLElement,
+    container: HTMLElement
+  ) {
+    const workbench = instantiationService.create(Workbench, container, serviceStorage);
 
-        this.workbench = this.createWorkbench(
-            instantiationService,
-            serviceStorage,
-            parent.getHTMLElement(),
-            workbenchContainer.getHTMLElement()
-        );
-        this.workbench.startup();
-        ipcRenderer.send('app:workbenchLoaded');
+    return workbench;
+  }
 
-        instantiationService.create(ElectronWindow);
-
-        return workbenchContainer;
-    }
-
-    public createWorkbench(
-        instantiationService: IInstantiationService,
-        serviceStorage: ServiceStorage,
-        parent: HTMLElement,
-        container: HTMLElement
-    ) {
-        const workbench = instantiationService.create(
-            Workbench,
-            container,
-            serviceStorage
-        );
-
-        return workbench;
-    }
-
-    public registerListeners(): void {
-        window.addEventListener('resize', () => {
-            this.layout();
-        });
-    }
+  public registerListeners(): void {
+    window.addEventListener('resize', () => {
+      this.layout();
+    });
+  }
 }

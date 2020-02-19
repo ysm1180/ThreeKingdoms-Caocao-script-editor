@@ -1,23 +1,23 @@
 export interface IEditorInput {
-    getResource(): any;
+  getResource(): any;
 
-    getName(): string;
+  getName(): string;
 
-    matches(other: any): boolean;
+  matches(other: any): boolean;
 
-    resolve(refresh?: boolean): Promise<any>;
+  resolve(refresh?: boolean): Promise<any>;
 
-    getPreferredEditorId(): string;
+  getPreferredEditorId(): string;
 }
 
 export interface IResourceInput {
-    resource: string;
+  resource: string;
 
-    label?: string;
+  label?: string;
 }
 
 export interface IUntitleResourceInput {
-    resource?: string;
+  resource?: string;
 
-    label?: string;
+  label?: string;
 }

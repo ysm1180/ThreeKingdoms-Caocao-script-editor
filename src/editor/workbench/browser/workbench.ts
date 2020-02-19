@@ -1,14 +1,10 @@
 import { $, DomBuilder } from '../../../base/browser/domBuilder';
 import { CommandService, ICommandService } from '../../../platform/commands/commandService';
-import {
-    ContextKeyService, IContextKeyService
-} from '../../../platform/contexts/contextKeyService';
+import { ContextKeyService, IContextKeyService } from '../../../platform/contexts/contextKeyService';
 import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
 import { IInstantiationService } from '../../../platform/instantiation/instantiationService';
 import { ServiceStorage } from '../../../platform/instantiation/serviceStorage';
-import {
-    IKeybindingService, KeybindingService
-} from '../../../platform/keybindings/keybindingService';
+import { IKeybindingService, KeybindingService } from '../../../platform/keybindings/keybindingService';
 import { ITreeService, TreeService } from '../../../platform/tree/treeService';
 import { IWindowService } from '../../../platform/windows/windows';
 import { WindowClientService } from '../../../platform/windows/windowsIpc';
@@ -32,200 +28,162 @@ import { IStatusbarService, StatusbarPart } from './parts/statusbarPart';
 import { ITitlePartService, TitlePart } from './parts/titlePart';
 
 export class Workbench implements IPartService {
-    private container: HTMLElement;
+  private container: HTMLElement;
 
-    private workbenchContainer: DomBuilder;
-    private workbench: DomBuilder;
-    private workbenchLayout: WorkbenchLayout;
+  private workbenchContainer: DomBuilder;
+  private workbench: DomBuilder;
+  private workbenchLayout: WorkbenchLayout;
 
-    private titlePart: TitlePart;
-    private sidebarPart: SidebarPart;
-    private editorPart: EditorPart;
-    private statusbarPart: StatusbarPart;
-    private sideBarHidden: boolean;
+  private titlePart: TitlePart;
+  private sidebarPart: SidebarPart;
+  private editorPart: EditorPart;
+  private statusbarPart: StatusbarPart;
+  private sideBarHidden: boolean;
 
-    private serviceStorage: ServiceStorage;
+  private serviceStorage: ServiceStorage;
 
-    constructor(
-        container: HTMLElement,
-        serviceStorage: ServiceStorage,
-        @IInstantiationService
-        private instantiationService: IInstantiationService
-    ) {
-        this.container = container;
-        this.serviceStorage = serviceStorage;
+  constructor(
+    container: HTMLElement,
+    serviceStorage: ServiceStorage,
+    @IInstantiationService
+    private instantiationService: IInstantiationService
+  ) {
+    this.container = container;
+    this.serviceStorage = serviceStorage;
 
-        this.sideBarHidden = true;
+    this.sideBarHidden = true;
+  }
+
+  public startup() {
+    this.createWorkbench();
+
+    this.initService();
+
+    this.registerListeners();
+
+    this.render();
+
+    this.createLayout();
+  }
+
+  private initService() {
+    this.serviceStorage.set(IPartService, this);
+
+    this.serviceStorage.set(IContextKeyService, new ClassDescriptor(ContextKeyService));
+
+    this.serviceStorage.set(ITreeService, new ClassDescriptor(TreeService));
+
+    this.serviceStorage.set(IWindowService, new ClassDescriptor(WindowClientService));
+    this.serviceStorage.set(IDialogService, new ClassDescriptor(DialogService));
+
+    this.serviceStorage.set(ICommandService, new ClassDescriptor(CommandService));
+    this.serviceStorage.set(IKeybindingService, new ClassDescriptor(KeybindingService, window));
+    this.serviceStorage.set(IContextMenuService, new ClassDescriptor(ContextMenuService));
+
+    this.serviceStorage.set(IFileService, new ClassDescriptor(FileService));
+    this.serviceStorage.set(ITextFileService, new ClassDescriptor(TextFileService));
+    this.serviceStorage.set(IResourceFileService, new ClassDescriptor(Me5FileService));
+    this.serviceStorage.set(IResourceDataService, new ClassDescriptor(Me5DataService));
+
+    this.editorPart = this.instantiationService.create(EditorPart);
+    this.serviceStorage.set(IEditorGroupService, this.editorPart);
+    this.serviceStorage.set(IWorkbenchEditorService, new ClassDescriptor(WorkbenchEditorService, this.editorPart));
+
+    this.sidebarPart = this.instantiationService.create(SidebarPart);
+
+    this.serviceStorage.set(ICompositeViewService, new ClassDescriptor(CompositeViewService, this.sidebarPart));
+
+    this.titlePart = this.instantiationService.create(TitlePart);
+    this.serviceStorage.set(ITitlePartService, this.titlePart);
+
+    this.statusbarPart = this.instantiationService.create(StatusbarPart);
+    this.serviceStorage.set(IStatusbarService, this.statusbarPart);
+  }
+
+  private createWorkbench() {
+    this.workbenchContainer = $('.workbench-container');
+    this.workbench = $()
+      .div({
+        class: 'workbench nosidebar',
+      })
+      .appendTo(this.workbenchContainer);
+  }
+
+  private render() {
+    this.createTitle();
+    this.createSidebar();
+    this.createEditor();
+    this.createStatusbar();
+
+    this.workbenchContainer.build(this.container);
+  }
+
+  private createTitle(): void {
+    const titleContainer = $(this.workbench).div({
+      class: 'title',
+    });
+    this.titlePart.create(titleContainer);
+  }
+
+  private createSidebar(): void {
+    const sidebarContainer = $(this.workbench).div({
+      class: 'sidebar',
+    });
+
+    this.sidebarPart.create(sidebarContainer);
+  }
+
+  private createEditor(): void {
+    const editorContainer = $(this.workbench).div({
+      class: 'editor',
+    });
+
+    this.editorPart.create(editorContainer);
+  }
+
+  private createStatusbar(): void {
+    const statusbarContainer = $(this.workbench).div({
+      class: 'statusbar',
+    });
+
+    this.statusbarPart.create(statusbarContainer);
+  }
+
+  private createLayout(): void {
+    this.workbenchLayout = this.instantiationService.create(WorkbenchLayout, $(this.container), this.workbench, {
+      title: this.titlePart,
+      sidebar: this.sidebarPart,
+      editor: this.editorPart,
+      statusbar: this.statusbarPart,
+    });
+  }
+
+  public isSidebarVisible(): boolean {
+    return !this.sideBarHidden;
+  }
+
+  public setSideBarHidden(hidden: boolean): void {
+    this.sideBarHidden = hidden;
+    if (hidden) {
+      this.workbench.addClass('nosidebar');
+    } else {
+      this.workbench.removeClass('nosidebar');
     }
 
-    public startup() {
-        this.createWorkbench();
+    this.layout();
+  }
 
-        this.initService();
+  public layout() {
+    this.workbenchLayout.layout();
+  }
 
-        this.registerListeners();
+  public registerListeners() {
+    this.editorPart.onEditorInputChanged.add(() => {
+      this.statusbarPart.update();
+    });
+  }
 
-        this.render();
-
-        this.createLayout();
-    }
-
-    private initService() {
-        this.serviceStorage.set(IPartService, this);
-
-        this.serviceStorage.set(
-            IContextKeyService,
-            new ClassDescriptor(ContextKeyService)
-        );
-
-        this.serviceStorage.set(ITreeService, new ClassDescriptor(TreeService));
-
-        this.serviceStorage.set(
-            IWindowService,
-            new ClassDescriptor(WindowClientService)
-        );
-        this.serviceStorage.set(
-            IDialogService,
-            new ClassDescriptor(DialogService)
-        );
-
-        this.serviceStorage.set(
-            ICommandService,
-            new ClassDescriptor(CommandService)
-        );
-        this.serviceStorage.set(
-            IKeybindingService,
-            new ClassDescriptor(KeybindingService, window)
-        );
-        this.serviceStorage.set(
-            IContextMenuService,
-            new ClassDescriptor(ContextMenuService)
-        );
-
-        this.serviceStorage.set(IFileService, new ClassDescriptor(FileService));
-        this.serviceStorage.set(
-            ITextFileService,
-            new ClassDescriptor(TextFileService)
-        );
-        this.serviceStorage.set(
-            IResourceFileService,
-            new ClassDescriptor(Me5FileService)
-        );
-        this.serviceStorage.set(
-            IResourceDataService,
-            new ClassDescriptor(Me5DataService)
-        );
-
-        this.editorPart = this.instantiationService.create(EditorPart);
-        this.serviceStorage.set(IEditorGroupService, this.editorPart);
-        this.serviceStorage.set(
-            IWorkbenchEditorService,
-            new ClassDescriptor(WorkbenchEditorService, this.editorPart)
-        );
-
-        this.sidebarPart = this.instantiationService.create(SidebarPart);
-
-        this.serviceStorage.set(
-            ICompositeViewService,
-            new ClassDescriptor(CompositeViewService, this.sidebarPart)
-        );
-
-        this.titlePart = this.instantiationService.create(TitlePart);
-        this.serviceStorage.set(ITitlePartService, this.titlePart);
-
-        this.statusbarPart = this.instantiationService.create(StatusbarPart);
-        this.serviceStorage.set(IStatusbarService, this.statusbarPart);
-    }
-
-    private createWorkbench() {
-        this.workbenchContainer = $('.workbench-container');
-        this.workbench = $()
-            .div({
-                class: 'workbench nosidebar',
-            })
-            .appendTo(this.workbenchContainer);
-    }
-
-    private render() {
-        this.createTitle();
-        this.createSidebar();
-        this.createEditor();
-        this.createStatusbar();
-
-        this.workbenchContainer.build(this.container);
-    }
-
-    private createTitle(): void {
-        const titleContainer = $(this.workbench).div({
-            class: 'title',
-        });
-        this.titlePart.create(titleContainer);
-    }
-
-    private createSidebar(): void {
-        const sidebarContainer = $(this.workbench).div({
-            class: 'sidebar',
-        });
-
-        this.sidebarPart.create(sidebarContainer);
-    }
-
-    private createEditor(): void {
-        const editorContainer = $(this.workbench).div({
-            class: 'editor',
-        });
-
-        this.editorPart.create(editorContainer);
-    }
-
-    private createStatusbar(): void {
-        const statusbarContainer = $(this.workbench).div({
-            class: 'statusbar',
-        });
-
-        this.statusbarPart.create(statusbarContainer);
-    }
-
-    private createLayout(): void {
-        this.workbenchLayout = this.instantiationService.create(
-            WorkbenchLayout,
-            $(this.container),
-            this.workbench,
-            {
-                title: this.titlePart,
-                sidebar: this.sidebarPart,
-                editor: this.editorPart,
-                statusbar: this.statusbarPart,
-            }
-        );
-    }
-
-    public isSidebarVisible(): boolean {
-        return !this.sideBarHidden;
-    }
-
-    public setSideBarHidden(hidden: boolean): void {
-        this.sideBarHidden = hidden;
-        if (hidden) {
-            this.workbench.addClass('nosidebar');
-        } else {
-            this.workbench.removeClass('nosidebar');
-        }
-
-        this.layout();
-    }
-
-    public layout() {
-        this.workbenchLayout.layout();
-    }
-
-    public registerListeners() {
-        this.editorPart.onEditorInputChanged.add(() => {
-            this.statusbarPart.update();
-        });
-    }
-
-    public dispose() {
-        this.sidebarPart.dispose();
-    }
+  public dispose() {
+    this.sidebarPart.dispose();
+  }
 }

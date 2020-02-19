@@ -2,23 +2,23 @@
  * @internal
  */
 export interface ITextBufferBuilder {
-    acceptChunk(chunk: string): void;
-    finish(): ITextBufferFactory;
+  acceptChunk(chunk: string): void;
+  finish(): ITextBufferFactory;
 }
 
 /**
  * @internal
  */
 export interface ITextBufferFactory {
-    create(): ITextBuffer;
+  create(): ITextBuffer;
 }
 
 /**
  * @internal
  */
 export interface ITextBuffer {
-    getLength(): number;
-    getLineCount(): number;
-    getLinesContent(): string[];
-    getLineContent(lineNumber: number): string;
+  getLength(): number;
+  getLineCount(): number;
+  getLinesContent(): string[];
+  getLineContent(lineNumber: number): string;
 }

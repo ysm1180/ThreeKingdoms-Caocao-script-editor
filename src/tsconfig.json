@@ -1,25 +1,23 @@
 {
-	"compilerOptions": {
-		"experimentalDecorators": true,
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"noImplicitAny": false,
-		"removeComments": false,
-		"preserveConstEnums": true,
-		"target": "es6",
-		"sourceMap": true,
-		"declaration": false,
-		"noImplicitReturns": true,
-		"noImplicitThis": true,
-		"alwaysStrict": true,
-		"strictBindCallApply": true,
-        "allowJs": true,
-		"checkJs": true,
-		"baseUrl": ".",
-		"outDir": "../dist",
-		"noUnusedLocals": false,
-		"typeRoots": [
-			"typings"
-		]
-	}
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "target": "es6",
+    "sourceMap": true,
+    "declaration": false,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictBindCallApply": true,
+    "allowJs": true,
+    "checkJs": true,
+    "baseUrl": ".",
+    "outDir": "../dist",
+    "noUnusedLocals": false,
+    "typeRoots": ["typings"]
+  }
 }

@@ -1,49 +1,49 @@
-import { DomBuilder } from '../../../../../base/browser/domBuilder';
 import { Disposable } from '../../../../../base/common/lifecycle';
-import { IEditorInput } from '../../../../../platform/editor/editor';
+import { DomBuilder } from '../../../../../base/browser/domBuilder';
 import { IDimension } from '../../../../common/editorCommon';
+import { IEditorInput } from '../../../../../platform/editor/editor';
 
 export abstract class BaseEditor extends Disposable {
-    private parent: DomBuilder;
-    private _input: IEditorInput;
-    private id: string;
+  private parent: DomBuilder;
+  private _input: IEditorInput;
+  private id: string;
 
-    constructor(id: string) {
-        super();
+  constructor(id: string) {
+    super();
 
-        this.parent = null;
-        this.id = id;
-        this._input = null;
-    }
+    this.parent = null;
+    this.id = id;
+    this._input = null;
+  }
 
-    public get input(): IEditorInput {
-        return this._input;
-    }
+  public get input(): IEditorInput {
+    return this._input;
+  }
 
-    public getId(): string {
-        return this.id;
-    }
+  public getId(): string {
+    return this.id;
+  }
 
-    public create(parent: DomBuilder) {
-        this.parent = parent;
-    }
+  public create(parent: DomBuilder) {
+    this.parent = parent;
+  }
 
-    public getContainer() {
-        return this.parent;
-    }
+  public getContainer() {
+    return this.parent;
+  }
 
-    public setInput(input: IEditorInput, refresh?: boolean): Promise<void> {
-        this._input = input;
+  public setInput(input: IEditorInput, refresh?: boolean): Promise<void> {
+    this._input = input;
 
-        return Promise.resolve();
-    }
+    return Promise.resolve();
+  }
 
-    public abstract layout(dimension?: IDimension): void;
+  public abstract layout(dimension?: IDimension): void;
 
-    public dispose() {
-        this.parent = null;
-        this._input = null;
+  public dispose() {
+    this.parent = null;
+    this._input = null;
 
-        super.dispose();
-    }
+    super.dispose();
+  }
 }

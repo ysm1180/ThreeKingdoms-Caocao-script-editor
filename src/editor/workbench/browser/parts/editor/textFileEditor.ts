@@ -7,53 +7,50 @@ import { TextFileEditorModel } from '../../../services/textfile/textFileEditorMo
 import { BaseEditor } from './baseEditor';
 
 export class TextFileEditor extends BaseEditor {
-    static ID = 'editor.texteditor';
+  static ID = 'editor.texteditor';
 
-    private editorControl: CodeEditor;
+  private editorControl: CodeEditor;
 
-    constructor(
-        @IInstantiationService
-        private instantiationService: IInstantiationService
-    ) {
-        super(TextFileEditor.ID);
+  constructor(
+    @IInstantiationService
+    private instantiationService: IInstantiationService
+  ) {
+    super(TextFileEditor.ID);
+  }
+
+  public create(parent: DomBuilder) {
+    super.create(parent);
+
+    this.createEditor(parent);
+  }
+
+  private createEditor(parent: DomBuilder) {
+    this.editorControl = this.instantiationService.create(CodeEditor, parent.getHTMLElement());
+  }
+
+  public setInput(input: IEditorInput, refresh?: boolean): Promise<void> {
+    if (!input) {
+      return Promise.resolve();
     }
 
-    public create(parent: DomBuilder) {
-        super.create(parent);
+    return super.setInput(input).then(() => {
+      return input.resolve(refresh).then((model: TextFileEditorModel) => {
+        const modelPromise = model.load();
 
-        this.createEditor(parent);
-    }
-
-    private createEditor(parent: DomBuilder) {
-        this.editorControl = this.instantiationService.create(
-            CodeEditor,
-            parent.getHTMLElement()
-        );
-    }
-
-    public setInput(input: IEditorInput, refresh?: boolean): Promise<void> {
-        if (!input) {
-            return Promise.resolve();
-        }
-
-        return super.setInput(input).then(() => {
-            return input.resolve(refresh).then((model: TextFileEditorModel) => {
-                const modelPromise = model.load();
-
-                return modelPromise.then((model: TextFileEditorModel) => {
-                    this.editorControl.setModel(model.model);
-                });
-            });
+        return modelPromise.then((model: TextFileEditorModel) => {
+          this.editorControl.setModel(model.model);
         });
-    }
+      });
+    });
+  }
 
-    public layout(dimension?: IDimension): void {
-        this.editorControl.layout(dimension);
-    }
+  public layout(dimension?: IDimension): void {
+    this.editorControl.layout(dimension);
+  }
 
-    public dispose() {
-        this.editorControl.dispose();
+  public dispose() {
+    this.editorControl.dispose();
 
-        super.dispose();
-    }
+    super.dispose();
+  }
 }

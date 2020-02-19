@@ -1,51 +1,50 @@
 import { isNullOrUndefined, isString } from '../../../../base/common/types';
-import { decorator, ServiceIdentifier } from '../../../../platform/instantiation/instantiation';
 
-export const IStorageService: ServiceIdentifier<StorageService> = decorator<
-    StorageService
->('storageService');
+import { decorator } from '../../../../platform/instantiation/instantiation';
+
+export const IStorageService = decorator<StorageService>('storageService');
 
 export class StorageService {
-    constructor(private storage: Storage) {}
+  constructor(private storage: Storage) {}
 
-    public store(key: string, value: any) {
-        if (isNullOrUndefined(value)) {
-            this.remove(key);
-            return;
-        }
-
-        if (typeof value === 'object') {
-            this.storage.setItem(key, JSON.stringify(value));
-        } else {
-            this.storage.setItem(key, value);
-        }
+  public store(key: string, value: any) {
+    if (isNullOrUndefined(value)) {
+      this.remove(key);
+      return;
     }
 
-    public get(key: string): string {
-        return this.storage.getItem(key);
+    if (typeof value === 'object') {
+      this.storage.setItem(key, JSON.stringify(value));
+    } else {
+      this.storage.setItem(key, value);
+    }
+  }
+
+  public get(key: string): string {
+    return this.storage.getItem(key);
+  }
+
+  public getObject(key: string): Object {
+    const value = this.get(key);
+
+    if (isNullOrUndefined(value)) {
+      return {};
     }
 
-    public getObject(key: string): Object {
-        const value = this.get(key);
+    return JSON.parse(value);
+  }
 
-        if (isNullOrUndefined(value)) {
-            return {};
-        }
+  public getBoolean(key: string): boolean {
+    const value = this.get(key);
 
-        return JSON.parse(value);
+    if (isString(value)) {
+      return value.toLowerCase() === 'true' ? true : false;
     }
 
-    public getBoolean(key: string): boolean {
-        const value = this.get(key);
+    return value ? true : false;
+  }
 
-        if (isString(value)) {
-            return value.toLowerCase() === 'true' ? true : false;
-        }
-
-        return value ? true : false;
-    }
-
-    public remove(key: string) {
-        this.storage.removeItem(key);
-    }
+  public remove(key: string) {
+    this.storage.removeItem(key);
+  }
 }

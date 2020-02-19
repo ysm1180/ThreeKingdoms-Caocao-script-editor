@@ -1,93 +1,85 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { decorator } from '../../instantiation/instantiation';
 import { isUndefined } from '../../../base/common/types';
-import { decorator, ServiceIdentifier } from '../../instantiation/instantiation';
 
-export const IFileStorageService: ServiceIdentifier<
-    FileStorageService
-> = decorator<FileStorageService>('fileStorageService');
+export const IFileStorageService = decorator<FileStorageService>('fileStorageService');
 
 export class FileStorage {
-    private database: Object;
+  private database: Object;
 
-    constructor(private path: string) {}
+  constructor(private path: string) {}
 
-    private ensureLoaded() {
-        if (!this.database) {
-            this.database = this.loadSync();
-        }
+  private ensureLoaded() {
+    if (!this.database) {
+      this.database = this.loadSync();
+    }
+  }
+
+  public getItem(key: string) {
+    this.ensureLoaded();
+
+    const value = this.database[key];
+    return value;
+  }
+
+  public setItem(key: string, value: any) {
+    this.ensureLoaded();
+
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+      if (this.database[key] === value) {
+        return;
+      }
     }
 
-    public getItem(key: string) {
-        this.ensureLoaded();
+    this.database[key] = value;
+    this.saveSync();
+  }
 
-        const value = this.database[key];
-        return value;
+  public removeItem(key: string) {
+    this.ensureLoaded();
+
+    if (!isUndefined(this.database[key])) {
+      this.database[key] = void 0;
+      this.saveSync();
     }
+  }
 
-    public setItem(key: string, value: any) {
-        this.ensureLoaded();
-
-        if (
-            typeof value === 'string' ||
-            typeof value === 'number' ||
-            typeof value === 'boolean'
-        ) {
-            if (this.database[key] === value) {
-                return;
-            }
-        }
-
-        this.database[key] = value;
-        this.saveSync();
+  private loadSync(): Object {
+    try {
+      return JSON.parse(fs.readFileSync(this.path).toString());
+    } catch {
+      return {};
     }
+  }
 
-    public removeItem(key: string) {
-        this.ensureLoaded();
+  private saveSync() {
+    const data = JSON.stringify(this.database, null, 4);
 
-        if (!isUndefined(this.database[key])) {
-            this.database[key] = void 0;
-            this.saveSync();
-        }
-    }
-
-    private loadSync(): Object {
-        try {
-            return JSON.parse(fs.readFileSync(this.path).toString());
-        } catch {
-            return {};
-        }
-    }
-
-    private saveSync() {
-        const data = JSON.stringify(this.database, null, 4);
-
-        const fd = fs.openSync(this.path, 'w');
-        fs.writeFileSync(fd, data);
-        fs.fdatasyncSync(fd);
-        fs.closeSync(fd);
-    }
+    const fd = fs.openSync(this.path, 'w');
+    fs.writeFileSync(fd, data);
+    fs.fdatasyncSync(fd);
+    fs.closeSync(fd);
+  }
 }
 
 export class FileStorageService {
-    private fileStorage: FileStorage;
+  private fileStorage: FileStorage;
 
-    constructor(userDataPath: string) {
-        this.fileStorage = new FileStorage(
-            path.join(userDataPath, 'storage.json')
-        );
-    }
+  constructor(userDataPath: string) {
+    this.fileStorage = new FileStorage(path.join(userDataPath, 'storage.json'));
+  }
 
-    public get(key: string) {
-        return this.fileStorage.getItem(key);
-    }
+  public get(key: string) {
+    return this.fileStorage.getItem(key);
+  }
 
-    public store(key: string, value: any): void {
-        this.fileStorage.setItem(key, value);
-    }
+  public store(key: string, value: any): void {
+    this.fileStorage.setItem(key, value);
+  }
 
-    public remove(key: string): void {
-        this.fileStorage.removeItem(key);
-    }
+  public remove(key: string): void {
+    this.fileStorage.removeItem(key);
+  }
 }

@@ -3,23 +3,21 @@ import { decorator } from '../../../../platform/instantiation/instantiation';
 export type FilterFuntion<T> = (e: T) => boolean;
 
 export interface IResourceStat {
-    name: string;
+  name: string;
 
-    data: Buffer;
+  data: Buffer;
 
-    getId(): string;
+  getId(): string;
 
-    getChildren(filter?: FilterFuntion<IResourceStat>): IResourceStat[];
+  getChildren(filter?: FilterFuntion<IResourceStat>): IResourceStat[];
 
-    getIndex(filter?: FilterFuntion<IResourceStat>): number;
+  getIndex(filter?: FilterFuntion<IResourceStat>): number;
 }
 
-export const IResourceDataService = decorator<ResourceDataService>(
-    'resourceDataService'
-);
+export const IResourceDataService = decorator<ResourceDataService>('resourceDataService');
 
 export abstract class ResourceDataService {
-    constructor() {}
+  constructor() {}
 
-    public abstract resolveFile(resource: string): Promise<IResourceStat>;
+  public abstract resolveFile(resource: string): Promise<IResourceStat>;
 }

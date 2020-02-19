@@ -1,43 +1,31 @@
 export interface IConfigurationChangedEvent {
-    readonly layoutInfo: boolean;
+  readonly layoutInfo: boolean;
 }
 
 export interface EditorLayoutInfo {
-    readonly contentLeft: number;
-    readonly contentWidth: number;
-    readonly contentHeight: number;
+  readonly contentLeft: number;
+  readonly contentWidth: number;
+  readonly contentHeight: number;
 }
 
 export class InternalEditorOptions {
-    public layoutInfo: EditorLayoutInfo;
+  public layoutInfo: EditorLayoutInfo;
 
-    constructor(source: { layoutInfo: EditorLayoutInfo }) {
-        this.layoutInfo = source.layoutInfo;
-    }
+  constructor(source: { layoutInfo: EditorLayoutInfo }) {
+    this.layoutInfo = source.layoutInfo;
+  }
 
-    public equals(other: InternalEditorOptions): boolean {
-        return InternalEditorOptions._equalsLayoutInfo(
-            this.layoutInfo,
-            other.layoutInfo
-        );
-    }
+  public equals(other: InternalEditorOptions): boolean {
+    return InternalEditorOptions._equalsLayoutInfo(this.layoutInfo, other.layoutInfo);
+  }
 
-    private static _equalsLayoutInfo(a: EditorLayoutInfo, b: EditorLayoutInfo) {
-        return (
-            a.contentLeft === b.contentLeft &&
-            a.contentWidth === b.contentWidth &&
-            a.contentHeight === b.contentHeight
-        );
-    }
+  private static _equalsLayoutInfo(a: EditorLayoutInfo, b: EditorLayoutInfo) {
+    return a.contentLeft === b.contentLeft && a.contentWidth === b.contentWidth && a.contentHeight === b.contentHeight;
+  }
 
-    public createChangeEvent(
-        newOpts: InternalEditorOptions
-    ): IConfigurationChangedEvent {
-        return {
-            layoutInfo: !InternalEditorOptions._equalsLayoutInfo(
-                this.layoutInfo,
-                newOpts.layoutInfo
-            ),
-        };
-    }
+  public createChangeEvent(newOpts: InternalEditorOptions): IConfigurationChangedEvent {
+    return {
+      layoutInfo: !InternalEditorOptions._equalsLayoutInfo(this.layoutInfo, newOpts.layoutInfo),
+    };
+  }
 }

@@ -4,138 +4,130 @@ import { ResourceBufferFactory } from '../../../../common/model/resourceBufferBu
 import { ResourceModel } from '../../../../common/resourceModel';
 import { IEditorModel } from '../../../services/files/files';
 import {
-    IResourceDataService, IResourceStat, ResourceDataService
+  IResourceDataService,
+  IResourceStat,
+  ResourceDataService,
 } from '../../../services/resourceFile/resourceDataService';
 import { IResourceFileService } from '../../../services/resourceFile/resourcefiles';
 import { ResourceFileService } from '../../../services/resourceFile/resourceFileService';
 import { IRawResourceContent } from '../../../services/textfile/textfiles';
 
 export class ResourceFileEditorModel implements IEditorModel {
-    private _resourceModel: ResourceModel;
-    private _resourceStat: IResourceStat;
+  private _resourceModel: ResourceModel;
+  private _resourceStat: IResourceStat;
 
-    private _isSaving: boolean;
+  private _isSaving: boolean;
 
-    private savingPromise: Promise<void>;
+  private savingPromise: Promise<void>;
 
-    public onDidStateChanged = new Event<StateChange>();
+  public onDidStateChanged = new Event<StateChange>();
 
-    constructor(
-        private resource: string,
-        @IResourceFileService private resourceFileService: ResourceFileService,
-        @IResourceDataService private resourceDataService: ResourceDataService
-    ) {
-        this._resourceModel = null;
-        this._isSaving = false;
-        this.savingPromise = null;
+  constructor(
+    private resource: string,
+    @IResourceFileService private resourceFileService: ResourceFileService,
+    @IResourceDataService private resourceDataService: ResourceDataService
+  ) {
+    this._resourceModel = null;
+    this._isSaving = false;
+    this.savingPromise = null;
+  }
+
+  public get resourceModel(): ResourceModel {
+    return this._resourceModel;
+  }
+
+  public get resourceStat(): IResourceStat {
+    return this._resourceStat;
+  }
+
+  public getResource(): string {
+    return this.resource;
+  }
+
+  public load(): Promise<ResourceFileEditorModel> {
+    return this._loadFromFile();
+  }
+
+  private _loadFromFile(): Promise<ResourceFileEditorModel> {
+    return this.resourceFileService.resolveRawContent(this.resource).then(
+      (content) => this._loadWithContent(content),
+      () => this.onHandleFailed()
+    );
+  }
+
+  private _loadWithContent(content: IRawResourceContent): Promise<ResourceFileEditorModel> {
+    return this._createResourceEditorModel(content.value);
+  }
+
+  private _createResourceEditorModel(value: ResourceBufferFactory): Promise<ResourceFileEditorModel> {
+    this._createResourceModel(value);
+    return this._createResourceStat().then((result) => {
+      this._resourceStat = result;
+      return this;
+    });
+  }
+
+  private _createResourceModel(value: ResourceBufferFactory): void {
+    this._resourceModel = new ResourceModel(value.create());
+  }
+
+  private _createResourceStat(): Promise<IResourceStat> {
+    return this.resourceDataService.resolveFile(this.resource);
+  }
+
+  public getCurrentData() {
+    return this._resourceModel ? this._resourceModel.getCurrentData() : null;
+  }
+
+  public setDataIndex(index: number): void {
+    if (this._resourceModel) {
+      this._resourceModel.setDataIndex(index);
+    }
+  }
+
+  private onHandleFailed() {
+    console.error('Resource File Load Failed');
+    return Promise.reject(null);
+  }
+
+  public save() {
+    if (this.savingPromise) {
+      return this.savingPromise;
     }
 
-    public get resourceModel(): ResourceModel {
-        return this._resourceModel;
-    }
+    this.savingPromise = new Promise((c, e) => {
+      this._isSaving = true;
+      this.onDidStateChanged.fire(StateChange.SAVING);
 
-    public get resourceStat(): IResourceStat {
-        return this._resourceStat;
-    }
+      this.resourceFileService.updateContents(this.resource, this._resourceStat).then(
+        () => {
+          this.finishSave();
+          this.onDidStateChanged.fire(StateChange.SAVED);
 
-    public getResource(): string {
-        return this.resource;
-    }
+          c();
+        },
+        () => {
+          console.error('Fail to save');
 
-    public load(): Promise<ResourceFileEditorModel> {
-        return this._loadFromFile();
-    }
+          this.finishSave();
+          this.onDidStateChanged.fire(StateChange.SAVED);
 
-    private _loadFromFile(): Promise<ResourceFileEditorModel> {
-        return this.resourceFileService
-            .resolveRawContent(this.resource)
-            .then(
-                content => this._loadWithContent(content),
-                () => this.onHandleFailed()
-            );
-    }
-
-    private _loadWithContent(
-        content: IRawResourceContent
-    ): Promise<ResourceFileEditorModel> {
-        return this._createResourceEditorModel(content.value);
-    }
-
-    private _createResourceEditorModel(
-        value: ResourceBufferFactory
-    ): Promise<ResourceFileEditorModel> {
-        this._createResourceModel(value);
-        return this._createResourceStat().then(result => {
-            this._resourceStat = result;
-            return this;
-        });
-    }
-
-    private _createResourceModel(value: ResourceBufferFactory): void {
-        this._resourceModel = new ResourceModel(value.create());
-    }
-
-    private _createResourceStat(): Promise<IResourceStat> {
-        return this.resourceDataService.resolveFile(this.resource);
-    }
-
-    public getCurrentData() {
-        return this._resourceModel
-            ? this._resourceModel.getCurrentData()
-            : null;
-    }
-
-    public setDataIndex(index: number): void {
-        if (this._resourceModel) {
-            this._resourceModel.setDataIndex(index);
+          e();
         }
-    }
+      );
+    });
 
-    private onHandleFailed() {
-        console.error('Resource File Load Failed');
-        return Promise.reject(null);
-    }
+    return this.savingPromise;
+  }
 
-    public save() {
-        if (this.savingPromise) {
-            return this.savingPromise;
-        }
+  private finishSave() {
+    this._isSaving = false;
+    this.savingPromise = null;
+  }
 
-        this.savingPromise = new Promise((c, e) => {
-            this._isSaving = true;
-            this.onDidStateChanged.fire(StateChange.SAVING);
+  public isSaving(): boolean {
+    return this._isSaving;
+  }
 
-            this.resourceFileService
-                .updateContents(this.resource, this._resourceStat)
-                .then(
-                    () => {
-                        this.finishSave();
-                        this.onDidStateChanged.fire(StateChange.SAVED);
-
-                        c();
-                    },
-                    () => {
-                        console.error('Fail to save');
-
-                        this.finishSave();
-                        this.onDidStateChanged.fire(StateChange.SAVED);
-
-                        e();
-                    }
-                );
-        });
-
-        return this.savingPromise;
-    }
-
-    private finishSave() {
-        this._isSaving = false;
-        this.savingPromise = null;
-    }
-
-    public isSaving(): boolean {
-        return this._isSaving;
-    }
-
-    public dispose(): void {}
+  public dispose(): void {}
 }
