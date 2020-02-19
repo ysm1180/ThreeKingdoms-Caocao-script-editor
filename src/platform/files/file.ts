@@ -1,8 +1,8 @@
-import * as Convert from '../../base/common/convert';
 import * as fs from 'fs';
 import * as path from 'path';
-
 import { isBuffer } from 'util';
+
+import * as Convert from '../../base/common/convert';
 import { isString } from '../../base/common/types';
 
 export namespace Files {
@@ -15,7 +15,7 @@ export class BinaryFile {
   public data: Buffer = Buffer.alloc(0);
   protected _path: string;
   protected tempData: { buffer: Buffer; offset: number }[];
-  protected dataSize: number;
+  protected size: number = 0;
 
   constructor(resource: string | Buffer) {
     if (isString(resource)) {
@@ -23,6 +23,7 @@ export class BinaryFile {
     } else if (isBuffer(resource)) {
       this._path = null;
       this.data = resource;
+      this.size = this.data.length;
     }
   }
 
@@ -63,6 +64,7 @@ export class BinaryFile {
             }
 
             this.data = data;
+            this.size = data.length;
 
             fs.close(fd, (closeError) => {
               if (closeError) {
@@ -114,12 +116,14 @@ export class BinaryFile {
       offset,
       buffer: data,
     });
-    this.dataSize += length;
+    if (offset + length > this.size) {
+      this.size += offset + length - this.size;
+    }
   }
 
   public finish(fd: number): Promise<void> {
     return new Promise((c, e) => {
-      this.data = Buffer.alloc(this.dataSize);
+      this.data = Buffer.alloc(this.size, this.data);
       this.tempData.forEach((element) => {
         this.data.set(element.buffer, element.offset);
       });

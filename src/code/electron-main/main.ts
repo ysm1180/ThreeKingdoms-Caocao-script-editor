@@ -1,10 +1,11 @@
 'use strict';
 
-import { IInstantiationService, InstantiationService } from '../../platform/instantiation/instantiationService';
-
-import { EditorApplication } from './app';
-import { ServiceStorage } from '../../platform/instantiation/serviceStorage';
 import { app } from 'electron';
+
+import { IInstantiationService } from '../../platform/instantiation/instantiation';
+import { InstantiationService } from '../../platform/instantiation/instantiationService';
+import { ServiceStorage } from '../../platform/instantiation/serviceStorage';
+import { EditorApplication } from './app';
 
 function createService(): IInstantiationService {
   const services = new ServiceStorage();

@@ -1,7 +1,7 @@
 import { $, DomBuilder } from '../../base/browser/domBuilder';
 import { CommandService, ICommandService } from '../../platform/commands/commandService';
 import { ContextKeyService, IContextKeyService } from '../../platform/contexts/contextKeyService';
-import { ClassDescriptor } from '../../platform/instantiation/descriptor';
+import { ClassDescriptor } from '../../platform/instantiation/descriptors';
 import { IInstantiationService } from '../../platform/instantiation/instantiation';
 import { ServiceStorage } from '../../platform/instantiation/serviceStorage';
 import { IKeybindingService, KeybindingService } from '../../platform/keybindings/keybindingService';

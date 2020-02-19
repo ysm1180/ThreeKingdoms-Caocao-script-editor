@@ -1,6 +1,6 @@
 import { isArray } from '../../base/common/types';
 import { IEditorInput } from '../../platform/editor/editor';
-import { ClassDescriptor } from '../../platform/instantiation/descriptor';
+import { ClassDescriptor } from '../../platform/instantiation/descriptors';
 import { IInstantiationService } from '../../platform/instantiation/instantiation';
 import { BaseEditor } from './parts/editor/baseEditor';
 

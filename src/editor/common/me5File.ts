@@ -1,13 +1,13 @@
-import * as Convert from '../../base/common/convert';
-import * as electron from 'electron';
 import * as fs from 'fs';
-
-import { FilterFuntion, IResourceStat } from '../workbench/services/resourceFile/resourceDataService';
-
-import { BinaryFile } from '../../platform/files/file';
-import { ImageResource } from '../workbench/common/imageResource';
-import { Me5Stat } from '../workbench/parts/files/me5Data';
 import { isBuffer } from 'util';
+
+import * as electron from 'electron';
+
+import * as Convert from '../../base/common/convert';
+import { BinaryFile } from '../../platform/files/file';
+import { ImageResource } from '../../workbench/common/imageResource';
+import { Me5Stat } from '../../workbench/parts/files/me5Data';
+import { FilterFuntion, IResourceStat } from '../../workbench/services/resourceFile/resourceDataService';
 
 export class Me5File extends BinaryFile {
   public static readonly ALL_ITEM_COUNT_OFFSET = 1;
@@ -111,15 +111,12 @@ export class Me5File extends BinaryFile {
     return this.readBytes(offset + itemNameLength, itemSize);
   }
 
-  public async save(stat: IResourceStat, groupFilter?: FilterFuntion<IResourceStat>) {
+  public async save(stat: Me5Stat, groupFilter?: FilterFuntion<IResourceStat>) {
     return new Promise<void>((c1, e) => {
       fs.open(this._path, 'w', (openError, fd) => {
         if (openError) {
           return e(openError);
         }
-
-        this.tempData = [];
-        this.dataSize = 0;
 
         const groups = stat.getChildren(groupFilter);
 
@@ -202,21 +199,21 @@ export class Me5File extends BinaryFile {
     this.writeInt(Me5File.GROUP_COUNT_OFFSET, count);
   }
 
-  private _setGroupInfo(group: IResourceStat, baseItemIndex: number, filter?: FilterFuntion<Me5Stat>) {
+  private _setGroupInfo(group: Me5Stat, baseItemIndex: number, filter?: FilterFuntion<Me5Stat>) {
     const offset = Me5File.GROUP_INFO_START_OFFSET + group.getIndex(filter) * Me5File.GROUP_HEADER_SIZE;
     this.writeInt(offset + 4, baseItemIndex); // Item Begin Index
     this.writeInt(offset + 8, baseItemIndex + group.getChildren().length - 1); // Item End Index
     this.writeInt(offset, Convert.getByteLength(group.name));
   }
 
-  private _setItemInfo(item: IResourceStat, baseItemIndex: number, filter?: FilterFuntion<Me5Stat>) {
+  private _setItemInfo(item: Me5Stat, baseItemIndex: number, filter?: FilterFuntion<Me5Stat>) {
     const offset = this.itemInfoStartOffset + (baseItemIndex + item.getIndex(filter)) * Me5File.ITEM_HEADER_SIZE;
     this.writeInt(offset, 0); // item offset
     this.writeInt(offset + 4, Convert.getByteLength(item.name));
     this.writeInt(offset + 8, 0); // item size
   }
 
-  private _setGroup(offset: number, group: IResourceStat): number {
+  private _setGroup(offset: number, group: Me5Stat): number {
     const name = group.name;
     const length = Convert.getByteLength(name);
 
@@ -227,7 +224,7 @@ export class Me5File extends BinaryFile {
 
   private _setItem(
     offset: number,
-    item: IResourceStat,
+    item: Me5Stat,
     baseItemIndex: number,
     filter?: FilterFuntion<Me5Stat>
   ): Promise<number> {

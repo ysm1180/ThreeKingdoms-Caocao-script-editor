@@ -1,7 +1,7 @@
 'use strict';
 
 function main() {
-    require('../../editor/workbench/main').startup();
+    require('../../workbench/main').startup();
 }
 
 main();

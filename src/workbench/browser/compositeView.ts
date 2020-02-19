@@ -1,7 +1,7 @@
 import { DomBuilder } from '../../base/browser/domBuilder';
 import { Disposable } from '../../base/common/lifecycle';
 import { IEditorInput } from '../../platform/editor/editor';
-import { ClassDescriptor } from '../../platform/instantiation/descriptor';
+import { ClassDescriptor, ClassDescriptor0 } from '../../platform/instantiation/descriptors';
 
 export abstract class CompositeView extends Disposable {
   private id: string;
@@ -29,7 +29,7 @@ export abstract class CompositeView extends Disposable {
 }
 
 export class CompositeViewDescriptor {
-  public readonly ctor: ClassDescriptor<CompositeView>;
+  public readonly ctor: ClassDescriptor0<CompositeView>;
   public readonly id: string;
 
   constructor(ctor: new (...args: any[]) => CompositeView, id: string) {

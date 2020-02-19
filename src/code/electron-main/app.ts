@@ -1,7 +1,7 @@
 import { FileStorageService, IFileStorageService } from '../../platform/files/node/fileStorageService';
-import { ClassDescriptor } from '../../platform/instantiation/descriptor';
+import { ClassDescriptor } from '../../platform/instantiation/descriptors';
 import { ServicesAccessor } from '../../platform/instantiation/instantiation';
-import { IInstantiationService } from '../../platform/instantiation/instantiationService';
+import { IInstantiationService } from '../../platform/instantiation/instantiation';
 import { ServiceStorage } from '../../platform/instantiation/serviceStorage';
 import { IWindowMainService } from '../../platform/windows/electron-main/windows';
 import { WindowChannel } from '../../platform/windows/windowsIpc';
@@ -13,10 +13,7 @@ export class EditorApplication {
   private windowMainService: IWindowMainService;
   private windowChannel: WindowChannel;
 
-  constructor(
-    @IInstantiationService
-    private instantiationService: IInstantiationService
-  ) {}
+  constructor(@IInstantiationService private instantiationService: IInstantiationService) {}
 
   public startup() {
     const appInstantiationService = this.initServices();

@@ -1,15 +1,16 @@
-import { ClassDescriptor } from '../instantiation/descriptor';
 import { ContextKeyExpr } from '../contexts/contextKey';
+import { ClassDescriptor, ClassDescriptor1 } from '../instantiation/descriptors';
+import { IConstructorSignature0 } from '../instantiation/instantiation';
 
 export class StatusbarItemDescriptor {
-  public readonly ctor: ClassDescriptor<IStatusbarItem>;
+  public readonly ctor: ClassDescriptor1<IStatusbarEntry, IStatusbarItem>;
   public readonly id: string;
   public readonly alignment: StatusbarItemAlignment;
   public readonly when: ContextKeyExpr;
   public readonly priority: number;
 
   constructor(
-    ctor: new (...args: any[]) => IStatusbarItem,
+    ctor: IConstructorSignature0<IStatusbarItem>,
     id: string,
     alignment?: StatusbarItemAlignment,
     when?: ContextKeyExpr,

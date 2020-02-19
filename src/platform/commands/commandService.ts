@@ -1,14 +1,10 @@
-import { decorator } from '../instantiation/instantiation';
-import { IInstantiationService } from '../instantiation/instantiationService';
+import { IInstantiationService, decorator } from '../instantiation/instantiation';
 import { CommandsRegistry } from './commands';
 
 export const ICommandService = decorator<CommandService>('commandService');
 
 export class CommandService {
-  constructor(
-    @IInstantiationService
-    private instantiationService: IInstantiationService
-  ) {}
+  constructor(@IInstantiationService private instantiationService: IInstantiationService) {}
 
   public run<T>(id: string, ...args: any[]): T {
     const command = CommandsRegistry.getCommand(id);

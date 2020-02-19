@@ -1,7 +1,6 @@
+import { ClassDescriptor } from '../../../platform/instantiation/descriptors';
 import { CompositViewRegistry, CompositeViewDescriptor } from '../../browser/compositeView';
 import { EXPLORER_VIEW_ID, Me5ExplorerView } from '../../browser/parts/me5Explorer';
-
-import { ClassDescriptor } from '../../../platform/instantiation/descriptor';
 import { ResourceEditorInput } from '../../common/editor/resourceEditorInput';
 
 CompositViewRegistry.registerCompositeView(

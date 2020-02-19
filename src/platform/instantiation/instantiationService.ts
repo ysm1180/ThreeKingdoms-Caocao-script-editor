@@ -1,17 +1,7 @@
 import { Graph } from '../../base/common/graph';
-import { ClassDescriptor } from './descriptor';
-import { decorator, init, ServiceIdentifier, ServicesAccessor } from './instantiation';
+import { ClassDescriptor } from './descriptors';
+import { IInstantiationService, ServiceIdentifier, ServicesAccessor, init } from './instantiation';
 import { ServiceStorage } from './serviceStorage';
-
-export const IInstantiationService = decorator<InstantiationService>('instantiationService');
-
-export interface IInstantiationService {
-  create(param: any, ...rest: any[]): any;
-
-  createChild(services: ServiceStorage): IInstantiationService;
-
-  invokeFunction<R>(fn: (accessor: ServicesAccessor) => R, ...args: any[]);
-}
 
 function create(ctor: any, ...args: any[]): any {
   return new ctor(...args);

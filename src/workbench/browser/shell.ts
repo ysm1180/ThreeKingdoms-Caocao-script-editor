@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron';
 
 import { $, DomBuilder } from '../../base/browser/domBuilder';
-import { ClassDescriptor } from '../../platform/instantiation/descriptor';
+import { ClassDescriptor } from '../../platform/instantiation/descriptors';
 import { IInstantiationService } from '../../platform/instantiation/instantiation';
 import { InstantiationService } from '../../platform/instantiation/instantiationService';
 import { ServiceStorage } from '../../platform/instantiation/serviceStorage';
