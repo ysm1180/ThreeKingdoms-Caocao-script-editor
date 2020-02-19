@@ -1,12 +1,12 @@
-import { $, DomBuilder } from '../../../base/browser/domBuilder';
-import { Event } from '../../../base/common/event';
-import { IDimension } from '../../../editor/common/editorCommon';
-import { IInstantiationService } from '../../../platform/instantiation/instantiation';
-import { IPartService } from '../../services/part/partService';
-import { CompositViewRegistry, CompositeView } from '../compositeView';
-import { Part } from '../part';
-import { EditorGroup } from './editor/editorGroup';
-import { EditorPart, IEditorGroupService } from './editor/editorPart';
+import { $, DomBuilder } from '../../../../base/browser/domBuilder';
+import { Event } from '../../../../base/common/event';
+import { IDimension } from '../../../../editor/common/editorCommon';
+import { IInstantiationService } from '../../../../platform/instantiation/instantiation';
+import { IPartService } from '../../../services/part/partService';
+import { CompositViewRegistry, CompositeView } from '../../compositeView';
+import { Part } from '../../part';
+import { EditorGroup } from '../editor/editorGroup';
+import { EditorPart, IEditorGroupService } from '../editor/editorPart';
 
 export class SidebarPart extends Part {
   private instantiatedComposites: CompositeView[];

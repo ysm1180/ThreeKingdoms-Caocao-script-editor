@@ -10,7 +10,7 @@ import {
   me5ExplorerGroupContext,
   me5ExplorerItemContext,
   me5ExplorerRootContext,
-} from '../../browser/parts/me5Explorer';
+} from '../../browser/parts/editor/me5Explorer';
 import { ImageResource, ImageType } from '../../common/imageResource';
 import { IResourceFileService } from '../../services/binaryfile/binaryFiles';
 import { BinaryFileService } from '../../services/binaryfile/binaryFileService';

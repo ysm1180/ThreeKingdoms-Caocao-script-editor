@@ -1,12 +1,13 @@
 import { IDisposable, combinedDisposable } from '../../../../base/common/lifecycle';
 import { ContextKeyExpr } from '../../../../platform/contexts/contextKey';
 import { IEditorInput } from '../../../../platform/editor/editor';
-import { IStatusbarEntry, IStatusbarItem, StatusbarItemAlignment } from '../../../../platform/statusbar/statusbar';
+import { IStatusbarEntry, StatusbarItemAlignment } from '../../../../platform/statusbar/statusbar';
 import { ResourceEditorInput } from '../../../common/editor/resourceEditorInput';
 import { ImageResource } from '../../../common/imageResource';
 import { IResourceFileService } from '../../../services/binaryfile/binaryFiles';
 import { BinaryFileService } from '../../../services/binaryfile/binaryFileService';
-import { EditorPart, IEditorGroupService } from '../editor/editorPart';
+import { IStatusbarItem } from '../statusbar/statusbar';
+import { EditorPart, IEditorGroupService } from './editorPart';
 
 export class ImageViewStatusItem implements IStatusbarItem {
   private imageSize: HTMLElement;

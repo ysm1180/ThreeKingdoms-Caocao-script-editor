@@ -1,8 +1,8 @@
-import { DomBuilder } from '../../../base/browser/domBuilder';
-import { IInstantiationService, decorator } from '../../../platform/instantiation/instantiation';
-import { Part } from '../part';
-import { EditorPart, IEditorGroupService } from './editor/editorPart';
-import { TabControl } from './tabControl';
+import { DomBuilder } from '../../../../base/browser/domBuilder';
+import { IInstantiationService, decorator } from '../../../../platform/instantiation/instantiation';
+import { Part } from '../../part';
+import { EditorPart, IEditorGroupService } from '../editor/editorPart';
+import { TabControl } from '../editor/tabControl';
 
 export const ITitlePartService = decorator<TitlePart>('titlePart');
 

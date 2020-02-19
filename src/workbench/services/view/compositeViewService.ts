@@ -1,7 +1,7 @@
-import { CompositeView } from '../../browser/compositeView';
 import { Event } from '../../../base/common/event';
-import { SidebarPart } from '../../browser/parts/sidebarPart';
 import { decorator } from '../../../platform/instantiation/instantiation';
+import { CompositeView } from '../../browser/compositeView';
+import { SidebarPart } from '../../browser/parts/sidebar/sidebarPart';
 
 export const ICompositeViewService = decorator<CompositeViewService>('compositeViewService');
 

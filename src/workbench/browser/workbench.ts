@@ -5,6 +5,7 @@ import { ClassDescriptor } from '../../platform/instantiation/descriptors';
 import { IInstantiationService } from '../../platform/instantiation/instantiation';
 import { ServiceStorage } from '../../platform/instantiation/serviceStorage';
 import { IKeybindingService, KeybindingService } from '../../platform/keybindings/keybindingService';
+import { IStatusbarService } from '../../platform/statusbar/statusbar';
 import { ITreeService, TreeService } from '../../platform/tree/treeService';
 import { IWindowService } from '../../platform/windows/windows';
 import { WindowClientService } from '../../platform/windows/windowsIpc';
@@ -23,9 +24,9 @@ import { TextFileService } from '../services/textfile/textFileService';
 import { CompositeViewService, ICompositeViewService } from '../services/view/compositeViewService';
 import { WorkbenchLayout } from './layout';
 import { EditorPart, IEditorGroupService } from './parts/editor/editorPart';
-import { SidebarPart } from './parts/sidebarPart';
-import { IStatusbarService, StatusbarPart } from './parts/statusbarPart';
-import { ITitlePartService, TitlePart } from './parts/titlePart';
+import { SidebarPart } from './parts/sidebar/sidebarPart';
+import { StatusbarPart } from './parts/statusbar/statusbarPart';
+import { ITitlePartService, TitlePart } from './parts/titlebar/titlePart';
 
 export class Workbench implements IPartService {
   private container: HTMLElement;

@@ -3,9 +3,9 @@ import { ISashLayoutProvider, Sash } from '../../base/browser/ui/sash';
 import { Disposable, IDisposable } from '../../base/common/lifecycle';
 import { IPartService } from '../services/part/partService';
 import { EditorPart, IEditorGroupService } from './parts/editor/editorPart';
-import { SidebarPart } from './parts/sidebarPart';
-import { StatusbarPart } from './parts/statusbarPart';
-import { TitlePart } from './parts/titlePart';
+import { SidebarPart } from './parts/sidebar/sidebarPart';
+import { StatusbarPart } from './parts/statusbar/statusbarPart';
+import { TitlePart } from './parts/titlebar/titlePart';
 
 const MIN_SIDEBAR_PART_WIDTH = 170;
 const DEFAULT_SIDEBAR_PART_WIDTH = 300;

@@ -1,11 +1,7 @@
-import {
-  StatusbarItemAlignment,
-  StatusbarItemDescriptor,
-  StatusbarRegistry,
-} from '../../../platform/statusbar/statusbar';
-
-import { ImageViewStatusItem } from '../../browser/parts/statusbar/me5ImageViewStatus';
-import { me5ExplorerItemContext } from '../../browser/parts/me5Explorer';
+import { StatusbarItemAlignment } from '../../../platform/statusbar/statusbar';
+import { me5ExplorerItemContext } from '../../browser/parts/editor/me5Explorer';
+import { ImageViewStatusItem } from '../../browser/parts/editor/me5ImageViewStatus';
+import { StatusbarItemDescriptor, StatusbarRegistry } from '../../browser/parts/statusbar/statusbar';
 
 StatusbarRegistry.registerStatusbarItem(
   new StatusbarItemDescriptor(

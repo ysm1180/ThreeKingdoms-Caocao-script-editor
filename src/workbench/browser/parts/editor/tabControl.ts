@@ -1,7 +1,7 @@
-import * as Dom from '../../../base/browser/dom';
-import { combinedDisposable, IDisposable } from '../../../base/common/lifecycle';
-import { EditorGroup } from './editor/editorGroup';
-import { EditorPart, IEditorGroupService } from './editor/editorPart';
+import * as Dom from '../../../../base/browser/dom';
+import { IDisposable, combinedDisposable } from '../../../../base/common/lifecycle';
+import { EditorGroup } from './editorGroup';
+import { EditorPart, IEditorGroupService } from './editorPart';
 
 export class TabControl {
   private parent: HTMLElement;
