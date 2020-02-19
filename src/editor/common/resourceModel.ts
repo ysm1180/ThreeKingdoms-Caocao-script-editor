@@ -1,6 +1,6 @@
 import { isNullOrUndefined } from '../../base/common/types';
 import { IStringStream } from '../../platform/files/files';
-import { Me5ResourceBuffer } from '../../workbench/common/model/me5ResourceBuffer';
+import { Me5ResourceBuffer } from './model/me5ResourceBuffer';
 import { ResourceBuffer } from './model/resourceBuffer';
 import { ResourceBufferBuilder, ResourceBufferFactory } from './model/resourceBufferBuilder';
 

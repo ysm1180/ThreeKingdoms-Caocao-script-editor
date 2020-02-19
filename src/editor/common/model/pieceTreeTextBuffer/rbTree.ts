@@ -1,6 +1,6 @@
 'use strict';
 
-import { Piece, PieceTreeBase } from '../pieceTreeBase';
+import { Piece, PieceTreeBase } from './pieceTreeBase';
 
 export const enum NodeColor {
   Black = 0,

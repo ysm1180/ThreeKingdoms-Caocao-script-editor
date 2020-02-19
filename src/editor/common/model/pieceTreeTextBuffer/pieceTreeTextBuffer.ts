@@ -1,6 +1,5 @@
+import { ITextBuffer } from '../../models';
 import { PieceTreeBase, StringBuffer } from './pieceTreeBase';
-
-import { ITextBuffer } from '../models';
 
 export class PieceTreeTextBuffer implements ITextBuffer {
   private pieceTree: PieceTreeBase;

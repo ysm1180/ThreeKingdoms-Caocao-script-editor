@@ -1,5 +1,5 @@
-import { Me5File } from '../../../editor/common/me5File';
-import { ResourceBuffer } from '../../../editor/common/model/resourceBuffer';
+import { Me5File } from '../me5File';
+import { ResourceBuffer } from './resourceBuffer';
 
 export class Me5ResourceBuffer extends ResourceBuffer {
   constructor(buffer: Buffer) {

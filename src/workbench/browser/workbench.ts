@@ -11,7 +11,7 @@ import { IWindowService } from '../../platform/windows/windows';
 import { WindowClientService } from '../../platform/windows/windowsIpc';
 import { IResourceFileService } from '../services/binaryfile/binaryFiles';
 import { IResourceDataService } from '../services/binaryfile/resourceDataService';
-import { ContextMenuService, IContextMenuService } from '../services/contextmenuService';
+import { ContextMenuService, IContextMenuService } from '../services/contextmenu/contextmenuService';
 import { IWorkbenchEditorService, WorkbenchEditorService } from '../services/editor/editorService';
 import { DialogService, IDialogService } from '../services/electron-browser/dialogService';
 import { IFileService } from '../services/files/files';

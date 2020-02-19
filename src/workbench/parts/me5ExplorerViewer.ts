@@ -11,7 +11,7 @@ import { ContextKey, ContextKeyService, IContextKeyService } from '../../platfor
 import { ContextMenuEvent } from '../../platform/events/contextMenuEvent';
 import { IResourceFileService } from '../services/binaryfile/binaryFiles';
 import { BinaryFileService } from '../services/binaryfile/binaryFileService';
-import { ContextMenuService, IContextMenuService } from '../services/contextmenuService';
+import { ContextMenuService, IContextMenuService } from '../services/contextmenu/contextmenuService';
 import { IWorkbenchEditorService, WorkbenchEditorService } from '../services/editor/editorService';
 import { ItemState, Me5Stat } from './files/me5Data';
 

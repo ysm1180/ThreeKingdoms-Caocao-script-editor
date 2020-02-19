@@ -1,7 +1,6 @@
-import * as models from './models';
-
 import { IStringStream } from '../../platform/files/files';
-import { PieceTreeTextBufferBuilder } from './model/pieceTreeTextBufferBuilder';
+import { PieceTreeTextBufferBuilder } from './model/pieceTreeTextBuffer/pieceTreeTextBufferBuilder';
+import * as models from './models';
 
 export function createTextBufferBuilder() {
   return new PieceTreeTextBufferBuilder();

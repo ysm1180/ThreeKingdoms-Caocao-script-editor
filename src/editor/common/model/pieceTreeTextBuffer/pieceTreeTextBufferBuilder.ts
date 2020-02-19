@@ -1,6 +1,5 @@
+import { ITextBufferFactory } from '../../models';
 import { StringBuffer, createLineStartsFast } from './pieceTreeBase';
-
-import { ITextBufferFactory } from '../models';
 import { PieceTreeTextBuffer } from './pieceTreeTextBuffer';
 
 export class PieceTreeTextBufferFactory implements ITextBufferFactory {
