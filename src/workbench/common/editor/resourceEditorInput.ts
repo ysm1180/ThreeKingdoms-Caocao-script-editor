@@ -1,7 +1,7 @@
 import { IDisposable } from '../../../base/common/lifecycle';
 import { IEditorInput } from '../../../platform/editor/editor';
 import { ResourceFileEditorModel } from '../../browser/parts/editor/resourceFileEditorModel';
-import { ResourceViewEditor } from '../../browser/parts/editor/resourceViewEditor';
+import { ResourceEditor } from '../../browser/parts/editor/resourceViewEditor';
 import { IResourceFileService } from '../../services/resourceFile/resourcefiles';
 import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
 import { EditorInput } from '../editor';
@@ -55,7 +55,7 @@ export class ResourceEditorInput extends EditorInput {
   }
 
   public getPreferredEditorId(): string {
-    return ResourceViewEditor.ID;
+    return ResourceEditor.ID;
   }
 
   public isSaving(): boolean {

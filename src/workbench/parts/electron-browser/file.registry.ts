@@ -2,13 +2,13 @@ import { IEditorInput } from '../../../platform/editor/editor';
 import { ClassDescriptor } from '../../../platform/instantiation/descriptors';
 import { EditorDescriptor, EditorRegistry } from '../../browser/editor';
 import { ControlEditor } from '../../browser/parts/editor/controlEditor';
-import { ResourceViewEditor } from '../../browser/parts/editor/resourceViewEditor';
+import { ResourceEditor } from '../../browser/parts/editor/resourceViewEditor';
 import { TextFileEditor } from '../../browser/parts/editor/textFileEditor';
 import { ResourceEditorInput } from '../../common/editor/resourceEditorInput';
 import { FileEditorInput } from '../files/fileEditorInput';
 
 EditorRegistry.registerEditor(
-  new EditorDescriptor(ResourceViewEditor, ResourceViewEditor.ID),
+  new EditorDescriptor(ResourceEditor, ResourceEditor.ID),
   new ClassDescriptor<IEditorInput>(ResourceEditorInput)
 );
 

@@ -311,12 +311,12 @@ body {
     height: 100%;
 }
 
-.editor-container > .resource-viewer-editor {
+.editor-container > .resource-editor {
     display: flex;
     height: 100%;
 }
 
-.resource-viewer-editor > .image-view {
+.resource-editor > .image-view {
     position: relative;
     width: 100%;
     height: 100%;

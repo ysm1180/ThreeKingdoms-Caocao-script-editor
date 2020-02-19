@@ -1,10 +1,9 @@
-import { $, DomBuilder } from '../domBuilder';
 import { Disposable, IDisposable, dispose } from '../../common/lifecycle';
 import { addClass, addDisposableEventListener, removeClass } from '../dom';
-
+import { $, DomBuilder } from '../domBuilder';
 import { StandardMouseEvent } from '../mouseEvent';
 
-export class AudioPlayer extends Disposable {
+export class Audio extends Disposable {
   private parent: HTMLElement;
   private container: HTMLElement;
   private playButton: HTMLElement;

@@ -1,25 +1,24 @@
 import { $, DomBuilder } from '../../../../base/browser/domBuilder';
-
-import { BaseEditor } from './baseEditor';
-import { BinaryResourceViewer } from './resourceViewer';
 import { IDimension } from '../../../../editor/common/editorCommon';
 import { ResourceEditorInput } from '../../../common/editor/resourceEditorInput';
+import { BaseEditor } from './baseEditor';
 import { ResourceFileEditorModel } from './resourceFileEditorModel';
+import { ResourceViewer } from './resourceViewer';
 
-export class ResourceViewEditor extends BaseEditor {
-  static ID = 'editor.resourceViewerEditor';
+export class ResourceEditor extends BaseEditor {
+  static ID = 'editor.resourceEditor';
 
   private viewer: DomBuilder;
 
   constructor() {
-    super(ResourceViewEditor.ID);
+    super(ResourceEditor.ID);
   }
 
   public create(parent: DomBuilder) {
     super.create(parent);
 
     this.viewer = $().div({
-      class: 'resource-viewer-editor',
+      class: 'resource-editor',
     });
 
     this.viewer.build(parent);
@@ -46,7 +45,7 @@ export class ResourceViewEditor extends BaseEditor {
         if (resource) {
           this.viewer.show();
 
-          BinaryResourceViewer.show({ resource }, this.viewer);
+          ResourceViewer.show({ resource }, this.viewer);
         } else {
           this.viewer.hide();
         }
