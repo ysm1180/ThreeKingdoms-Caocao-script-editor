@@ -97,6 +97,7 @@
   },
   "dependencies": {
     "bmp-js": "^0.1.0",
+    "gulp-sourcemaps": "^2.6.5",
     "iconv-lite": "^0.5.1",
     "jpeg-js": "^0.3.7",
     "pngjs": "^3.4.0",
