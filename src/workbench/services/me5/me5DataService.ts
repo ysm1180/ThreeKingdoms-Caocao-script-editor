@@ -1,7 +1,7 @@
 import { Me5File } from '../../../editor/common/me5File';
 import { IInstantiationService } from '../../../platform/instantiation/instantiation';
 import { Me5Stat } from '../../parts/files/me5Data';
-import { IResourceStat, ResourceDataService } from '../resourceFile/resourceDataService';
+import { IResourceStat, ResourceDataService } from '../binaryfile/resourceDataService';
 
 export class Me5DataService extends ResourceDataService {
   constructor(@IInstantiationService private instantiationService: IInstantiationService) {

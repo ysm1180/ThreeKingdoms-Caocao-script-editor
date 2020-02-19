@@ -8,9 +8,9 @@ import { ITreeService, TreeService } from '../../../platform/tree/treeService';
 import { ResourceEditorInput } from '../../common/editor/resourceEditorInput';
 import { Me5Stat } from '../../parts/files/me5Data';
 import { Me5DataController, Me5DataRenderer, Me5DataSource } from '../../parts/me5ExplorerViewer';
-import { IResourceStat } from '../../services/resourceFile/resourceDataService';
-import { IResourceFileService } from '../../services/resourceFile/resourcefiles';
-import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
+import { IResourceFileService } from '../../services/binaryfile/binaryFiles';
+import { BinaryFileService } from '../../services/binaryfile/binaryFileService';
+import { IResourceStat } from '../../services/binaryfile/resourceDataService';
 import { CompositeViewService, ICompositeViewService } from '../../services/view/compositeViewService';
 import { CompositeView } from '../compositeView';
 import { EditorGroup } from './editor/editorGroup';
@@ -90,7 +90,7 @@ export class Me5ExplorerView extends CompositeView {
     @IContextKeyService private contextKeyService: ContextKeyService,
     @IEditorGroupService private editorService: EditorPart,
     @ICompositeViewService private compositeViewService: CompositeViewService,
-    @IResourceFileService private resourceFileService: ResourceFileService,
+    @IResourceFileService private resourceFileService: BinaryFileService,
     @IInstantiationService private instantiationService: IInstantiationService
   ) {
     super(EXPLORER_VIEW_ID);

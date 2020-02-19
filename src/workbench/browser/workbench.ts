@@ -8,6 +8,8 @@ import { IKeybindingService, KeybindingService } from '../../platform/keybinding
 import { ITreeService, TreeService } from '../../platform/tree/treeService';
 import { IWindowService } from '../../platform/windows/windows';
 import { WindowClientService } from '../../platform/windows/windowsIpc';
+import { IResourceFileService } from '../services/binaryfile/binaryFiles';
+import { IResourceDataService } from '../services/binaryfile/resourceDataService';
 import { ContextMenuService, IContextMenuService } from '../services/contextmenuService';
 import { IWorkbenchEditorService, WorkbenchEditorService } from '../services/editor/editorService';
 import { DialogService, IDialogService } from '../services/electron-browser/dialogService';
@@ -16,8 +18,6 @@ import { FileService } from '../services/files/node/fileService';
 import { Me5DataService } from '../services/me5/me5DataService';
 import { Me5FileService } from '../services/me5/me5FileService';
 import { IPartService } from '../services/part/partService';
-import { IResourceDataService } from '../services/resourceFile/resourceDataService';
-import { IResourceFileService } from '../services/resourceFile/resourcefiles';
 import { ITextFileService } from '../services/textfile/textfiles';
 import { TextFileService } from '../services/textfile/textFileService';
 import { CompositeViewService, ICompositeViewService } from '../services/view/compositeViewService';

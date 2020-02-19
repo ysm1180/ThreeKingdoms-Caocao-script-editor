@@ -1,9 +1,9 @@
 import { IDisposable } from '../../../base/common/lifecycle';
 import { IEditorInput } from '../../../platform/editor/editor';
-import { ResourceFileEditorModel } from '../../browser/parts/editor/resourceFileEditorModel';
-import { ResourceEditor } from '../../browser/parts/editor/resourceViewEditor';
-import { IResourceFileService } from '../../services/resourceFile/resourcefiles';
-import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
+import { ResourceEditor } from '../../browser/parts/editor/resourceEditor';
+import { BinaryFileEditorModel } from '../../services/binaryfile/binaryFileEditorModel';
+import { IResourceFileService } from '../../services/binaryfile/binaryFiles';
+import { BinaryFileService } from '../../services/binaryfile/binaryFileService';
 import { EditorInput } from '../editor';
 
 export class ResourceEditorInput extends EditorInput {
@@ -12,7 +12,7 @@ export class ResourceEditorInput extends EditorInput {
   constructor(
     private resource: string,
     private name: string,
-    @IResourceFileService private resourceFileService: ResourceFileService
+    @IResourceFileService private resourceFileService: BinaryFileService
   ) {
     super();
 
@@ -79,7 +79,7 @@ export class ResourceEditorInput extends EditorInput {
     return this.resource === other.getResource();
   }
 
-  public resolve(refresh?: boolean): Promise<ResourceFileEditorModel> {
+  public resolve(refresh?: boolean): Promise<BinaryFileEditorModel> {
     return Promise.resolve().then(() => {
       return this.resourceFileService.models.loadOrCreate(this.resource, refresh);
     });

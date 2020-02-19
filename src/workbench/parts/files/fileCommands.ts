@@ -1,15 +1,14 @@
 import { KeyCode, KeyMode } from '../../../base/common/keyCodes';
-
-import { IResourceFileService } from '../../services/resourceFile/resourcefiles';
-import { IWorkbenchEditorService } from '../../services/editor/editorService';
-import { KeybindingsRegistry } from '../../../platform/keybindings/keybindingsRegistry';
-import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
 import { ServicesAccessor } from '../../../platform/instantiation/instantiation';
+import { KeybindingsRegistry } from '../../../platform/keybindings/keybindingsRegistry';
 import { editorInputActivatedContext } from '../../browser/parts/editor/editorPart';
+import { IResourceFileService } from '../../services/binaryfile/binaryFiles';
+import { BinaryFileService } from '../../services/binaryfile/binaryFileService';
+import { IWorkbenchEditorService } from '../../services/editor/editorService';
 
 export const SAVE_FILE_ID = 'SAVE_FILE';
 
-function save(path: string, me5FileService: ResourceFileService) {
+function save(path: string, me5FileService: BinaryFileService) {
   me5FileService.save(path);
 }
 

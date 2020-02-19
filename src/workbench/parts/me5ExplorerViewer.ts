@@ -9,10 +9,10 @@ import { MenuId } from '../../platform/actions/registry';
 import { RawContextKey } from '../../platform/contexts/contextKey';
 import { ContextKey, ContextKeyService, IContextKeyService } from '../../platform/contexts/contextKeyService';
 import { ContextMenuEvent } from '../../platform/events/contextMenuEvent';
+import { IResourceFileService } from '../services/binaryfile/binaryFiles';
+import { BinaryFileService } from '../services/binaryfile/binaryFileService';
 import { ContextMenuService, IContextMenuService } from '../services/contextmenuService';
 import { IWorkbenchEditorService, WorkbenchEditorService } from '../services/editor/editorService';
-import { IResourceFileService } from '../services/resourceFile/resourcefiles';
-import { ResourceFileService } from '../services/resourceFile/resourceFileService';
 import { ItemState, Me5Stat } from './files/me5Data';
 
 export const explorerEditableItemId = 'explorerRename';
@@ -122,7 +122,7 @@ export class Me5DataController implements IDataController {
   constructor(
     @IWorkbenchEditorService private editorService: WorkbenchEditorService,
     @IContextMenuService private contextMenuService: ContextMenuService,
-    @IResourceFileService private resourceFileService: ResourceFileService
+    @IResourceFileService private resourceFileService: BinaryFileService
   ) {}
 
   public onClick(tree: Tree, element: Me5Stat) {

@@ -1,9 +1,9 @@
 import { Disposable, IDisposable, once, toDisposable } from '../../../base/common/lifecycle';
 import { LinkedList } from '../../../base/common/linkedList';
+import { IResourceFileService } from '../../services/binaryfile/binaryFiles';
+import { BinaryFileService } from '../../services/binaryfile/binaryFileService';
+import { FilterFuntion, IResourceStat } from '../../services/binaryfile/resourceDataService';
 import { IWorkbenchEditorService, WorkbenchEditorService } from '../../services/editor/editorService';
-import { FilterFuntion, IResourceStat } from '../../services/resourceFile/resourceDataService';
-import { IResourceFileService } from '../../services/resourceFile/resourcefiles';
-import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
 
 export enum ItemState {
   Normal,
@@ -26,7 +26,7 @@ export class Me5Stat extends Disposable implements IResourceStat {
     isGroup: boolean,
     public root: Me5Stat,
     index: number,
-    @IResourceFileService private resourceFileService: ResourceFileService,
+    @IResourceFileService private resourceFileService: BinaryFileService,
     @IWorkbenchEditorService private editorService: WorkbenchEditorService
   ) {
     super();

@@ -12,10 +12,10 @@ import {
   me5ExplorerRootContext,
 } from '../../browser/parts/me5Explorer';
 import { ImageResource, ImageType } from '../../common/imageResource';
+import { IResourceFileService } from '../../services/binaryfile/binaryFiles';
+import { BinaryFileService } from '../../services/binaryfile/binaryFileService';
 import { IWorkbenchEditorService, WorkbenchEditorService } from '../../services/editor/editorService';
 import { DialogService, IDialogService } from '../../services/electron-browser/dialogService';
-import { IResourceFileService } from '../../services/resourceFile/resourcefiles';
-import { ResourceFileService } from '../../services/resourceFile/resourceFileService';
 import { ItemState, Me5Stat } from '../files/me5Data';
 import { explorerEditContext } from '../me5ExplorerViewer';
 
@@ -35,7 +35,7 @@ function resolveImageData(file: BinaryFile): Promise<Uint8Array> {
 }
 
 function doChangeItem(
-  resourceFileService: ResourceFileService,
+  resourceFileService: BinaryFileService,
   editorService: WorkbenchEditorService,
   dialogService: DialogService,
   treeService: TreeService
@@ -85,7 +85,7 @@ function doChangeItem(
 }
 
 function doInsertItem(
-  resourceFileService: ResourceFileService,
+  resourceFileService: BinaryFileService,
   editorService: WorkbenchEditorService,
   dialogService: DialogService,
   treeService: TreeService,

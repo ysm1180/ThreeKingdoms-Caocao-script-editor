@@ -3,12 +3,12 @@ import { createMe5ResourceBufferFactoryFromStream } from '../../../editor/common
 import { ISavingFile } from '../../../platform/dialogs/dialogs';
 import { IInstantiationService } from '../../../platform/instantiation/instantiation';
 import { Me5Stat } from '../../parts/files/me5Data';
+import { BinaryFileService } from '../binaryfile/binaryFileService';
 import { DialogService, IDialogService } from '../electron-browser/dialogService';
 import { IFileService } from '../files/files';
-import { ResourceFileService } from '../resourceFile/resourceFileService';
 import { IRawResourceContent } from '../textfile/textfiles';
 
-export class Me5FileService extends ResourceFileService {
+export class Me5FileService extends BinaryFileService {
   constructor(
     @IFileService private fileService: IFileService,
     @IDialogService private dialogService: DialogService,

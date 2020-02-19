@@ -1,18 +1,18 @@
-import { Event } from '../../../../base/common/event';
-import { StateChange } from '../../../../platform/files/files';
-import { ResourceBufferFactory } from '../../../../editor/common/model/resourceBufferBuilder';
-import { ResourceModel } from '../../../../editor/common/resourceModel';
-import { IEditorModel } from '../../../services/files/files';
+import { Event } from '../../../base/common/event';
+import { ResourceBufferFactory } from '../../../editor/common/model/resourceBufferBuilder';
+import { ResourceModel } from '../../../editor/common/resourceModel';
+import { StateChange } from '../../../platform/files/files';
+import { IEditorModel } from '../files/files';
+import { IRawResourceContent } from '../textfile/textfiles';
+import { IResourceFileService } from './binaryFiles';
+import { BinaryFileService } from './binaryFileService';
 import {
   IResourceDataService,
   IResourceStat,
   ResourceDataService,
-} from '../../../services/resourceFile/resourceDataService';
-import { IResourceFileService } from '../../../services/resourceFile/resourcefiles';
-import { ResourceFileService } from '../../../services/resourceFile/resourceFileService';
-import { IRawResourceContent } from '../../../services/textfile/textfiles';
+} from './resourceDataService';
 
-export class ResourceFileEditorModel implements IEditorModel {
+export class BinaryFileEditorModel implements IEditorModel {
   private _resourceModel: ResourceModel;
   private _resourceStat: IResourceStat;
 
@@ -24,7 +24,7 @@ export class ResourceFileEditorModel implements IEditorModel {
 
   constructor(
     private resource: string,
-    @IResourceFileService private resourceFileService: ResourceFileService,
+    @IResourceFileService private resourceFileService: BinaryFileService,
     @IResourceDataService private resourceDataService: ResourceDataService
   ) {
     this._resourceModel = null;
@@ -44,22 +44,22 @@ export class ResourceFileEditorModel implements IEditorModel {
     return this.resource;
   }
 
-  public load(): Promise<ResourceFileEditorModel> {
+  public load(): Promise<BinaryFileEditorModel> {
     return this._loadFromFile();
   }
 
-  private _loadFromFile(): Promise<ResourceFileEditorModel> {
+  private _loadFromFile(): Promise<BinaryFileEditorModel> {
     return this.resourceFileService.resolveRawContent(this.resource).then(
       (content) => this._loadWithContent(content),
       () => this.onHandleFailed()
     );
   }
 
-  private _loadWithContent(content: IRawResourceContent): Promise<ResourceFileEditorModel> {
+  private _loadWithContent(content: IRawResourceContent): Promise<BinaryFileEditorModel> {
     return this._createResourceEditorModel(content.value);
   }
 
-  private _createResourceEditorModel(value: ResourceBufferFactory): Promise<ResourceFileEditorModel> {
+  private _createResourceEditorModel(value: ResourceBufferFactory): Promise<BinaryFileEditorModel> {
     this._createResourceModel(value);
     return this._createResourceStat().then((result) => {
       this._resourceStat = result;

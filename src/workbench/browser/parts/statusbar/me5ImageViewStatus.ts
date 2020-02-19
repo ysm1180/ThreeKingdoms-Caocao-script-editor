@@ -1,11 +1,11 @@
-import { combinedDisposable, IDisposable } from '../../../../base/common/lifecycle';
+import { IDisposable, combinedDisposable } from '../../../../base/common/lifecycle';
 import { ContextKeyExpr } from '../../../../platform/contexts/contextKey';
 import { IEditorInput } from '../../../../platform/editor/editor';
 import { IStatusbarEntry, IStatusbarItem, StatusbarItemAlignment } from '../../../../platform/statusbar/statusbar';
 import { ResourceEditorInput } from '../../../common/editor/resourceEditorInput';
 import { ImageResource } from '../../../common/imageResource';
-import { IResourceFileService } from '../../../services/resourceFile/resourcefiles';
-import { ResourceFileService } from '../../../services/resourceFile/resourceFileService';
+import { IResourceFileService } from '../../../services/binaryfile/binaryFiles';
+import { BinaryFileService } from '../../../services/binaryfile/binaryFileService';
 import { EditorPart, IEditorGroupService } from '../editor/editorPart';
 
 export class ImageViewStatusItem implements IStatusbarItem {
@@ -16,7 +16,7 @@ export class ImageViewStatusItem implements IStatusbarItem {
   constructor(
     private entry: IStatusbarEntry,
     @IEditorGroupService private editorService: EditorPart,
-    @IResourceFileService private resourceFileService: ResourceFileService
+    @IResourceFileService private resourceFileService: BinaryFileService
   ) {}
 
   public get alignment(): StatusbarItemAlignment {

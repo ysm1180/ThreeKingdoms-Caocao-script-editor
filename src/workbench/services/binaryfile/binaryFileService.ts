@@ -1,16 +1,16 @@
 import { IInstantiationService } from '../../../platform/instantiation/instantiation';
 import { IRawResourceContent } from '../textfile/textfiles';
+import { BinaryFileEditorModelManager } from './binaryFileEditorModelManager';
 import { IResourceStat } from './resourceDataService';
-import { ResourceFileEditorModelManager } from './resourceFileEditorModelManager';
 
-export abstract class ResourceFileService {
-  protected _models: ResourceFileEditorModelManager;
+export abstract class BinaryFileService {
+  protected _models: BinaryFileEditorModelManager;
 
   constructor(protected instantiationService: IInstantiationService) {
-    this._models = this.instantiationService.create(ResourceFileEditorModelManager);
+    this._models = this.instantiationService.create(BinaryFileEditorModelManager);
   }
 
-  public get models(): ResourceFileEditorModelManager {
+  public get models(): BinaryFileEditorModelManager {
     return this._models;
   }
 

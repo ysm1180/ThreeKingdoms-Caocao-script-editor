@@ -1,11 +1,11 @@
 import { Event } from '../../../base/common/event';
 import { StateChange } from '../../../platform/files/files';
 import { IInstantiationService } from '../../../platform/instantiation/instantiation';
-import { ResourceFileEditorModel } from '../../browser/parts/editor/resourceFileEditorModel';
+import { BinaryFileEditorModel } from './binaryFileEditorModel';
 
-export class ResourceFileEditorModelManager {
-  private mapResourceToModel: Map<String, ResourceFileEditorModel>;
-  private mapResourceToPendingModelLoaders: Map<String, Promise<ResourceFileEditorModel>>;
+export class BinaryFileEditorModelManager {
+  private mapResourceToModel: Map<String, BinaryFileEditorModel>;
+  private mapResourceToPendingModelLoaders: Map<String, Promise<BinaryFileEditorModel>>;
 
   public onModelSaving = new Event<void>();
   public onModelSaved = new Event<void>();
@@ -13,15 +13,15 @@ export class ResourceFileEditorModelManager {
   public onModelLoaded = new Event<void>();
 
   constructor(@IInstantiationService private instantiationService: IInstantiationService) {
-    this.mapResourceToModel = new Map<String, ResourceFileEditorModel>();
-    this.mapResourceToPendingModelLoaders = new Map<String, Promise<ResourceFileEditorModel>>();
+    this.mapResourceToModel = new Map<String, BinaryFileEditorModel>();
+    this.mapResourceToPendingModelLoaders = new Map<String, Promise<BinaryFileEditorModel>>();
   }
 
-  public get(resource: string): ResourceFileEditorModel {
+  public get(resource: string): BinaryFileEditorModel {
     return this.mapResourceToModel.get(resource);
   }
 
-  public loadOrCreate(resource: string, refresh?: boolean): Promise<ResourceFileEditorModel> {
+  public loadOrCreate(resource: string, refresh?: boolean): Promise<BinaryFileEditorModel> {
     const pendingLoad = this.mapResourceToPendingModelLoaders.get(resource);
     if (pendingLoad) {
       return pendingLoad;
@@ -29,7 +29,7 @@ export class ResourceFileEditorModelManager {
 
     let model = this.get(resource);
 
-    let modelLoadPromise: Promise<ResourceFileEditorModel>;
+    let modelLoadPromise: Promise<BinaryFileEditorModel>;
     if (model) {
       if (!refresh) {
         modelLoadPromise = Promise.resolve(model);
@@ -37,7 +37,7 @@ export class ResourceFileEditorModelManager {
         modelLoadPromise = model.load();
       }
     } else {
-      model = this.instantiationService.create(ResourceFileEditorModel, resource);
+      model = this.instantiationService.create(BinaryFileEditorModel, resource);
       modelLoadPromise = model.load();
 
       model.onDidStateChanged.add((state) => {
@@ -74,7 +74,7 @@ export class ResourceFileEditorModelManager {
     return !!pendingLoad;
   }
 
-  private _add(resource: string, model: ResourceFileEditorModel) {
+  private _add(resource: string, model: BinaryFileEditorModel) {
     const knownModel = this.mapResourceToModel.get(resource);
     if (knownModel === model) {
       return;

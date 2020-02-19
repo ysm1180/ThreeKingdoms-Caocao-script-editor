@@ -1,8 +1,8 @@
 import { $, DomBuilder } from '../../../../base/browser/domBuilder';
 import { IDimension } from '../../../../editor/common/editorCommon';
 import { ResourceEditorInput } from '../../../common/editor/resourceEditorInput';
+import { BinaryFileEditorModel } from '../../../services/binaryfile/binaryFileEditorModel';
 import { BaseEditor } from './baseEditor';
-import { ResourceFileEditorModel } from './resourceFileEditorModel';
 import { ResourceViewer } from './resourceViewer';
 
 export class ResourceEditor extends BaseEditor {
@@ -31,8 +31,8 @@ export class ResourceEditor extends BaseEditor {
         return Promise.resolve();
       }
 
-      return input.resolve(refresh).then((editorModel: ResourceFileEditorModel) => {
-        if (!(editorModel instanceof ResourceFileEditorModel)) {
+      return input.resolve(refresh).then((editorModel: BinaryFileEditorModel) => {
+        if (!(editorModel instanceof BinaryFileEditorModel)) {
           return;
         }
 

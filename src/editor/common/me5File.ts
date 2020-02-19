@@ -7,7 +7,7 @@ import * as Convert from '../../base/common/convert';
 import { BinaryFile } from '../../platform/files/file';
 import { ImageResource } from '../../workbench/common/imageResource';
 import { Me5Stat } from '../../workbench/parts/files/me5Data';
-import { FilterFuntion, IResourceStat } from '../../workbench/services/resourceFile/resourceDataService';
+import { FilterFuntion, IResourceStat } from '../../workbench/services/binaryfile/resourceDataService';
 
 export class Me5File extends BinaryFile {
   public static readonly ALL_ITEM_COUNT_OFFSET = 1;
