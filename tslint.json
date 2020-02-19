@@ -16,7 +16,7 @@
         "no-string-throw": true,
         "no-unsafe-finally": true,
         "no-var-keyword": true,
-        "number-literal-format": true,
+        "number-literal-format": false,
         "no-unused-expression": true,
         "no-duplicate-variable": true,
         "quotemark": [
