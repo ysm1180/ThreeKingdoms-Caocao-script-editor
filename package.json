@@ -88,6 +88,7 @@
     "gulp-tsb": "^4.0.5",
     "gulp-tslint": "^8.1.4",
     "gulp-typescript": "^6.0.0-alpha.1",
+    "import-sort-parser-typescript": "^6.0.0",
     "path": "^0.12.7",
     "rimraf": "^3.0.2",
     "tslint": "^6.0.0",
@@ -102,5 +103,11 @@
     "requirejs": "^2.3.6",
     "sharp": "^0.24.1"
   },
-  "postinstall": "electron-builder install-app-deps"
+  "postinstall": "electron-builder install-app-deps",
+  "importSort": {
+    ".js, .jsx, .ts, .tsx": {
+      "style": "module",
+      "parser": "typescript"
+    }
+  }
 }
