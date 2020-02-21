@@ -1,55 +1,8 @@
 {
   "name": "newjojogame-script-editor",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "dist/main.js",
-  "build": {
-    "productName": "JojoGameEditor",
-    "appId": "com.electron.jojoeditor",
-    "asar": true,
-    "protocols": {
-      "name": "JojoGameEditor",
-      "schemes": [
-        "JojoGameEditor"
-      ]
-    },
-    "mac": {
-      "target": [
-        "default"
-      ],
-      "icon": "./resources/installer/Icon.icns"
-    },
-    "dmg": {
-      "title": "JojoGameEditor",
-      "icon": "./resources/installer/Icon.icns"
-    },
-    "win": {
-      "target": [
-        "zip",
-        "nsis"
-      ],
-      "icon": "./resources/installer/Icon.ico"
-    },
-    "linux": {
-      "target": [
-        "AppImage",
-        "deb",
-        "rpm",
-        "zip",
-        "tar.gz"
-      ],
-      "icon": "./resources/linuxicon"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
-    },
-    "directories": {
-      "buildResources": "resources/installer/",
-      "output": "bin/",
-      "app": "."
-    }
-  },
   "files": [
     "**/*",
     "!src/*"
@@ -74,8 +27,9 @@
     "url": "https://github.com/ysm1180/newjojogame-script-editor/issues"
   },
   "homepage": "https://github.com/ysm1180/newjojogame-script-editor#readme",
-  "devDependencies": {
+  "dependencies": {
     "@types/gulp": "^4.0.5",
+    "bmp-js": "^0.1.0",
     "cross-env": "^7.0.0",
     "electron": ">=8.0.1",
     "electron-builder": "^22.3.2",
@@ -85,24 +39,21 @@
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.2.0",
     "gulp-htmlmin": "^5.0.1",
+    "gulp-sourcemaps": "^2.6.5",
     "gulp-tsb": "^4.0.5",
     "gulp-tslint": "^8.1.4",
     "gulp-typescript": "^6.0.0-alpha.1",
+    "iconv-lite": "^0.5.1",
     "import-sort-parser-typescript": "^6.0.0",
+    "jpeg-js": "^0.3.7",
     "path": "^0.12.7",
+    "pngjs": "^3.4.0",
+    "requirejs": "^2.3.6",
     "rimraf": "^3.0.2",
+    "sharp": "^0.24.1",
     "tslint": "^6.0.0",
     "typescript": "^3.7.5",
     "url": "^0.11.0"
-  },
-  "dependencies": {
-    "bmp-js": "^0.1.0",
-    "gulp-sourcemaps": "^2.6.5",
-    "iconv-lite": "^0.5.1",
-    "jpeg-js": "^0.3.7",
-    "pngjs": "^3.4.0",
-    "requirejs": "^2.3.6",
-    "sharp": "^0.24.1"
   },
   "postinstall": "electron-builder install-app-deps",
   "importSort": {
