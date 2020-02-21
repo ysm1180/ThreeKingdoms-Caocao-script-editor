@@ -1,13 +1,18 @@
 import { DomBuilder } from '../../../../base/browser/domBuilder';
 import { IDisposable, dispose } from '../../../../base/common/lifecycle';
-import { ITreeConfiguration, ITreeOptions, Tree } from '../../../../base/parts/tree/browser/tree';
+import { ITreeConfiguration, ITreeOptions } from '../../../../base/parts/tree/browser/tree';
+import { Tree } from '../../../../base/parts/tree/browser/treeImpl';
 import { ContextKeyExpr, ContextKeyNotExpr, RawContextKey } from '../../../../platform/contexts/contextKey';
 import { ContextKey, ContextKeyService, IContextKeyService } from '../../../../platform/contexts/contextKeyService';
 import { IInstantiationService } from '../../../../platform/instantiation/instantiation';
 import { ITreeService, TreeService } from '../../../../platform/tree/treeService';
 import { ResourceEditorInput } from '../../../common/editor/resourceEditorInput';
-import { Me5Stat } from '../../../parts/files/me5Data';
-import { Me5DataController, Me5DataRenderer, Me5DataSource } from '../../../parts/me5ExplorerViewer';
+import {
+  Me5DataController,
+  Me5DataRenderer,
+  Me5DataSource,
+} from '../../../parts/me5/electron-browser/views/me5DataViewer';
+import { Me5Item } from '../../../parts/me5/me5Data';
 import { IResourceFileService } from '../../../services/binaryfile/binaryFiles';
 import { BinaryFileService } from '../../../services/binaryfile/binaryFileService';
 import { IResourceStat } from '../../../services/binaryfile/resourceDataService';
@@ -27,7 +32,7 @@ export const me5ExplorerItemContext: ContextKeyNotExpr = ContextKeyExpr.not(
 );
 
 export class Me5Tree extends Tree {
-  private _cache = new Map<String, IResourceStat>();
+  private _cache = new Map<String, Me5Item>();
 
   constructor(
     container: HTMLElement,
@@ -121,7 +126,7 @@ export class Me5ExplorerView extends CompositeView {
 
     this.registerDispose(
       this.explorerViewer.onDidChangeFocus.add((e) => {
-        const focused = e.focus as Me5Stat;
+        const focused = e.focus as Me5Item;
         if (focused) {
           this.groupContext.set(focused.isGroup && !focused.isRoot);
           this.rootContext.set(focused.isRoot);
@@ -166,7 +171,7 @@ export class Me5ExplorerView extends CompositeView {
   }
 
   private _onOpenInput() {
-    const previousRoot = this.explorerViewer.getRoot() as Me5Stat;
+    const previousRoot = this.explorerViewer.getRoot() as Me5Item;
     if (previousRoot) {
       this.setElementStates(previousRoot.getId());
     }

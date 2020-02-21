@@ -4,7 +4,7 @@ import { StandardMouseEvent } from '../../../browser/mouseEvent';
 import { ScrollableElement } from '../../../browser/ui/scrollbar/scrollbarElement';
 import { ArrayIterator, IIterator } from '../../../common/iterator';
 import { Disposable } from '../../../common/lifecycle';
-import { TreeContext } from './tree';
+import { ITreeContext } from './tree';
 import * as Model from './treeModel';
 
 export interface IRow {
@@ -13,7 +13,7 @@ export interface IRow {
 }
 
 export class ViewItem extends Disposable {
-  private context: TreeContext;
+  private context: ITreeContext;
 
   public model: Model.Item;
   public id: string;
@@ -25,7 +25,7 @@ export class ViewItem extends Disposable {
   public top: number;
   public height: number;
 
-  constructor(context: TreeContext, model: Model.Item) {
+  constructor(context: ITreeContext, model: Model.Item) {
     super();
 
     this.model = model;
@@ -131,7 +131,7 @@ export class ViewItem extends Disposable {
 }
 
 export class RootViewItem extends ViewItem {
-  constructor(context: TreeContext, model: Model.Item) {
+  constructor(context: ITreeContext, model: Model.Item) {
     super(context, model);
   }
 
@@ -147,7 +147,7 @@ export class RootViewItem extends ViewItem {
 }
 
 export class TreeView {
-  private context: TreeContext;
+  private context: ITreeContext;
   private model: Model.TreeModel;
 
   private domNode: HTMLElement;
@@ -163,7 +163,7 @@ export class TreeView {
   private indexes: { [id: string]: number };
   private itemMap: ViewItem[];
 
-  constructor(context: TreeContext, container: HTMLElement) {
+  constructor(context: ITreeContext, container: HTMLElement) {
     this.context = context;
 
     this.domNode = document.createElement('div');

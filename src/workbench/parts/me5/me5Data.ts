@@ -10,21 +10,21 @@ export enum ItemState {
   Edit,
 }
 
-export class Me5Stat extends Disposable implements IResourceStat {
+export class Me5Item extends Disposable implements IResourceStat {
   private static INDEX = 1;
 
   private _state: ItemState;
-  private _parent: Me5Stat;
+  private _parent: Me5Item;
   private _isGroup: boolean;
   private _name: string;
-  private _children = new LinkedList<Me5Stat>();
+  private _children = new LinkedList<Me5Item>();
   private _dataIndex: number;
-  private readonly id = String(Me5Stat.INDEX++);
+  private readonly id = String(Me5Item.INDEX++);
 
   constructor(
     name: string,
     isGroup: boolean,
-    public root: Me5Stat,
+    public root: Me5Item,
     index: number,
     @IResourceFileService private resourceFileService: BinaryFileService,
     @IWorkbenchEditorService private editorService: WorkbenchEditorService
@@ -62,7 +62,7 @@ export class Me5Stat extends Disposable implements IResourceStat {
     this._state = state;
   }
 
-  public get parent(): Me5Stat {
+  public get parent(): Me5Item {
     return this._parent;
   }
 
@@ -74,7 +74,7 @@ export class Me5Stat extends Disposable implements IResourceStat {
     if (value !== this._isGroup) {
       this._isGroup = value;
       if (this._isGroup) {
-        this._children = new LinkedList<Me5Stat>();
+        this._children = new LinkedList<Me5Item>();
       } else {
         this._children = undefined;
       }
@@ -100,7 +100,7 @@ export class Me5Stat extends Disposable implements IResourceStat {
     this._dataIndex = value;
   }
 
-  public getChildren(filter?: FilterFuntion<Me5Stat>): Me5Stat[] {
+  public getChildren(filter?: FilterFuntion<Me5Item>): Me5Item[] {
     const result = this._children.toArray();
 
     if (!filter) {
@@ -110,7 +110,7 @@ export class Me5Stat extends Disposable implements IResourceStat {
     return result.filter(filter);
   }
 
-  public insertChild(child: Me5Stat, itemAfter?: Me5Stat): IDisposable {
+  public insertChild(child: Me5Item, itemAfter?: Me5Item): IDisposable {
     let remove;
     if (itemAfter) {
       remove = this._children.insertBefore(child, itemAfter);
@@ -120,7 +120,7 @@ export class Me5Stat extends Disposable implements IResourceStat {
     return toDisposable(once(remove));
   }
 
-  public getIndex(filter?: FilterFuntion<Me5Stat>): number {
+  public getIndex(filter?: FilterFuntion<Me5Item>): number {
     const parent = this._parent;
     if (parent) {
       const children = parent.getChildren(filter);
@@ -130,7 +130,7 @@ export class Me5Stat extends Disposable implements IResourceStat {
     }
   }
 
-  public build(parent: Me5Stat, itemAfter?: Me5Stat) {
+  public build(parent: Me5Item, itemAfter?: Me5Item) {
     this._parent = parent;
     this.registerDispose(this._parent.insertChild(this, itemAfter));
   }

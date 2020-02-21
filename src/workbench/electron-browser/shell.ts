@@ -6,7 +6,7 @@ import { IInstantiationService } from '../../platform/instantiation/instantiatio
 import { InstantiationService } from '../../platform/instantiation/instantiationService';
 import { ServiceStorage } from '../../platform/instantiation/serviceStorage';
 import { IStorageService, StorageService } from '../services/electron-browser/storageService';
-import { ElectronWindow } from '../window';
+import { ElectronWindow } from './window';
 import { Workbench } from './workbench';
 
 export class WorkbenchShell {

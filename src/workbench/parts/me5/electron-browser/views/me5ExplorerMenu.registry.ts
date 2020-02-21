@@ -1,23 +1,23 @@
-import { KeyCode, KeyMode } from '../../../base/common/keyCodes';
-import { MenuId, MenuRegistry } from '../../../platform/actions/registry';
-import { ContextKeyExpr } from '../../../platform/contexts/contextKey';
-import { IConfirmation } from '../../../platform/dialogs/dialogs';
-import { BinaryFile } from '../../../platform/files/file';
-import { IInstantiationService, ServicesAccessor } from '../../../platform/instantiation/instantiation';
-import { KeybindingsRegistry } from '../../../platform/keybindings/keybindingsRegistry';
-import { ITreeService, TreeService } from '../../../platform/tree/treeService';
+import { KeyCode, KeyMode } from '../../../../../base/common/keyCodes';
+import { MenuId, MenuRegistry } from '../../../../../platform/actions/registry';
+import { ContextKeyExpr } from '../../../../../platform/contexts/contextKey';
+import { IConfirmation } from '../../../../../platform/dialogs/dialogs';
+import { BinaryFile } from '../../../../../platform/files/file';
+import { IInstantiationService, ServicesAccessor } from '../../../../../platform/instantiation/instantiation';
+import { KeybindingsRegistry } from '../../../../../platform/keybindings/keybindingsRegistry';
+import { ITreeService, TreeService } from '../../../../../platform/tree/treeService';
 import {
   me5ExplorerGroupContext,
   me5ExplorerItemContext,
   me5ExplorerRootContext,
-} from '../../browser/parts/editor/me5Explorer';
-import { ImageResource, ImageType } from '../../common/imageResource';
-import { IResourceFileService } from '../../services/binaryfile/binaryFiles';
-import { BinaryFileService } from '../../services/binaryfile/binaryFileService';
-import { IWorkbenchEditorService, WorkbenchEditorService } from '../../services/editor/editorService';
-import { DialogService, IDialogService } from '../../services/electron-browser/dialogService';
-import { ItemState, Me5Stat } from '../files/me5Data';
-import { explorerEditContext } from '../me5ExplorerViewer';
+} from '../../../../browser/parts/editor/me5Explorer';
+import { ImageResource, ImageType } from '../../../../common/imageResource';
+import { IResourceFileService } from '../../../../services/binaryfile/binaryFiles';
+import { BinaryFileService } from '../../../../services/binaryfile/binaryFileService';
+import { IWorkbenchEditorService, WorkbenchEditorService } from '../../../../services/editor/editorService';
+import { DialogService, IDialogService } from '../../../../services/electron-browser/dialogService';
+import { ItemState, Me5Item } from '../../me5Data';
+import { explorerEditContext } from './me5DataViewer';
 
 const INSERT_GROUP_ID = 'INSERT_GROUP';
 const MODIFICATION_ID = 'MODIFICATION';
@@ -41,7 +41,7 @@ function doChangeItem(
   treeService: TreeService
 ) {
   const lastTree = treeService.LastFocusedTree;
-  const element = <Me5Stat>lastTree.getFocus();
+  const element = <Me5Item>lastTree.getFocus();
 
   if (!element || element.isGroup) {
     return;
@@ -93,8 +93,8 @@ function doInsertItem(
   isSelectionAfter?: boolean
 ) {
   const lastTree = treeService.LastFocusedTree;
-  let element = <Me5Stat>lastTree.getFocus();
-  let parent: Me5Stat;
+  let element = <Me5Item>lastTree.getFocus();
+  let parent: Me5Item;
 
   if (!element) {
     return;
@@ -133,12 +133,12 @@ function doInsertItem(
       return Promise.all(promises);
     })
     .then((binaries: Uint8Array[]) => {
-      const selectItems: Me5Stat[] = [];
+      const selectItems: Me5Item[] = [];
       const activeInput = editorService.getActiveEditorInput();
       const model = resourceFileService.models.get(activeInput.getResource());
       for (const [index, binary] of binaries.entries()) {
         const bufferIndex = model.resourceModel.add(Buffer.from(binary.buffer));
-        const item = instantiationService.create(Me5Stat, names[index], false, element.root, bufferIndex);
+        const item = instantiationService.create(Me5Item, names[index], false, element.root, bufferIndex);
         item.build(parent, isSelectionAfter ? element : null);
         selectItems.push(item);
       }
@@ -161,19 +161,19 @@ function doInsertItem(
 
 function doInsertGroup(treeService: TreeService, instantiationService: IInstantiationService) {
   const lastTree = treeService.LastFocusedTree;
-  const element = <Me5Stat>lastTree.getFocus();
+  const element = <Me5Item>lastTree.getFocus();
 
   let root;
   let itemAfter;
   if (element === lastTree.getRoot()) {
-    root = <Me5Stat>lastTree.getRoot();
+    root = <Me5Item>lastTree.getRoot();
     itemAfter = null;
   } else {
     root = element.parent;
     itemAfter = element;
   }
 
-  const newGroup = instantiationService.create(Me5Stat, 'NEW GROUP', true, root, null);
+  const newGroup = instantiationService.create(Me5Item, 'NEW GROUP', true, root, null);
   newGroup.build(root, itemAfter);
 
   lastTree.refresh(root);
@@ -181,7 +181,7 @@ function doInsertGroup(treeService: TreeService, instantiationService: IInstanti
 
 function doRename(treeService: TreeService) {
   const lastTree = treeService.LastFocusedTree;
-  const element = <Me5Stat>lastTree.getFocus();
+  const element = <Me5Item>lastTree.getFocus();
 
   if (!element || element.isRoot) {
     return;
@@ -195,7 +195,7 @@ function doRename(treeService: TreeService) {
 
 function doDelete(dialogService: DialogService, treeService: TreeService) {
   const lastTree = treeService.LastFocusedTree;
-  const elements = [<Me5Stat>lastTree.getFocus()];
+  const elements = [<Me5Item>lastTree.getFocus()];
 
   if (elements.length > 0) {
     const confirmation: IConfirmation = {
@@ -218,7 +218,7 @@ function doDelete(dialogService: DialogService, treeService: TreeService) {
 
 function doExportImage(dialogService: DialogService, treeService: TreeService) {
   const lastTree = treeService.LastFocusedTree;
-  const element = <Me5Stat>lastTree.getFocus();
+  const element = <Me5Item>lastTree.getFocus();
 
   dialogService
     .saveFile({

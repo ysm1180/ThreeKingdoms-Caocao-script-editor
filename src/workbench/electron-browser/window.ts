@@ -1,12 +1,12 @@
 import { ipcRenderer } from 'electron';
 
-import * as array from '../base/common/array';
-import { CommandService, ICommandService } from '../platform/commands/commandService';
-import { IResourceInput } from '../platform/editor/editor';
-import { IInstantiationService } from '../platform/instantiation/instantiation';
-import { IKeybindingService, KeybindingService } from '../platform/keybindings/keybindingService';
-import { IOpenFileRequest } from '../platform/windows/windows';
-import { IWorkbenchEditorService, WorkbenchEditorService } from './services/editor/editorService';
+import * as array from '../../base/common/array';
+import { CommandService, ICommandService } from '../../platform/commands/commandService';
+import { IResourceInput } from '../../platform/editor/editor';
+import { IInstantiationService } from '../../platform/instantiation/instantiation';
+import { IKeybindingService, KeybindingService } from '../../platform/keybindings/keybindingService';
+import { IOpenFileRequest } from '../../platform/windows/windows';
+import { IWorkbenchEditorService, WorkbenchEditorService } from '../services/editor/editorService';
 
 export class ElectronWindow {
   constructor(

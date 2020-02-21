@@ -1,6 +1,6 @@
 import { Me5File } from '../../../editor/common/me5File';
 import { IInstantiationService } from '../../../platform/instantiation/instantiation';
-import { Me5Stat } from '../../parts/files/me5Data';
+import { Me5Item } from '../../parts/me5/me5Data';
 import { IResourceStat, ResourceDataService } from '../binaryfile/resourceDataService';
 
 export class Me5DataService extends ResourceDataService {
@@ -22,13 +22,13 @@ export class Me5DataService extends ResourceDataService {
           throw new Error();
         }
         let baseItemIndex = 1;
-        const stat = this.instantiationService.create(Me5Stat, null, true, null, null);
+        const stat = this.instantiationService.create(Me5Item, null, true, null, null);
         for (let i = 0, groupCount = me5File.getGroupCount(); i < groupCount; i++) {
-          const group = this.instantiationService.create(Me5Stat, me5File.getGroupName(i), true, stat, null);
+          const group = this.instantiationService.create(Me5Item, me5File.getGroupName(i), true, stat, null);
           group.build(stat);
           for (let j = 0, itemCount = me5File.getGroupItemCount(i); j < itemCount; ++j) {
             const item = this.instantiationService.create(
-              Me5Stat,
+              Me5Item,
               me5File.getItemName(i, j),
               false,
               stat,

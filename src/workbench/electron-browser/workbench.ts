@@ -9,6 +9,11 @@ import { IStatusbarService } from '../../platform/statusbar/statusbar';
 import { ITreeService, TreeService } from '../../platform/tree/treeService';
 import { IWindowService } from '../../platform/windows/windows';
 import { WindowClientService } from '../../platform/windows/windowsIpc';
+import { WorkbenchLayout } from '../browser/layout';
+import { EditorPart, IEditorGroupService } from '../browser/parts/editor/editorPart';
+import { SidebarPart } from '../browser/parts/sidebar/sidebarPart';
+import { StatusbarPart } from '../browser/parts/statusbar/statusbarPart';
+import { ITitlePartService, TitlePart } from '../browser/parts/titlebar/titlePart';
 import { IResourceFileService } from '../services/binaryfile/binaryFiles';
 import { IResourceDataService } from '../services/binaryfile/resourceDataService';
 import { ContextMenuService, IContextMenuService } from '../services/contextmenu/contextmenuService';
@@ -22,11 +27,6 @@ import { IPartService } from '../services/part/partService';
 import { ITextFileService } from '../services/textfile/textfiles';
 import { TextFileService } from '../services/textfile/textFileService';
 import { CompositeViewService, ICompositeViewService } from '../services/view/compositeViewService';
-import { WorkbenchLayout } from './layout';
-import { EditorPart, IEditorGroupService } from './parts/editor/editorPart';
-import { SidebarPart } from './parts/sidebar/sidebarPart';
-import { StatusbarPart } from './parts/statusbar/statusbarPart';
-import { ITitlePartService, TitlePart } from './parts/titlebar/titlePart';
 
 export class Workbench implements IPartService {
   private container: HTMLElement;

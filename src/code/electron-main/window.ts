@@ -41,7 +41,7 @@ export class CodeWindow {
 
     this.window.loadURL(
       url.format({
-        pathname: path.join(__dirname, '../workbench/index.html'),
+        pathname: path.join(__dirname, '../workbench/workbench.html'),
         protocol: 'file:',
         slashes: true,
       })

@@ -2,7 +2,7 @@ import { Me5File } from '../../../editor/common/me5File';
 import { createMe5ResourceBufferFactoryFromStream } from '../../../editor/common/resourceModel';
 import { ISavingFile } from '../../../platform/dialogs/dialogs';
 import { IInstantiationService } from '../../../platform/instantiation/instantiation';
-import { Me5Stat } from '../../parts/files/me5Data';
+import { Me5Item } from '../../parts/me5/me5Data';
 import { BinaryFileService } from '../binaryfile/binaryFileService';
 import { DialogService, IDialogService } from '../electron-browser/dialogService';
 import { IFileService } from '../files/files';
@@ -41,7 +41,7 @@ export class Me5FileService extends BinaryFileService {
     }
   }
 
-  public updateContents(resource: string, stat: Me5Stat): Promise<void> {
+  public updateContents(resource: string, stat: Me5Item): Promise<void> {
     const file = new Me5File(resource);
     return file.save(stat, (group) => group.getChildren().length !== 0);
   }

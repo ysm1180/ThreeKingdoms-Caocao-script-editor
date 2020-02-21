@@ -1,29 +1,29 @@
-import { addDisposableEventListener } from '../../base/browser/dom';
-import { Input } from '../../base/browser/ui/input';
-import { Label } from '../../base/browser/ui/labels';
-import { KeyCode } from '../../base/common/keyCodes';
-import { dispose } from '../../base/common/lifecycle';
-import { IDataController, IDataRenderer, IDataSource, Tree } from '../../base/parts/tree/browser/tree';
-import { Menu } from '../../platform/actions/menu';
-import { MenuId } from '../../platform/actions/registry';
-import { RawContextKey } from '../../platform/contexts/contextKey';
-import { ContextKey, ContextKeyService, IContextKeyService } from '../../platform/contexts/contextKeyService';
-import { ContextMenuEvent } from '../../platform/events/contextMenuEvent';
-import { IResourceFileService } from '../services/binaryfile/binaryFiles';
-import { BinaryFileService } from '../services/binaryfile/binaryFileService';
-import { ContextMenuService, IContextMenuService } from '../services/contextmenu/contextmenuService';
-import { IWorkbenchEditorService, WorkbenchEditorService } from '../services/editor/editorService';
-import { ItemState, Me5Stat } from './files/me5Data';
+import { addDisposableEventListener } from '../../../../../base/browser/dom';
+import { Input } from '../../../../../base/browser/ui/input';
+import { Label } from '../../../../../base/browser/ui/labels';
+import { KeyCode } from '../../../../../base/common/keyCodes';
+import { dispose } from '../../../../../base/common/lifecycle';
+import { IDataController, IDataRenderer, IDataSource, ITree } from '../../../../../base/parts/tree/browser/tree';
+import { Menu } from '../../../../../platform/actions/menu';
+import { MenuId } from '../../../../../platform/actions/registry';
+import { RawContextKey } from '../../../../../platform/contexts/contextKey';
+import { ContextKey, ContextKeyService, IContextKeyService } from '../../../../../platform/contexts/contextKeyService';
+import { ContextMenuEvent } from '../../../../../platform/events/contextMenuEvent';
+import { IResourceFileService } from '../../../../services/binaryfile/binaryFiles';
+import { BinaryFileService } from '../../../../services/binaryfile/binaryFileService';
+import { ContextMenuService, IContextMenuService } from '../../../../services/contextmenu/contextmenuService';
+import { IWorkbenchEditorService, WorkbenchEditorService } from '../../../../services/editor/editorService';
+import { ItemState, Me5Item } from '../../me5Data';
 
 export const explorerEditableItemId = 'explorerRename';
 export const explorerEditContext = new RawContextKey<boolean>(explorerEditableItemId, false);
 
 export class Me5DataSource implements IDataSource {
-  public getId(element: Me5Stat): string {
+  public getId(element: Me5Item): string {
     return element.getId();
   }
 
-  public getChildren(element: Me5Stat): Me5Stat[] {
+  public getChildren(element: Me5Item): Me5Item[] {
     if (!element || !element.getChildren) {
       return [];
     }
@@ -31,7 +31,7 @@ export class Me5DataSource implements IDataSource {
     return element.getChildren();
   }
 
-  public hasChildren(element: Me5Stat): boolean {
+  public hasChildren(element: Me5Item): boolean {
     if (!element) {
       return false;
     }
@@ -59,7 +59,7 @@ export class Me5DataRenderer implements IDataRenderer {
     return { label, container };
   }
 
-  public render(tree: Tree, element: Me5Stat, templateData: IMe5TemplateData) {
+  public render(tree: ITree, element: Me5Item, templateData: IMe5TemplateData) {
     if (element.state === ItemState.Edit) {
       templateData.label.element.style.display = 'none';
       this.renderInput(tree, templateData.container, element);
@@ -70,7 +70,7 @@ export class Me5DataRenderer implements IDataRenderer {
     }
   }
 
-  private renderInput(tree: Tree, container: HTMLElement, element: Me5Stat) {
+  private renderInput(tree: ITree, container: HTMLElement, element: Me5Item) {
     const label = new Label(container);
     const input = new Input(label.element);
 
@@ -125,7 +125,7 @@ export class Me5DataController implements IDataController {
     @IResourceFileService private resourceFileService: BinaryFileService
   ) {}
 
-  public onClick(tree: Tree, element: Me5Stat) {
+  public onClick(tree: ITree, element: Me5Item) {
     tree.focus();
 
     const input = this.editorService.getActiveEditorInput();
@@ -134,7 +134,7 @@ export class Me5DataController implements IDataController {
     this.editorService.refresh();
   }
 
-  public onContextMenu(tree: Tree, element: Me5Stat, event: ContextMenuEvent) {
+  public onContextMenu(tree: ITree, element: Me5Item, event: ContextMenuEvent) {
     event.preventDefault();
     event.stopPropagation();
 

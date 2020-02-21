@@ -1,8 +1,7 @@
 import { ChainEventStorage, Event } from '../../../common/event';
-import { IDisposable, dispose } from '../../../common/lifecycle';
-
 import { IIterator } from '../../../common/iterator';
-import { TreeContext } from './tree';
+import { IDisposable, dispose } from '../../../common/lifecycle';
+import { ITreeContext } from './tree';
 
 interface IMap<T> {
   [id: string]: T;
@@ -78,6 +77,7 @@ export class ItemRegistry {
     this.onDidDisposeItem.dispose();
   }
 }
+
 export class Item {
   private element: any;
   private traits: { [trait: string]: boolean };
@@ -87,7 +87,7 @@ export class Item {
   private doesHaveChildren: boolean;
 
   private registry: ItemRegistry;
-  private context: TreeContext;
+  private context: ITreeContext;
 
   public parent: Item;
   public previous: Item;
@@ -113,7 +113,7 @@ export class Item {
   public readonly onDidRemoveTrait = new Event<IItemTraitEvent>();
   public readonly onDidDispose = new Event<Item>();
 
-  constructor(id: string, registry: ItemRegistry, context: TreeContext, element: any) {
+  constructor(id: string, registry: ItemRegistry, context: ITreeContext, element: any) {
     this.id = id;
     this.registry = registry;
     this.element = element;
@@ -490,7 +490,7 @@ export class ItemNavigator implements IIterator<Item> {
 }
 
 export class RootItem extends Item {
-  constructor(id: string, registry: ItemRegistry, context: TreeContext, element: any) {
+  constructor(id: string, registry: ItemRegistry, context: ITreeContext, element: any) {
     super(id, registry, context, element);
   }
 
@@ -505,7 +505,7 @@ export class RootItem extends Item {
 
 export class TreeModel {
   private root: Item;
-  private context: TreeContext;
+  private context: ITreeContext;
   private registry: ItemRegistry;
   private traitsToItems: IMap<IItemMap>;
 
@@ -522,7 +522,7 @@ export class TreeModel {
   public readonly onDidRemoveTraitItem = new Event<IItemTraitEvent>();
   public readonly onDidChangeHighlight = new Event<void>();
 
-  constructor(context: TreeContext) {
+  constructor(context: ITreeContext) {
     this.root = null;
     this.context = context;
 

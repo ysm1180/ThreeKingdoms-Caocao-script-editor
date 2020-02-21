@@ -1,11 +1,11 @@
 import { Disposable } from '../../base/common/lifecycle';
-import { Tree } from '../../base/parts/tree/browser/tree';
+import { ITree } from '../../base/parts/tree/browser/tree';
 import { decorator } from '../instantiation/instantiation';
 
 export const ITreeService = decorator<TreeService>('treeService');
 
 export class TreeService extends Disposable {
-  private _lastFocusedTree: Tree;
+  private _lastFocusedTree: ITree;
 
   constructor() {
     super();
@@ -17,7 +17,7 @@ export class TreeService extends Disposable {
     return this._lastFocusedTree;
   }
 
-  public register(tree: Tree) {
+  public register(tree: ITree) {
     this._lastFocusedTree = tree;
 
     this.registerDispose(
