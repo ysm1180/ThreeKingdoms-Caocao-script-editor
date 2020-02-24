@@ -5,5 +5,5 @@ if (process.env['NODE_ENV'] === 'development') {
 }
 
 app.on('ready', () => {
-  require('./code/electron-main/main');
+  require('./bootstrap-amd').load('jojo/code/electron-main/main', () => {});
 });

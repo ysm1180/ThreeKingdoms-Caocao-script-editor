@@ -1,20 +1,31 @@
 {
-    "typescript.surveys.enabled": false,
-    "typescript.tsdk": "node_modules\\typescript\\lib",
-    "workbench.colorCustomizations": {
-        "activityBar.background": "#3399ff",
-        "activityBar.activeBorder": "#bf0060",
-        "activityBar.foreground": "#15202b",
-        "activityBar.inactiveForeground": "#15202b99",
-        "activityBarBadge.background": "#bf0060",
-        "activityBarBadge.foreground": "#e7e7e7",
-        "titleBar.activeBackground": "#007fff",
-        "titleBar.inactiveBackground": "#007fff99",
-        "titleBar.activeForeground": "#e7e7e7",
-        "titleBar.inactiveForeground": "#e7e7e799",
-        "statusBar.background": "#007fff",
-        "statusBarItem.hoverBackground": "#3399ff",
-        "statusBar.foreground": "#e7e7e7"
-    },
-    "peacock.color": "#007fff"
+  "typescript.surveys.enabled": false,
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.quoteStyle": "single",
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#3399ff",
+    "activityBar.activeBorder": "#bf0060",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#bf0060",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "titleBar.activeBackground": "#007fff",
+    "titleBar.inactiveBackground": "#007fff99",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveForeground": "#e7e7e799",
+    "statusBar.background": "#007fff",
+    "statusBarItem.hoverBackground": "#3399ff",
+    "statusBar.foreground": "#e7e7e7"
+  },
+  "peacock.color": "#007fff",
+  "eslint.options": {
+    "rulePaths": ["./build/lib/eslint"]
+  },
+  "eslint.validate": ["typescript"],
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true
+  }
 }

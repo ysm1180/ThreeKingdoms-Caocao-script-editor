@@ -3,10 +3,9 @@ const path = require('path');
 const rimraf = require('rimraf');
 const htmlMin = require('gulp-htmlmin');
 const cssMin = require('gulp-clean-css');
-const gulptslint = require('gulp-tslint');
+const gulpeslint = require('gulp-eslint');
 const electron = require('electron-connect').server.create();
-var ts = require('gulp-typescript');
-const tsProject = ts.createProject('src/tsconfig.json');
+const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
 
 function toFileUri(filePath) {
@@ -19,11 +18,8 @@ function toFileUri(filePath) {
   return 'file://' + filePath.replace(/\\/g, '/');
 }
 
-const rootDir = path.join(__dirname, './src');
-const options = require('./src/tsconfig.json').compilerOptions;
-options.rootDir = rootDir;
-options.sourceRoot = toFileUri(rootDir);
-options.newLine = 'CRLF';
+const rootDir = path.join(__dirname, 'src');
+const tsProject = ts.createProject('./src/tsconfig.json', { rootDir: rootDir, sourceRoot: toFileUri(rootDir) });
 
 const clean = function() {
   return new Promise(function(resolve, reject) {
@@ -102,11 +98,23 @@ gulp.task('compile-ts', compileTypescript);
 gulp.task('compile-js', compileJavascript);
 
 gulp.task('compile', gulp.series('compile-ts', 'compile-js'));
-gulp.task('tslint', function() {
+gulp.task('eslint', function() {
   return gulp
-    .src('src/**/*.ts')
-    .pipe(gulptslint.default())
-    .pipe(gulptslint.default.report({ emitError: true }));
+    .src('src/**/*.(j|t)s')
+    .pipe(
+      gulpeslint({
+        configFile: '.eslintrc.json',
+        rulesDirectory: './build/lib/eslint',
+      })
+    )
+    .pipe(gulpeslint.formatEach('compact'))
+    .pipe(
+      gulpeslint.results((results) => {
+        if (results.warningCount > 0 || results.errorCount > 0) {
+          throw new Error('eslint failed with warnings and/or errors');
+        }
+      })
+    );
 });
 
 gulp.task('electron-restart', electronRestart);
@@ -117,12 +125,12 @@ gulp.task('watch', function(done) {
   electron.start();
 
   gulp.watch(['src/**/*.css'], gulp.series('minify-css', 'electron-reload'));
-  gulp.watch(['src/**/*.ts'], gulp.series('tslint', 'compile', 'electron-restart'));
+  gulp.watch(['src/**/*.ts'], gulp.series('eslint', 'compile', 'electron-restart'));
   gulp.watch(['src/**/*.svg'], gulp.series('move-assets', 'electron-restart'));
 
   done();
 });
 
-gulp.task('development', gulp.series('tslint', 'clean', 'source', 'compile', 'watch'));
+gulp.task('development', gulp.series('eslint', 'clean', 'source', 'compile', 'watch'));
 
-gulp.task('build', gulp.series('tslint', 'clean', 'source', 'compile'));
+gulp.task('build', gulp.series('eslint', 'clean', 'source', 'compile'));

@@ -1,0 +1,242 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "plugins": ["@typescript-eslint", "jsdoc"],
+  "rules": {
+    "constructor-super": "warn",
+    "curly": "warn",
+    "eqeqeq": "warn",
+    "no-buffer-constructor": "warn",
+    "no-caller": "warn",
+    "no-debugger": "warn",
+    "no-duplicate-case": "warn",
+    "no-duplicate-imports": "warn",
+    "no-eval": "warn",
+    "no-extra-semi": "warn",
+    "no-new-wrappers": "warn",
+    "no-redeclare": "off",
+    "no-sparse-arrays": "warn",
+    "no-throw-literal": "warn",
+    "no-unsafe-finally": "warn",
+    "no-unused-labels": "warn",
+    "no-prototype-builtins": "off",
+    "no-restricted-globals": [
+      "warn",
+      "name",
+      "length",
+      "event",
+      "closed",
+      "external",
+      "status",
+      "origin",
+      "orientation"
+    ], // non-complete list of globals that are easy to access unintentionally
+    "no-var": "warn",
+    "jsdoc/no-types": "warn",
+    "semi": "error",
+    "prefer-rest-params": "off",
+    "@typescript-eslint/semi": "warn",
+    "@typescript-eslint/class-name-casing": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/no-empty-interface": "warn",
+    "@typescript-eslint/consistent-type-assertions": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-this-alias": "off",
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "import-patterns": [
+      "warn",
+      {
+        "target": "**/base/common/**",
+        "restrictions": ["**/base/common/**"]
+      },
+      {
+        "target": "**/base/browser/**",
+        "restrictions": ["**/base/{common,browser}/**"]
+      },
+      {
+        "target": "**/base/parts/*/common/**",
+        "restrictions": ["**/base/common/**", "**/base/parts/*/common/**"]
+      },
+      {
+        "target": "**/base/parts/*/browser/**",
+        "restrictions": ["**/base/{common,browser}/**", "**/base/parts/*/{common,browser}/**"]
+      },
+      {
+        "target": "**/base/parts/*/electron-browser/**",
+        "restrictions": [
+          "**/base/{common,browser,node,electron-browser}/**",
+          "**/base/parts/*/{common,browser,node,electron-browser}/**",
+          "*"
+        ]
+      },
+      {
+        "target": "**/base/parts/*/electron-main/**",
+        "restrictions": [
+          "**/base/{common,browser,node,electron-main}/**",
+          "**/base/parts/*/{common,browser,node,electron-main}/**",
+          "*"
+        ]
+      },
+      {
+        "target": "**/platform/*/common/**",
+        "restrictions": ["**/base/common/**", "**/base/parts/*/common/**", "**/platform/*/common/**"]
+      },
+      {
+        "target": "**/platform/*/browser/**",
+        "restrictions": [
+          "**/base/{common,browser}/**",
+          "**/base/parts/*/{common,browser}/**",
+          "**/platform/*/{common,browser}/**"
+        ]
+      },
+      {
+        "target": "**/platform/*/node/**",
+        "restrictions": [
+          "**/base/{common,browser,node}/**",
+          "**/base/parts/*/{common,browser,node}/**",
+          "**/platform/*/{common,browser,node}/**",
+          "*"
+        ]
+      },
+      {
+        "target": "**/platform/*/electron-browser/**",
+        "restrictions": [
+          "**/base/{common,browser,node}/**",
+          "**/base/parts/*/{common,browser,node,electron-browser}/**",
+          "**/platform/*/{common,browser,node,electron-browser}/**",
+          "*"
+        ]
+      },
+      {
+        "target": "**/platform/*/electron-main/**",
+        "restrictions": [
+          "**/base/{common,browser,node}/**",
+          "**/base/parts/*/{common,browser,node,electron-browser}/**",
+          "**/platform/*/{common,browser,node,electron-main}/**",
+          "*"
+        ]
+      },
+      {
+        "target": "**/editor/common/**",
+        "restrictions": ["**/base/common/**", "**/platform/*/common/**", "**/editor/common/**"]
+      },
+      {
+        "target": "**/editor/browser/**",
+        "restrictions": [
+          "**/base/{common,browser}/**",
+          "**/platform/*/{common,browser}/**",
+          "**/editor/{common,browser}/**"
+        ]
+      },
+      {
+        "target": "**/workbench/common/**",
+        "restrictions": [
+          "**/base/common/**",
+          "**/base/parts/*/common/**",
+          "**/platform/*/common/**",
+          "**/editor/common/**",
+          "**/workbench/common/**",
+          "**/workbench/services/*/common/**",
+          "assert"
+        ]
+      },
+      {
+        "target": "**/workbench/browser/**",
+        "restrictions": [
+          "**/base/{common,browser}/**",
+          "**/base/parts/*/{common,browser}/**",
+          "**/platform/*/{common,browser}/**",
+          "**/editor/{common,browser}/**",
+          "**/workbench/{common,browser}/**",
+          "**/workbench/services/*/{common,browser}/**",
+          "assert"
+        ]
+      },
+      {
+        "target": "**/workbench/electron-browser/main.ts",
+        "restrictions": ["**"]
+      },
+      {
+        "target": "**/workbench/electron-browser/**",
+        "restrictions": [
+          "**/base/{common,browser,node,electron-browser}/**",
+          "**/base/parts/*/{common,browser,node,electron-browser}/**",
+          "**/platform/*/{common,browser,node,electron-browser}/**",
+          "**/editor/{common,browser,node,electron-browser}/**",
+          "**/workbench/{common,browser,node,electron-browser,api}/**",
+          "**/workbench/services/*/{common,browser,node,electron-browser}/**",
+          "*"
+        ]
+      },
+      {
+        "target": "**/workbench/services/**/common/**",
+        "restrictions": [
+          "**/base/**/common/**",
+          "**/platform/**/common/**",
+          "**/editor/common/**",
+          "**/workbench/common/**",
+          "**/workbench/services/**/common/**"
+        ]
+      },
+      {
+        "target": "**/workbench/services/**/browser/**",
+        "restrictions": [
+          "**/base/**/{common,browser}/**",
+          "**/platform/**/{common,browser}/**",
+          "**/editor/{common,browser}/**",
+          "**/workbench/{common,browser}/**",
+          "**/workbench/services/**/{common,browser}/**"
+        ]
+      },
+      {
+        "target": "**/workbench/services/**/electron-browser/**",
+        "restrictions": [
+          "**/base/**/{common,browser,node,electron-browser}/**",
+          "**/platform/**/{common,browser,node,electron-browser}/**",
+          "**/editor/**",
+          "**/workbench/{common,browser,node,electron-browser,api}/**",
+          "**/workbench/services/**/{common,browser,node,electron-browser}/**",
+          "*"
+        ]
+      },
+      {
+        "target": "**/code/electron-browser/**",
+        "restrictions": [
+          "**/base/**/{common,browser,node,electron-browser}/**",
+          "**/base/parts/**/{common,browser,node,electron-browser}/**",
+          "**/platform/**/{common,browser,node,electron-browser}/**",
+          "**/code/**/{common,browser,node,electron-browser}/**",
+          "*"
+        ]
+      },
+      {
+        "target": "**/code/electron-main/**",
+        "restrictions": [
+          "**/base/**/{common,browser,node}/**",
+          "**/base/parts/**/{common,browser,node,electron-main}/**",
+          "**/platform/**/{common,browser,node,electron-main}/**",
+          "**/code/**/{common,browser,node,electron-main}/**",
+          "*"
+        ]
+      },
+      {
+        "target": "**/{node,electron-browser,electron-main}/**",
+        "restrictions": "**/*"
+      },
+      {
+        "target": "**/{common,browser,workbench}/**",
+        "restrictions": "**/**"
+      }
+    ]
+  }
+}
