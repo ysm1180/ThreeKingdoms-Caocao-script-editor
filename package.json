@@ -34,7 +34,7 @@
     "path": "^0.12.7",
     "pngjs": "^3.4.0",
     "requirejs": "^2.3.6",
-    "sharp": "^0.24.1",
+    "sharp": "^0.30.5",
     "url": "^0.11.0"
   },
   "devDependencies": {
